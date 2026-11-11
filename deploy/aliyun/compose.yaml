@@ -1,0 +1,26 @@
+services:
+  app:
+    image: ${ONTOLOGY_IMAGE:?Set ONTOLOGY_IMAGE to the release image}
+    container_name: shwo-ontology-app
+    init: true
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:27080:27080"
+    environment:
+      LLM_CONFIG_FILE: /run/ontology-config/llm.config.json
+    volumes:
+      - /opt/shwo-ontology/config:/run/ontology-config:ro
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=16m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 64
+    mem_limit: 256m
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "3"

@@ -1,0 +1,29 @@
+{
+  "name": "ontology_learning",
+  "version": "0.4.0",
+  "description": "按 SPEC（弱覆盖，V0.9）生成本体、以上海 4 张工单为样例的决策与问答应用，并对外提供 OSDK REST 本体后端接口；依赖 Node.js ≥ 22.13（内置 node:sqlite），无第三方依赖；前端以小区为流程起点（大屏＋小区详情 7 步决策流程，动作必填参数由证据自动推导、只靠点击推进），问答带当前小区上下文且只读；含按业务人员使用场景编排的决策与问答测试用例（可经接口回放）",
+  "private": true,
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "node web/server.js --port 27080",
+    "extract": "node scripts/extract-source.js",
+    "ontology": "node scripts/gen-ontology.js && node scripts/gen-ontology-doc.js",
+    "seed": "node scripts/gen-seed.js",
+    "expected": "node scripts/build-expected.js",
+    "regen": "node scripts/gen-ontology.js && node scripts/gen-ontology-doc.js && node scripts/gen-seed.js && node scripts/build-expected.js",
+    "replay": "node scripts/replay.js",
+    "test": "node test/run.js && node test/web.js",
+    "test:web": "node test/web.js",
+    "qa": "node src/qa-cli.js",
+    "qa:fresh": "node src/qa-cli.js --stage fresh",
+    "serve": "node src/server.js --port 27072",
+    "test:biz": "node test/business.js",
+    "test:biz:api": "node test/business.js --transport api",
+    "test:llm": "node test/llm.js",
+    "llm:check": "node scripts/llm-check.js",
+    "qa:llm": "node src/qa-cli.js --llm",
+    "story": "node scripts/gen-story.js"
+  }
+}

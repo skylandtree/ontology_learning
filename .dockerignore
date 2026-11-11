@@ -1,0 +1,9 @@
+.git
+.DS_Store
+node_modules
+tmp
+outputs
+*.log
+config/llm.config.json
+deploy/aliyun/*.htpasswd
+deploy/aliyun/*.env

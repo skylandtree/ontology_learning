@@ -1,0 +1,1651 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>弱覆盖本体 · 从发现到关单入库｜主线故事线（SPEC V0.9）</title>
+<meta name="description" content="弱覆盖本体应用在上海工单上的四幕主线场景：问题发现、定因与方案、审批与执行、效果关单与案例复用。">
+<style>
+:root{
+  --paper:#efe7d8; --card:#fbf7ec; --ink:#14100b; --ink2:#33302a; --muted:#7c7261;
+  --line:#cfc3ab; --line2:#e4dac6; --red:#a8341b; --teal:#1b5a52; --amber:#a8791c;
+  --serif:"Songti SC","STSong","Noto Serif CJK SC","Source Han Serif SC","SimSun",serif;
+  --sans:"PingFang SC","Microsoft YaHei","Hiragino Sans GB","Source Han Sans SC",sans-serif;
+  --mono:"Cascadia Mono","Consolas","SFMono-Regular","JetBrains Mono",monospace;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.78;
+  background-image:radial-gradient(circle at 20% 0%,rgba(255,255,255,.55),transparent 55%),linear-gradient(rgba(20,16,11,.032) 1px,transparent 1px),linear-gradient(90deg,rgba(20,16,11,.032) 1px,transparent 1px);
+  background-size:auto,96px 96px,96px 96px}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;margin:0}
+p{margin:0 0 12px}
+a{color:inherit}
+button{font-family:inherit}
+.progress{position:fixed;top:0;left:0;height:2px;width:0;background:var(--red);z-index:80}
+/* hero */
+.hero{position:relative;background:#14100b;color:#f4ecdb;overflow:hidden;padding:56px 40px 0}
+.hero::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(244,236,219,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(244,236,219,.06) 1px,transparent 1px);background-size:76px 76px;mask-image:linear-gradient(to bottom,#000 10%,transparent 92%)}
+.hero-inner{position:relative;max-width:1200px;margin:0 auto;padding-bottom:34px}
+.kicker{font-family:var(--mono);font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:#b99a68}
+.hero .kicker{color:#c8a878}
+.hero h1{font-size:clamp(38px,5.6vw,74px);line-height:1.12;letter-spacing:.01em;margin:18px 0 20px;color:#f7efde}
+.hero .lede{max-width:44em;font-size:16.5px;line-height:1.85;color:#cfc3ae}
+.hero-subject{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:30px 0 0;padding:16px 0 0;border-top:1px solid rgba(244,236,219,.18)}
+.hero-subject dt{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:#a8997d;margin-bottom:4px}
+.hero-subject dd{margin:0;font-size:13.5px;color:#efe6d4}
+.hero-subject code{font-family:var(--mono);font-size:12.5px;color:#e7c9a0;overflow-wrap:anywhere}
+.hero-subject dd{overflow-wrap:anywhere}
+.hero-stats{position:relative;max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:0;border-top:1px solid rgba(244,236,219,.18)}
+.hstat{padding:16px 14px 22px;border-right:1px solid rgba(244,236,219,.12)}
+.hstat:last-child{border-right:0}
+.hv{font-family:var(--serif);font-size:26px;color:#f7efde;line-height:1.2}
+.hl{font-size:11.5px;color:#a8997d;margin-top:2px}
+.mode-bar{position:relative;max-width:1200px;margin:0 auto;padding:0 0 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.mode-hint{font-family:var(--mono);font-size:10.5px;color:#a8997d;letter-spacing:.08em}
+.seg{display:inline-flex;border:1px solid rgba(244,236,219,.35)}
+.seg button{background:transparent;color:#cfc3ae;border:0;padding:6px 14px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;cursor:pointer}
+.seg button[aria-pressed="true"]{background:#f4ecdb;color:#14100b}
+/* shell */
+.shell{max-width:1240px;margin:0 auto;padding:0 40px 100px;display:grid;grid-template-columns:222px minmax(0,1fr);gap:52px}
+.rail{position:sticky;top:0;align-self:start;max-height:100vh;overflow:auto;padding:38px 0 30px}
+.rail-label{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--muted);margin-bottom:14px}
+.rail-act{display:block;position:relative;padding:9px 0 9px 14px;border-left:1px solid var(--line);text-decoration:none;color:var(--muted)}
+.rail-act:hover{color:var(--ink)}
+.rail-act.active{border-left:2px solid var(--red);padding-left:13px;color:var(--ink)}
+.rail-act.active .r-no{color:var(--red)}
+.r-no{font-family:var(--mono);font-size:10.5px;margin-right:6px;letter-spacing:.08em}
+.r-t{font-size:14px}
+.r-time{display:block;font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:2px}
+.rail-note{margin-top:22px;padding-top:14px;border-top:1px solid var(--line);font-size:11.5px;color:var(--muted);line-height:1.7}
+.rail-note b{color:var(--ink2);font-weight:600}
+/* act */
+.act{padding:56px 0 8px;border-top:1px solid var(--line)}
+.act:first-child{border-top:0;padding-top:12px}
+.act-head{display:grid;grid-template-columns:112px minmax(0,1fr);gap:18px 22px}
+.act-num{font-family:var(--serif);font-size:88px;line-height:.82;color:transparent;-webkit-text-stroke:1px var(--line);user-select:none}
+.act-titles .kicker{color:var(--muted)}
+.act-titles h2{font-size:36px;margin:2px 0 10px;letter-spacing:.02em}
+.headline{font-family:var(--serif);font-size:19px;color:var(--ink);border-left:3px solid var(--red);padding-left:12px;margin:0;line-height:1.5}
+.act-meta{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:20px 0 0;padding:14px 0 0;border-top:1px dashed var(--line)}
+.act-meta dt{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;color:var(--muted)}
+.act-meta dd{margin:2px 0 0;font-size:12.5px;color:var(--ink2)}
+.act-lede{font-size:16px;color:var(--ink2);margin:26px 0 18px;max-width:58em}
+.prose p{font-size:15.5px;color:#2c2820;max-width:62em}
+/* kpi */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:0 26px;margin:26px 0 6px}
+.kpi{border-top:2px solid var(--ink);padding:10px 0 14px}
+.kpi .v{font-family:var(--serif);font-size:27px;line-height:1.25;letter-spacing:.01em}
+.kpi .l{font-size:12.5px;color:var(--ink2);margin-top:2px}
+.kpi .h{font-size:11px;color:var(--muted);margin-top:2px}
+/* figure */
+.figure{margin:26px 0 0;background:var(--card);border:1px solid var(--line);padding:18px 20px 14px}
+.figure figcaption{font-family:var(--serif);font-size:15px;margin-bottom:8px}
+.figure svg{display:block;width:100%;height:auto}
+.figure .note{font-size:11.5px;color:var(--muted);border-top:1px dashed var(--line2);padding-top:9px;margin:6px 0 0;line-height:1.7}
+text.ax{font-family:var(--mono);font-size:10.5px;fill:#7c7261}
+text.val{font-family:var(--mono);font-size:10.5px;fill:#241f17}
+text.red{font-family:var(--mono);font-size:10px;fill:#a8341b}
+text.grn{font-family:var(--mono);font-size:10px;fill:#1b5a52}
+text.cap{font-family:var(--sans);font-size:11px;fill:#33302a}
+/* panels */
+.panel{margin-top:26px;background:var(--card);border:1px solid var(--line);padding:22px 24px 18px;position:relative}
+.panel::before,.panel::after{content:"";position:absolute;width:9px;height:9px;border:1px solid var(--ink);opacity:.35}
+.panel::before{top:-1px;left:-1px;border-right:0;border-bottom:0}
+.panel::after{bottom:-1px;right:-1px;border-left:0;border-top:0}
+.panel-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;background:var(--ink);color:var(--paper);padding:2px 7px;white-space:nowrap}
+.panel-head h3{font-size:21px;letter-spacing:.01em}
+.panel-note{font-size:12.5px;color:var(--muted);margin:0 0 14px}
+.case-block{border-top:1px solid var(--line);padding-top:14px;margin-top:14px}
+.case-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.case-id{font-family:var(--mono);font-size:11px;color:var(--red);letter-spacing:.06em}
+.case-title{font-size:14.5px;font-weight:600}
+.case-stat{margin-left:auto;font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.case-scene{font-size:12.5px;color:var(--muted);margin:4px 0 10px;line-height:1.7}
+/* steps */
+.steps{list-style:none;margin:0;padding:0}
+.step{display:grid;grid-template-columns:42px minmax(0,1fr);gap:10px;padding:12px 0;border-top:1px solid var(--line2)}
+.step:first-child{border-top:0}
+.step-n{font-family:var(--mono);font-size:11px;color:var(--muted);padding-top:2px;position:relative}
+.step-n::after{content:"";position:absolute;left:0;top:19px;bottom:-12px;width:1px;background:var(--line2)}
+.step:last-child .step-n::after{display:none}
+.step[data-kind="rej"] .step-n{color:var(--red)}
+.step[data-kind="at"] .step-biz{color:var(--muted);font-size:13px}
+.step-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.role{font-size:11.5px;background:rgba(27,90,82,.09);color:#14463f;padding:1px 7px;border:1px solid rgba(27,90,82,.16)}
+.badge{font-family:var(--mono);font-size:10px;letter-spacing:.06em;padding:1px 6px;border:1px solid var(--line);color:var(--muted)}
+.badge.ok{color:#14463f;border-color:rgba(27,90,82,.35)}
+.badge.rej{color:var(--red);border-color:rgba(168,52,27,.4)}
+.badge.at{color:var(--muted);border-style:dashed}
+.badge.q{color:var(--ink2);border-color:var(--line)}
+.step-biz{margin:5px 0 2px;font-size:14px}
+.step-expect{margin:0;font-size:12px;color:var(--muted);line-height:1.65}
+.result-toggle{margin-top:7px;background:transparent;border:1px dashed var(--line);color:var(--muted);font-family:var(--mono);font-size:10px;letter-spacing:.06em;padding:2px 8px;cursor:pointer}
+.result-toggle:hover{color:var(--ink);border-color:var(--ink)}
+.result{display:none;margin:8px 0 0;padding:8px 10px;background:rgba(20,16,11,.045);border-left:2px solid var(--line);font-family:var(--mono);font-size:11px;line-height:1.7;white-space:pre-wrap;word-break:break-word;max-height:220px;overflow:auto}
+.step.open .result{display:block}
+body[data-mode="tech"] .result{display:block}
+/* chat */
+.chat{margin-top:6px}
+.turn{padding:14px 0;border-top:1px solid var(--line2)}
+.turn:first-child{border-top:0}
+.who{display:flex;align-items:center;gap:8px}
+.who .t{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;color:var(--muted)}
+.q{font-size:15px;margin:6px 0 8px;color:var(--ink);font-family:var(--serif)}
+.a{display:flex;gap:9px;background:rgba(27,90,82,.055);border-left:2px solid var(--teal);padding:9px 12px}
+.a .mark{font-family:var(--mono);font-size:10px;color:var(--teal);border:1px solid rgba(27,90,82,.4);padding:0 5px;height:18px;line-height:17px;flex:none;margin-top:2px}
+.a-body{min-width:0;flex:1}
+.a-text{position:relative;font-size:13px;line-height:1.82;color:#22302c;white-space:pre-wrap;overflow-wrap:anywhere}
+.a.clamp .a-text{max-height:142px;overflow:hidden}
+.a.clamp .a-text::after{content:"";position:absolute;left:0;right:0;bottom:0;height:46px;background:linear-gradient(rgba(238,244,241,0),#eef4f1)}
+.a-more{margin:5px 0 0;background:none;border:0;padding:0;color:var(--teal);font-family:var(--mono);font-size:10px;letter-spacing:.06em;cursor:pointer;border-bottom:1px dashed rgba(27,90,82,.5)}
+.a-more:hover{color:var(--red);border-color:rgba(168,52,27,.5)}
+/* support */
+.support-panel{background:transparent;border-style:dashed;padding:0}
+.support-panel>details>summary{cursor:pointer;list-style:none;display:flex;align-items:baseline;gap:12px;padding:14px 18px;flex-wrap:wrap}
+.support-panel>details>summary::-webkit-details-marker{display:none}
+.support-panel>details[open]>summary{border-bottom:1px solid var(--line)}
+.sum-title{font-family:var(--serif);font-size:16px}
+.sum-count{margin-left:auto;font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.sup-list{padding:0 18px 16px}
+.sup{border-bottom:1px solid var(--line2);padding:8px 0}
+.sup>summary{cursor:pointer;list-style:none;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.sup>summary::-webkit-details-marker{display:none}
+.sid{font-family:var(--mono);font-size:11px;color:var(--teal)}
+.stitle{font-size:13.5px}
+.ssteps{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--muted)}
+.sup .one{font-size:12.5px;color:var(--ink2);margin:6px 0 6px;padding-left:2px}
+.sup-steps{list-style:none;margin:0;padding:0 0 4px 2px}
+.sup-steps li{display:grid;grid-template-columns:26px minmax(0,1fr);gap:8px;font-size:12px;color:var(--ink2);padding:3px 0;line-height:1.65}
+.sup-steps .nm{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.sup-steps .e{grid-column:2;color:var(--muted);font-size:11.5px}
+.sup-meta{font-size:11px;color:var(--muted);margin:8px 0 0}
+/* tech */
+.tech{margin-top:26px;border-top:2px solid var(--teal);background:linear-gradient(180deg,rgba(27,90,82,.07),rgba(27,90,82,.015) 60%,transparent)}
+.tech-strip{width:100%;display:flex;align-items:baseline;gap:12px;background:transparent;border:0;padding:11px 14px;cursor:pointer;text-align:left}
+.t-label{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--teal)}
+.t-sum{font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.t-plus{margin-left:auto;font-family:var(--mono);color:var(--teal);font-size:12px}
+.tech.open .t-plus{transform:rotate(45deg)}
+body[data-mode="tech"] .tech .t-plus{display:none}
+.tech-body{display:none;padding:2px 16px 20px}
+body[data-mode="tech"] .tech .tech-body,.tech.open .tech-body{display:block}
+.chain{display:flex;flex-wrap:wrap;align-items:stretch;gap:6px;margin:4px 0 14px}
+.node{background:var(--card);border:1px solid var(--line);padding:6px 9px;min-width:96px}
+.node b{display:block;font-family:var(--mono);font-size:10.5px;color:var(--ink)}
+.node span{display:block;font-size:10.5px;color:var(--muted);line-height:1.5}
+.arrow{align-self:center;color:var(--muted);font-size:12px}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:16px}
+.chip{display:inline-flex;align-items:baseline;gap:5px;background:rgba(255,255,255,.55);border:1px solid rgba(27,90,82,.35);color:#17453f;font-family:var(--mono);font-size:10.5px;padding:2px 7px;cursor:pointer}
+.chip span{font-size:9.5px;color:var(--muted)}
+.chip:hover{background:var(--teal);color:#f4ecdb}
+.chip:hover span{color:#cfe0da}
+.chip:disabled{opacity:.4;cursor:default}
+.tech-cols{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:28px}
+.tech h4{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;color:var(--teal);margin:0 0 8px;font-weight:400}
+.guards{list-style:none;margin:0;padding:0}
+.guards li{font-size:12.5px;color:var(--ink2);padding:6px 0;border-bottom:1px dashed rgba(27,90,82,.18);line-height:1.7}
+.guards b{font-family:var(--mono);font-size:10.5px;color:var(--red);margin-right:6px}
+.facts{display:grid;grid-template-columns:84px minmax(0,1fr);gap:4px 10px;margin:0}
+.facts dt{font-family:var(--mono);font-size:10px;color:var(--muted);padding-top:2px}
+.facts dd{margin:0;font-size:12px;color:var(--ink2);line-height:1.65}
+/* closing */
+.closing{margin-top:70px;background:#14100b;color:#efe6d4;padding:44px 40px}
+.closing-in{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:44px}
+.closing h2{color:#f7efde;font-size:26px;margin-bottom:10px}
+.closing p{font-size:13px;color:#c3b7a2;line-height:1.85;max-width:40em}
+.closing .kicker{color:#c8a878}
+.closing details{margin-top:18px;border-top:1px solid rgba(244,236,219,.18);padding-top:12px}
+.closing summary{cursor:pointer;font-family:var(--mono);font-size:11px;color:#e0d3bd}
+.converge{width:100%;border-collapse:collapse;margin-top:10px;font-size:11.5px}
+.converge th,.converge td{text-align:left;padding:5px 8px;border-bottom:1px solid rgba(244,236,219,.12);vertical-align:top}
+.converge th{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:#a8997d;font-weight:400}
+.converge .c-no{font-family:var(--mono);color:#c8a878}
+.pill{display:inline-block;font-family:var(--mono);font-size:9.5px;padding:1px 5px;border:1px solid rgba(244,236,219,.25);color:#d9cdb8;margin:1px 2px 1px 0}
+.pill.main{border-color:#c8a878;color:#f0dcb8}
+.meta-list{list-style:none;margin:0;padding:0;font-size:11.5px;color:#a8997d}
+.meta-list li{padding:5px 0;border-bottom:1px solid rgba(244,236,219,.1);line-height:1.7}
+.meta-list b{color:#d9cdb8;font-weight:400;font-family:var(--mono);font-size:10.5px;margin-right:6px}
+/* drawer */
+.backdrop{position:fixed;inset:0;background:rgba(20,16,11,.32);opacity:0;pointer-events:none;transition:opacity .2s;z-index:60}
+.backdrop.show{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(430px,94vw);background:var(--card);border-left:1px solid var(--ink);z-index:70;display:flex;flex-direction:column;transform:translateX(103%);transition:transform .26s ease}
+.drawer.open{transform:none}
+.drawer-head{padding:18px 20px 14px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:10px}
+.drawer-head .did{font-family:var(--mono);font-size:13px;color:var(--red)}
+.drawer-head .dkind{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--muted);margin-top:3px}
+.drawer-close{margin-left:auto;background:transparent;border:1px solid var(--line);width:26px;height:26px;line-height:1;cursor:pointer;color:var(--ink2)}
+.drawer-body{padding:18px 20px 30px;overflow:auto}
+.drawer-body .dname{font-family:var(--serif);font-size:18px;margin-bottom:8px}
+.drawer-body .ddef{font-size:13px;line-height:1.85;color:var(--ink2);padding-bottom:12px;border-bottom:1px dashed var(--line)}
+.drawer-body dl{display:grid;grid-template-columns:72px minmax(0,1fr);gap:6px 10px;margin:12px 0 0}
+.drawer-body dt{font-family:var(--mono);font-size:9.5px;color:var(--muted);padding-top:3px}
+.drawer-body dd{margin:0;font-size:12px;line-height:1.75;color:var(--ink2)}
+.drawer-foot{margin-top:18px;padding-top:10px;border-top:1px solid var(--line);font-size:10.5px;color:var(--muted);line-height:1.7}
+/* misc */
+.caveat{font-size:11.5px;color:var(--muted);border-left:2px solid var(--line);padding-left:8px;margin:-6px 0 10px;line-height:1.7}
+.figure,.kpi,.step,.turn{animation:rise .5s ease both}
+@keyframes rise{from{opacity:.001;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  .figure,.kpi,.step,.turn{animation:none}
+  html{scroll-behavior:auto}
+}
+@media (max-width:1080px){
+  .hero-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .shell{grid-template-columns:1fr;gap:0;padding:0 24px 80px}
+  .rail{position:static;max-height:none;padding:20px 0 0;display:flex;gap:8px;overflow-x:auto;border-bottom:1px solid var(--line)}
+  .rail-label,.rail-note{display:none}
+  .rail-act{border-left:0;border-bottom:2px solid transparent;padding:8px 10px;white-space:nowrap}
+  .rail-act.active{border-left:0;border-bottom:2px solid var(--red);padding-left:10px}
+  .r-time{display:none}
+  .act-meta{grid-template-columns:1fr}
+  .tech-cols,.closing-in{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  .hero{padding:36px 22px 0}
+  .hero-subject{grid-template-columns:1fr}
+  .hero-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .act-head{grid-template-columns:1fr}
+  .act-num{font-size:56px}
+  .act-titles h2{font-size:28px}
+  .panel{padding:18px 16px}
+}
+@media print{
+  .rail,.mode-bar,.backdrop,.drawer,.result-toggle{display:none!important}
+  body{background:#fff}
+  .act{page-break-inside:avoid}
+}
+</style>
+</head>
+<body data-mode="biz">
+<div class="progress" aria-hidden="true"></div>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="kicker">弱覆盖本体应用 · 上海工单 · SPEC V0.9</div>
+    <h1>从一条 MR 数据<br>到一份可复用案例</h1>
+    <p class="lede">弱覆盖本体在上海工单上的主线场景：四幕，一条从发现到关单入库的完整故事线</p>
+    <dl class="hero-subject">
+      <div><dt>主角小区</dt><dd>崇明 · 崇贤达NF02H_222</dd></div>
+      <div><dt>身份</dt><dd><code>LTE:156514014 · 天线 611382-2-1</code></dd></div>
+      <div><dt>工单 / 问题键</dt><dd><code>TK-LTE-156514014-001</code><br><code>LTE:156514014@MR弱覆盖小区@2026-09-10</code></dd></div>
+    </dl>
+  </div>
+  <div class="hero-stats">
+    <div class="hstat"><div class="hv">4</div><div class="hl">幕 · 一条完整故事线</div></div>
+    <div class="hstat"><div class="hv">45</div><div class="hl">决策与问答用例</div></div>
+    <div class="hstat"><div class="hv">9 · 17 · 12</div><div class="hl">对象 · 关系 · 函数</div></div>
+    <div class="hstat"><div class="hv">11 · 17 · 19</div><div class="hl">动作 · 约束 · 规则</div></div>
+    <div class="hstat"><div class="hv">386/386</div><div class="hl">业务步骤断言</div></div>
+    <div class="hstat"><div class="hv">697/697</div><div class="hl">全量断言验证</div></div>
+  </div>
+  <div class="mode-bar">
+    <span class="mode-hint">视角</span>
+    <div class="seg" role="group" aria-label="视角切换">
+      <button data-mode-btn="biz" aria-pressed="true">业务视角</button>
+      <button data-mode-btn="tech" aria-pressed="false">技术视角</button>
+    </div>
+    <span class="mode-hint">← → 切换幕　·　技术要素可点开看 SPEC 定义</span>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="四幕导航">
+    <div class="rail-label">四幕 · 故事线</div>
+    <a class="rail-act" href="#act-detect" data-act="detect">
+    <span class="r-no">01</span><span class="r-t">问题发现</span><span class="r-time">2026-09-11 09:00（晨会前）</span></a><a class="rail-act" href="#act-diagnose" data-act="diagnose">
+    <span class="r-no">02</span><span class="r-t">定因与方案</span><span class="r-time">2026-09-11 上午</span></a><a class="rail-act" href="#act-execute" data-act="execute">
+    <span class="r-no">03</span><span class="r-t">审批与执行</span><span class="r-time">2026-09-12 ～ 09-14</span></a><a class="rail-act" href="#act-verify" data-act="verify">
+    <span class="r-no">04</span><span class="r-t">效果、关单与案例复用</span><span class="r-time">2026-09-15 ～ 10-06</span></a>
+    <div class="rail-note"><b>读法</b>：先看每幕的业务叙述与关键数字，再看“决策主线”里的真实步骤与“问答现场”的真实回答；技术视角展开后，每一步背后的对象、函数、约束都在。<br><br>29 个决策用例 + 14 段问答 → 4 幕主线（14 个主线用例）+ 29 个支撑用例</div>
+  </nav>
+  <main>
+    <article class="act" id="act-detect" data-key="detect">
+    <header class="act-head">
+      <div class="act-num" aria-hidden="true">01</div>
+      <div class="act-titles">
+        <div class="kicker">第一幕 · DETECT</div>
+        <h2>问题发现</h2>
+        <p class="headline">业务从数据开始，不从工单开始</p>
+      </div>
+      <dl class="act-meta">
+        <div><dt>时间</dt><dd>2026-09-11 09:00（晨会前）</dd></div>
+        <div><dt>角色</dt><dd>地市优化工程师、优化本体、MR 平台</dd></div>
+        <div><dt>状态跨度</dt><dd>无工单 → 工单待核验</dd></div>
+      </dl>
+    </header>
+    <p class="act-lede">起点不是派单系统里已有的单子，而是 12 个重点小区在过去 7 天的 MR 日统计。</p>
+    <div class="prose"><p>9 月 4 日到 10 日的 MR 日统计已在当天凌晨入库，系统里一张工单都没有。工程师打开发现清单，一次对 12 个重点小区做批量发现：6 个达到派单条件、3 个未达到、3 个证据不足——2 个缺数据、1 个是 VIP 场景、[派单规则]里没有对应行。</p><p>清单一律只读：点开任一项都能看到 7 天的逐日占比、命中日，以及这次判定用的是哪一版规则。清单本身不落库，随时能用当时的数据和规则版本重算。</p><p>崇贤达NF02H_222 的 7 天全部命中——单日弱覆盖占比 35.84%～39.07%，弱覆盖采样点 2498～2906，都过 RULE_D01 的双门限。系统据此建单，发现依据固定为窗口内 7 条 MR 日统计；再点一次不会多出一张单。</p><p>同站另一面 崇贤达NF08H_223 一天都没命中，港沿路 7 天只中 2 天，新河镇政府缺 2 天，陈家镇东一天数据都没有，崇明体育中心是 VIP 场景——四种“建不了”，四种不同的理由，且都留审计。</p></div>
+    <div class="kpis"><div class="kpi"><div class="v">12</div><div class="l">重点小区一次批量发现</div><div class="h">9 月 4 日～10 日，7 天窗口</div></div><div class="kpi"><div class="v">6 · 3 · 3</div><div class="l">达到 / 未达到 / 证据不足</div><div class="h">证据不足中 2 缺数据、1 无规则</div></div><div class="kpi"><div class="v">7 / 7</div><div class="l">崇贤达NF02H_222 命中天数</div><div class="h">按 RULE_D01：≥2000 点且 ≥20%</div></div><div class="kpi"><div class="v">7</div><div class="l">建单时固定的发现依据</div><div class="h">窗口内 7 条 MR 日统计 + 版本</div></div></div>
+    <figure class="figure">
+      <figcaption>这 7 天，数据是怎么被判成“达到”的</figcaption>
+      <svg viewBox="0 0 760 268" role="img" aria-label="7 天弱覆盖占比，全部高于 20% 门限"><line x1="56" y1="194" x2="704" y2="194" stroke="#d8cdb8" stroke-width="1"/><text x="46" y="198" text-anchor="end" class="ax">0%</text><line x1="56" y1="156.66666666666666" x2="704" y2="156.66666666666666" stroke="#d8cdb8" stroke-width="1"/><text x="46" y="160.66666666666666" text-anchor="end" class="ax">10%</text><line x1="56" y1="119.33333333333333" x2="704" y2="119.33333333333333" stroke="#d8cdb8" stroke-width="1"/><text x="46" y="123.33333333333333" text-anchor="end" class="ax">20%</text><line x1="56" y1="81.99999999999999" x2="704" y2="81.99999999999999" stroke="#d8cdb8" stroke-width="1"/><text x="46" y="85.99999999999999" text-anchor="end" class="ax">30%</text><line x1="56" y1="44.66666666666666" x2="704" y2="44.66666666666666" stroke="#d8cdb8" stroke-width="1"/><text x="46" y="48.66666666666666" text-anchor="end" class="ax">40%</text><rect x="65" y="50.82179341657209" width="74.57142857142857" height="143.1782065834279" fill="#241f17" opacity="0.88"/><text x="102.28571428571428" y="42.82179341657209" text-anchor="middle" class="val">38.4</text><text x="102.28571428571428" y="212" text-anchor="middle" class="ax">09-04</text><rect x="157.57142857142856" y="60.19656904558809" width="74.57142857142857" height="133.8034309544119" fill="#241f17" opacity="0.88"/><text x="194.85714285714283" y="52.19656904558809" text-anchor="middle" class="val">35.8</text><text x="194.85714285714283" y="212" text-anchor="middle" class="ax">09-05</text><rect x="250.14285714285714" y="55.666666666666686" width="74.57142857142857" height="138.33333333333331" fill="#241f17" opacity="0.88"/><text x="287.42857142857144" y="47.666666666666686" text-anchor="middle" class="val">37.1</text><text x="287.42857142857144" y="212" text-anchor="middle" class="ax">09-06</text><rect x="342.7142857142857" y="53.58453179929688" width="74.57142857142857" height="140.41546820070312" fill="#241f17" opacity="0.88"/><text x="380" y="45.58453179929688" text-anchor="middle" class="val">37.6</text><text x="380" y="212" text-anchor="middle" class="ax">09-07</text><rect x="435.2857142857143" y="57.67889113485418" width="74.57142857142857" height="136.32110886514582" fill="#241f17" opacity="0.88"/><text x="472.57142857142856" y="49.67889113485418" text-anchor="middle" class="val">36.5</text><text x="472.57142857142856" y="212" text-anchor="middle" class="ax">09-08</text><rect x="527.8571428571429" y="48.12038904576218" width="74.57142857142857" height="145.87961095423782" fill="#241f17" opacity="0.88"/><text x="565.1428571428572" y="40.12038904576218" text-anchor="middle" class="val">39.1</text><text x="565.1428571428572" y="212" text-anchor="middle" class="ax">09-09</text><rect x="620.4285714285714" y="58.21277421859833" width="74.57142857142857" height="135.78722578140167" fill="#241f17" opacity="0.88"/><text x="657.7142857142858" y="50.21277421859833" text-anchor="middle" class="val">36.4</text><text x="657.7142857142858" y="212" text-anchor="middle" class="ax">09-10</text><line x1="56" y1="119.33333333333333" x2="704" y2="119.33333333333333" stroke="#a8341b" stroke-width="1.4" stroke-dasharray="6 5"/><text x="704" y="111.33333333333333" text-anchor="end" class="red">RULE_D01 门限 20%</text><text x="56" y="18" class="ax">弱覆盖占比 · 同时要求弱覆盖采样点 ≥ 2000</text><text x="704" y="18" text-anchor="end" class="red">7 / 7 天命中</text></svg>
+      <p class="note">柱＝当日弱覆盖采样点占比，虚线＝RULE_D01 的 20% 门限；同时要求弱覆盖采样点 ≥2000。7 天全部同时满足，故“7 天出现 3 天”成立。</p>
+    </figure>
+    <section class="panel">
+      <div class="panel-head"><span class="tag">决策主线</span><h3>决策主线：清单怎么来的、单怎么建的</h3></div>
+      <p class="panel-note">每一步都是可执行的业务动作入口，预期列同时是断言。展开“实际结果”可看系统当时返回的原文。</p>
+      <div class="case-block">
+      <div class="case-head"><span class="case-id">BD-01</span><span class="case-title">问题发现与建单：看发现清单，对“达到”的小区建单</span>
+        <span class="case-stat">11 步 · 19/19 项核对</span></div>
+      <p class="case-scene">每天晨会前，优化本体对重点小区做批量发现；对“达到”的小区建单，未达到或证据不足的不建。工程师也可以对某个小区发起建单，系统都会按当时的数据重新判断一遍。</p>
+      <ol class="steps"><li class="step" data-kind="ok">
+      <div class="step-n">01</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">地市优化工程师</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">打开发现清单：对 13 个重点小区做批量发现（F_12，只读、不建单）</p>
+        <p class="step-expect">预期：只读核对</p>
+        
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">02</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">优化本体</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">对“达到”的 崇贤达NF02H_222 建单</p>
+        <p class="step-expect">预期：新建工单：待核验，发现依据 7 条 MR 日统计</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">成功 {&quot;ticketNo&quot;:&quot;TK-LTE-156514014-001&quot;,&quot;status&quot;:&quot;待核验&quot;,&quot;discovery&quot;:{&quot;problemKey&quot;:&quot;LTE:156514014@MR弱覆盖小区@2026-09-10&quot;,&quot;ruleId&quot;:&quot;RULE_D01&quot;,&quot;ruleVersion&quot;:&quot;1.0&quot;,&quot;window&quot;:…</pre>
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">03</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">优化本体</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">又点了一次对 崇贤达NF02H_222 建单</p>
+        <p class="step-expect">预期：返回原工单，不重复建单（INV_14）</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">成功 {&quot;ticketNo&quot;:&quot;TK-LTE-156514014-001&quot;,&quot;deduped&quot;:true,&quot;status&quot;:&quot;待核验&quot;}</pre>
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">04</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">地市优化工程师</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">工程师自己对门限边界小区 东滩公园NF02H_164 建单</p>
+        <p class="step-expect">预期：建单成功（SPEC 允许地市优化工程师发起），工单数 2</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">成功 {&quot;ticketNo&quot;:&quot;TK-LTE-156447908-001&quot;,&quot;status&quot;:&quot;待核验&quot;,&quot;discovery&quot;:{&quot;problemKey&quot;:&quot;LTE:156447908@MR弱覆盖小区@2026-09-10&quot;,&quot;ruleId&quot;:&quot;RULE_D01&quot;,&quot;ruleVersion&quot;:&quot;1.0&quot;,&quot;window&quot;:…</pre>
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">05</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">优化本体</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">崇贤达NF08H_223 同站但没达到门限</p>
+        <p class="step-expect">预期：被拒绝：INV_16（未达到派单条件，不建单）</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">拒绝 INV_16：未达到派单条件（命中 0 天，需 3 天），不建单</pre>
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">06</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">优化本体</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">港沿路NF02H_73 7 天只命中 2 天</p>
+        <p class="step-expect">预期：被拒绝：INV_16（差 1 天，不建单）</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">拒绝 INV_16：未达到派单条件（命中 2 天，需 3 天），不建单</pre>
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">07</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">优化本体</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">新河镇政府NF02H_58 有两天 MR 没到</p>
+        <p class="step-expect">预期：被拒绝：INV_09（证据不足：缺天太多，不建单）</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">拒绝 INV_09：证据不足，不建单：命中 2 天，另有 2 天无MR数据，无法判定是否达到 3 天；缺天 2026-09-05、2026-09-07</pre>
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">08</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">优化本体</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">陈家镇东NF02H_87 窗口内一天 MR 都没有</p>
+        <p class="step-expect">预期：被拒绝：INV_09（证据不足：数据缺口）</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">拒绝 INV_09：证据不足，不建单：命中 0 天，另有 7 天无MR数据，无法判定是否达到 3 天；缺天 2026-09-04、2026-09-05、2026-09-06、2026-09-07、2026-09-08、2026-09-09、2026-09-10</pre>
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">09</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">优化本体</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">崇明体育中心NF02H_215 是 VIP 场景</p>
+        <p class="step-expect">预期：被拒绝：INV_09（规则缺口，不套用一般场景门限）</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">拒绝 INV_09：证据不足，不建单：无对应派单规则（规则缺口），不套用其他场景门限；缺天 2026-09-04、2026-09-05、2026-09-06、2026-09-07、2026-09-08、2026-09-09、2026-09-10</pre>
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">10</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">现场维护人员</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">现场维护人员试图建单</p>
+        <p class="step-expect">预期：被拒绝：PERMISSION_DENIED（SPEC 只允许优化本体和地市优化工程师建单）</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">拒绝 PERMISSION_DENIED：角色“现场维护人员”无权执行 A_01（SPEC 允许：优化本体／地市优化工程师）</pre>
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">11</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">地市优化工程师</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">核对：被拒绝的 6 次都没有产生工单，并且都留有审计记录</p>
+        <p class="step-expect">预期：只读核对</p>
+        
+      </div>
+    </li></ol>
+    </div>
+    </section>
+    <section class="panel qa-panel">
+      <div class="panel-head"><span class="tag">问答现场</span><h3>同一件事，工程师会怎么问</h3></div>
+      <p class="panel-note">回答由规则按本体元数据与函数结果生成，每个数字都能追溯来源，不调用大模型。</p>
+      <p class="caveat">每段问答都在同一份种子数据的独立副本上执行：问法与回答是真实的系统输出，个别分支（如方案形态、时间点）可能与左侧决策主线不同；主线以决策步骤为准。</p>
+      <div class="case-block qa-block">
+      <div class="case-head"><span class="case-id">BQ-01</span><span class="case-title">问题发现：今天哪些小区弱覆盖、为什么没出来、建个单</span>
+        <span class="case-stat">12 问</span></div>
+      <p class="case-scene">工程师晨会前翻看当天的发现结果：哪些小区弱覆盖，某个小区为什么算（或为什么没出现在清单里），对达到的小区让系统建单，再追问建单后的状态。</p>
+      <div class="chat"><div class="turn" style="--i:0">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“今天哪些小区弱覆盖？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">在判断时点 2026-09-11、窗口 2026-09-04～2026-09-10 对 13 个小区做发现（只读、不建单）：达到 7、未达到 3、证据不足 3。堡镇中心NF02H_132：达到派单条件（RULE_D01，命中7天）；崇贤达NF02H_222：达到派单条件（RULE_D01，命中7天）；陈家镇北NF02H_196：达到派单条件（RULE_D01，命中7天）；陈家镇HR05H_36：达到派单条件（RULE_D03，命中7天）；崇明医院门诊楼ND08H_12：达到派单条件（RULE_D02，命中4天）；东滩公园NF02H_164：达到派单条件（RULE_D01，命中3天）；长兴客运码头HR12H_9：达到派单条件（RULE_D04，命中3天）；新河镇政府NF02H_58：证据不足（命中 2 天，另有 2 天无MR数据，无法判定是否达到 3 天；命中2天）；崇明体育中心NF02H_215：证据不足（规则缺口：[派单规则]无 LTE×宏站×VIP 的规则（规则缺口））；陈家镇东NF02H_87：证据不足（数据缺口：窗口内无任何OT_CELL_MR）；港沿路NF02H_73：未达到派单条件（RULE_D01，命中2天）；崇贤达NF08H_223：未达到派单条件（RULE_D01，命中0天）；崇贤北NF02H_141：未达到派单条件（RULE_D01，命中0天）。</div></div></div>
+    </div><div class="turn" style="--i:1">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“崇贤达NF02H_222 为什么算弱覆盖？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">崇贤达NF02H_222（LTE宏站，一般）：适用 RULE_D01，窗口 2026-09-04～2026-09-10。逐日：9月4日38.35%（2703/7048）命中，9月5日35.84%（2521/7034）命中，9月6日37.05%（2656/7168）命中，9月7日37.61%（2746/7301）命中，9月8日36.51%（2529/6926）命中，9月9日39.07%（2906/7437）命中，9月10日36.37%（2498/6868）命中。命中 7 天，未知 0 天，判定“达到派单条件”。</div></div></div>
+    </div><div class="turn" style="--i:2">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“崇明体育中心NF02H_215 怎么没出来？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">崇明体育中心NF02H_215（LTE宏站，VIP）：无适用规则（[派单规则]无 LTE×宏站×VIP 的规则（规则缺口）），窗口 2026-09-04～2026-09-10。逐日：9月4日无数据，9月5日无数据，9月6日无数据，9月7日无数据，9月8日无数据，9月9日无数据，9月10日无数据。命中 0 天，未知 7 天，判定“证据不足”。无对应派单规则（规则缺口），不套用其他场景门限。</div></div></div>
+    </div><div class="turn" style="--i:3">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“陈家镇东NF02H_87 为什么没算上”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">陈家镇东NF02H_87（LTE宏站，一般）：适用 RULE_D01，窗口 2026-09-04～2026-09-10。逐日：9月4日无数据，9月5日无数据，9月6日无数据，9月7日无数据，9月8日无数据，9月9日无数据，9月10日无数据。命中 0 天，未知 7 天，判定“证据不足”。命中 0 天，另有 7 天无MR数据，无法判定是否达到 3 天。</div></div></div>
+    </div><div class="turn" style="--i:4">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“陈家镇东NF02H_87 的MR到齐了吗”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">陈家镇东NF02H_87：窗口 2026-09-04～2026-09-10（7 天）内已到 0 天的 MR 日统计，缺 9月4日、9月5日、9月6日、9月7日、9月8日、9月9日、9月10日；该小区没有任何 MR 日统计。缺的天不是 0，规则里记“未知”：命中加未知都凑不够天数才判“未达到”，凑得够却不确定时判“证据不足”（INV_09）。</div></div></div>
+    </div><div class="turn" style="--i:5">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“帮我给崇贤达NF02H_222建个单”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">A_01 建单（依发现结果） 已由优化本体执行（本次写入 1 条动作审计）：新建工单 TK-LTE-156514014-001（状态“待核验”）。</div></div></div>
+    </div><div class="turn" style="--i:6">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“它现在什么状态？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">TK-LTE-156514014-001：宏站弱覆盖小区（覆盖结构／MR弱覆盖小区），状态“待核验”。发现依据：RULE_D01 v1.0，窗口 2026-09-04～2026-09-10，命中 7 天（9月4日、9月5日、9月6日、9月7日、9月8日、9月9日、9月10日），引用 7 条 MR 日统计（RT_17）；问题键 LTE:156514014@MR弱覆盖小区@2026-09-10。根因 0 条，诊断记录 1 条。</div></div></div>
+    </div><div class="turn" style="--i:7">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“再给它建个单”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">A_01 建单（依发现结果） 已由优化本体执行（本次写入 1 条动作审计）：该小区已有未关闭工单 TK-LTE-156514014-001（状态“待核验”）。</div></div></div>
+    </div><div class="turn" style="--i:8">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“崇贤达NF08H_223 能建单吗？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">崇贤达NF08H_223：不能：命中 0 天，达到条件需要 3 天（INV_16），问题必须由前置数据发现，未达到不建单。</div></div></div>
+    </div><div class="turn" style="--i:9">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“崇明体育中心NF02H_215 能建单吗？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">崇明体育中心NF02H_215：不能：规则缺口——[派单规则]无 LTE×宏站×VIP 的规则（规则缺口）（INV_09，证据不足不建单）。</div></div></div>
+    </div><div class="turn" style="--i:10">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“请对崇贤达NF08H_223建单”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">A_01 被拒绝：INV_16——未达到派单条件（命中 0 天，需 3 天），不建单。</div></div></div>
+    </div><div class="turn" style="--i:11">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“为什么建不了单？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">最近一次被拒绝的是 A_01 建单（依发现结果）（优化本体，对象 LTE:156514015）：INV_16——未达到派单条件（命中 0 天，需 3 天），不建单。对应核心约束 INV_16：问题须由前置数据发现：工单只能依发现结果建立——建单时F_06对窗口内OT_CELL_MR判定为“达到派单条件”，且`discovery.evidenceRefs[]`指向窗口内实际存在的OT_CELL_MR；无前置数据支撑的工单（未达到、证据不足、窗口无MR）不得建立；工单的状态、关闭与删除不改变前置数据与发现判定。下一步：继续观察，窗口内命中天数达到要求后会出现在发现清单里。拒绝也会留审计记录，不产生任何业务记录。</div></div></div>
+    </div></div>
+    </div>
+    </section>
+    <section class="panel support-panel">
+    <details>
+      <summary><span class="tag">支撑</span><span class="sum-title">同一幕上的异常与边界</span><span class="sum-count">8 个用例</span></summary>
+      <div class="sup-list"><details class="sup">
+          <summary><span class="sid">BD-02</span><span class="stitle">清晨 5 点就看清单：MR 还没到齐时的发现</span><span class="ssteps">8 步</span></summary>
+          <p class="one">清晨 5 点就看清单：缺的那天记“未知”，不当作 0，也不静默跳过</p>
+          <ol class="sup-steps"><li><span class="nm">01</span><span class="b">05:00 打开发现清单：崇贤达NF02H_222 昨天（9月10日）的 MR 还没到</span><span class="e">→ 只读核对</span></li><li><span class="nm">02</span><span class="b">崇贤达NF02H_222 的 MR 到齐了吗</span><span class="e">→ 意图 arrival；回答含：已到 6 天、缺 9月10日、INV_09；写入 0 条审计</span></li><li><span class="nm">03</span><span class="b">对 崇贤达NF02H_222 建单（昨天的数据还没到）</span><span class="e">→ 建单成功：发现依据 6 条，快照里记着缺 9 月 10 日</span></li><li><span class="nm">04</span><span class="b">对 港沿路NF02H_73 建单</span><span class="e">→ 被拒绝：INV_09（证据不足，数据到齐前不建单）</span></li><li><span class="nm">06</span><span class="b">崇贤达NF02H_222 的 MR 到齐了吗</span><span class="e">→ 意图 arrival；回答含：已到 7 天、缺 无；写入 0 条审计</span></li><li><span class="nm">07</span><span class="b">重新发现：崇贤达NF02H_222 命中 7 天；已建工单的快照不改（仍是 6 天、缺 1 天）</span><span class="e">→ 只读核对</span></li><li><span class="nm">08</span><span class="b">对 港沿路NF02H_73 再试：数据到齐后变成“未达到”</span><span class="e">→ 被拒绝：INV_16（命中只有 2 天，不建单）</span></li></ol>
+          <p class="sup-meta">角色：地市优化工程师　起始状态：清晨</p>
+        </details><details class="sup">
+          <summary><span class="sid">BD-25</span><span class="stitle">上游数据更正：已建工单的发现快照不变</span><span class="ssteps">6 步</span></summary>
+          <p class="one">上游数据更正后重新发现：已建工单的发现快照不随更正漂移</p>
+          <ol class="sup-steps"><li><span class="nm">01</span><span class="b">崇贤达NF02H_222 9月6日的MR是多少</span><span class="e">→ 意图 mr.day；回答含：1 个版本；写入 0 条审计</span></li><li><span class="nm">02</span><span class="b">MR 平台更正 9 月 6 日的数据：弱覆盖采样点降到 1900（低于门限 2000）</span><span class="e">→ 只读核对</span></li><li><span class="nm">03</span><span class="b">崇贤达NF02H_222 9月6日的MR是多少</span><span class="e">→ 意图 mr.day；回答含：1900、2 个版本；写入 0 条审计</span></li><li><span class="nm">04</span><span class="b">重新发现：崇贤达NF02H_222 命中变成 6 天（仍达到）；已建工单快照不变（7 天、引用版本 1）</span><span class="e">→ 只读核对</span></li><li><span class="nm">05</span><span class="b">崇贤达NF02H_222 这张工单的发现依据有哪些MR？</span><span class="e">→ 意图 ticket.evidence；回答含：7 条 OT_CELL_MR、只产生新版本；写入 0 条审计</span></li><li><span class="nm">06</span><span class="b">MR 日统计不允许就地改写（INV_17）</span><span class="e">→ 只读核对</span></li></ol>
+          <p class="sup-meta">角色：地市优化工程师／优化本体　起始状态：工单待核验</p>
+        </details><details class="sup">
+          <summary><span class="sid">BD-29</span><span class="stitle">基础数据不全：小区没有关联站点或根本不存在，不建单</span><span class="ssteps">3 步</span></summary>
+          <p class="one">基础数据不全：小区没有关联站点、或根本不存在，一律不建单</p>
+          <ol class="sup-steps"><li><span class="nm">01</span><span class="b">对没有关联站点的 崇贤达NF02H_222 建单</span><span class="e">→ 被拒绝：INV_01（站点类型未知，不建单）</span></li><li><span class="nm">02</span><span class="b">工程师对一个不存在的小区标识建单</span><span class="e">→ 被拒绝：NOT_FOUND（小区不存在）</span></li><li><span class="nm">03</span><span class="b">核对：没有产生任何工单，两次拒绝都留有审计</span><span class="e">→ 只读核对</span></li></ol>
+          <p class="sup-meta">角色：地市优化工程师　起始状态：清晨　数据： 崇贤达NF02H_222 没有关联站点</p>
+        </details><details class="sup">
+          <summary><span class="sid">BD-03</span><span class="stitle">5G 宏站：能发现、能建单，原因判断转人工</span><span class="ssteps">8 步</span></summary>
+          <p class="one">5G 宏站：能发现、能建单，但原因判断转人工——SPEC 没有定义 NR 公式</p>
+          <ol class="sup-steps"><li><span class="nm">01</span><span class="b">对 5G 小区 海剑HR03H_121 建单</span><span class="e">→ 按 RULE_D03 建单，派单问题“宏站弱覆盖小区”</span></li><li><span class="nm">02</span><span class="b">优化本体按规则定因</span><span class="e">→ F_08＝未知，不写根因</span></li><li><span class="nm">03</span><span class="b">它的根因是什么？</span><span class="e">→ 意图 cause；回答含：F_08＝未知、NR、转人工；写入 0 条审计</span></li><li><span class="nm">04</span><span class="b">5G 小区也能自动出下倾方案吗？</span><span class="e">→ 意图 unsupported；回答含：NR、未知、不生成下倾方案；写入 0 条审计</span></li><li><span class="nm">05</span><span class="b">工程师想直接确认</span><span class="e">→ 被拒绝：INV_03（没有带证据的主因不能确认）</span></li><li><span class="nm">06</span><span class="b">优化专家现场勘察后手工写入主因（附勘察记录）</span><span class="e">→ 根因第 1 轮写入，来源“人工”</span></li><li><span class="nm">07</span><span class="b">工程师确认</span><span class="e">→ 工单已确认</span></li><li><span class="nm">08</span><span class="b">优化本体想生成下倾方案</span><span class="e">→ 被拒绝：INV_09（F_08＝未知（NR 公式未定义），不生成方案，转人工处理）</span></li></ol>
+          <p class="sup-meta">角色：地市优化工程师／优化专家　起始状态：清晨</p>
+        </details><details class="sup">
+          <summary><span class="sid">BD-04</span><span class="stitle">4G 室分小区：按室分规则发现，不套用宏站下倾模型</span><span class="ssteps">4 步</span></summary>
+          <p class="one">4G 室分：按室分规则发现，不套用宏站的下倾模型</p>
+          <ol class="sup-steps"><li><span class="nm">01</span><span class="b">对室分小区 崇明医院门诊楼ND08H_12 建单</span><span class="e">→ 按 RULE_D02 建单，派单问题“室分弱覆盖小区”</span></li><li><span class="nm">02</span><span class="b">优化本体按规则定因</span><span class="e">→ F_08＝未知（室分不适用宏站模型）</span></li><li><span class="nm">03</span><span class="b">它的根因是什么？</span><span class="e">→ 意图 cause；回答含：F_08＝未知、室分、转人工；写入 0 条审计</span></li><li><span class="nm">04</span><span class="b">优化本体想生成下倾方案</span><span class="e">→ 被拒绝：INV_04（待核验的工单不得生成方案）</span></li></ol>
+          <p class="sup-meta">角色：地市优化工程师　起始状态：清晨</p>
+        </details><details class="sup">
+          <summary><span class="sid">BQ-09</span><span class="stitle">为什么被拒绝：建不了单时怎么问、怎么看原因</span><span class="ssteps">8 步</span></summary>
+          <p class="one">建不了单时怎么问：系统引用被拒绝的动作、约束原文和下一步</p>
+          <ol class="sup-steps"><li><span class="nm">01</span><span class="b">请对崇贤达NF08H_223建单</span><span class="e">→ 意图 act.bot；回答含：被拒绝：INV_16；写入 1 条审计</span></li><li><span class="nm">02</span><span class="b">为什么建不了单？</span><span class="e">→ 意图 why.rejected；回答含：INV_16、未达到派单条件、问题须由前置数据发现、下一步：继续观察；写入 0 条审计</span></li><li><span class="nm">03</span><span class="b">港沿路NF02H_73 的发现判定</span><span class="e">→ 意图 discover.cell；回答含：命中 2 天、未达到派单条件；写入 0 条审计</span></li><li><span class="nm">04</span><span class="b">请对港沿路NF02H_73建单</span><span class="e">→ 意图 act.bot；回答含：被拒绝：INV_16；写入 1 条审计</span></li><li><span class="nm">05</span><span class="b">新河镇政府NF02H_58 为什么没发现</span><span class="e">→ 意图 discover.cell；回答含：证据不足、未知 2 天、无数据；写入 0 条审计</span></li><li><span class="nm">06</span><span class="b">请对新河镇政府NF02H_58建单</span><span class="e">→ 意图 act.bot；回答含：被拒绝：INV_09；写入 1 条审计</span></li><li><span class="nm">07</span><span class="b">怎么又拒绝了？</span><span class="e">→ 意图 why.rejected；回答含：INV_09、证据不足、补齐缺失的 MR；写入 0 条审计</span></li><li><span class="nm">08</span><span class="b">崇明体育中心NF02H_215 能建单吗？</span><span class="e">→ 意图 can；回答含：不能、规则缺口；写入 0 条审计</span></li></ol>
+          <p class="sup-meta">角色：地市优化工程师　起始状态：清晨</p>
+        </details><details class="sup">
+          <summary><span class="sid">BQ-11</span><span class="stitle">规则咨询（新人培训）：弱覆盖怎么定义、门限、VIP、工单状态、容差</span><span class="ssteps">11 步</span></summary>
+          <p class="one">新人培训：弱覆盖怎么定义、7 天 3 天、VIP 怎么办、工单有哪些状态</p>
+          <ol class="sup-steps"><li><span class="nm">01</span><span class="b">弱覆盖是怎么定义的？门限是多少？</span><span class="e">→ 意图 rule.dispatch；回答含：RULE_D01、2000、20.00%、500、15.00%、7天出现3天；写入 0 条审计</span></li><li><span class="nm">02</span><span class="b">7天出现3天是怎么回事</span><span class="e">→ 意图 rule.dispatch；回答含：7天出现3天；写入 0 条审计</span></li><li><span class="nm">03</span><span class="b">采样点和占比两个条件要同时满足吗？</span><span class="e">→ 意图 rule.dispatch；回答含：弱覆盖采样点≥、占比≥；写入 0 条审计</span></li><li><span class="nm">04</span><span class="b">室分和宏站门限一样吗？</span><span class="e">→ 意图 rule.dispatch；回答含：室分、宏站、RULE_D02；写入 0 条审计</span></li><li><span class="nm">05</span><span class="b">VIP 小区怎么处理？</span><span class="e">→ 意图 rule.dispatch；回答含：VIP／VVIP、规则缺口、证据不足；写入 0 条审计</span></li><li><span class="nm">06</span><span class="b">工单有哪些状态，怎么转移？</span><span class="e">→ 意图 meta.states；回答含：待核验、已关闭、A_08；写入 0 条审计</span></li><li><span class="nm">07</span><span class="b">容差和单次上限、分辨率是多少？</span><span class="e">→ 意图 th.params；回答含：TH01、0.5°、TH02、2°、TH03；写入 0 条审计</span></li><li><span class="nm">08</span><span class="b">目标覆盖半径默认怎么取？</span><span class="e">→ 意图 radius；回答含：500 m、0.5；写入 0 条审计</span></li><li><span class="nm">09</span><span class="b">哪些措施可以用？</span><span class="e">→ 意图 measure.list；回答含：增大机械下倾角、单次上限 2°；写入 0 条审计</span></li><li><span class="nm">10</span><span class="b">A_10 能执行吗？</span><span class="e">→ 意图 meta.element；回答含：本期只定义；写入 0 条审计</span></li><li><span class="nm">11</span><span class="b">主因能不能直接写成“弱覆盖”？</span><span class="e">→ 意图 label.rule；回答含：症状级标签、INV_02、INV_03、远端弱覆盖；写入 0 条审计</span></li></ol>
+          <p class="sup-meta">角色：地市优化工程师　起始状态：清晨</p>
+        </details><details class="sup">
+          <summary><span class="sid">BQ-12</span><span class="stitle">数据核对：与上海真实工单对账、哪些数据是真实的</span><span class="ssteps">6 步</span></summary>
+          <p class="one">与上海 4 张真实工单对账：哪些是真实数据、哪些是构造，口径差异在哪</p>
+          <ol class="sup-steps"><li><span class="nm">01</span><span class="b">上海那4张真实工单和你发现的对得上吗？</span><span class="e">→ 意图 reconcile；回答含：SHCHM、与真实派单一致、SHBAO、11.82%、口径与上海原工单不同；写入 0 条审计</span></li><li><span class="nm">02</span><span class="b">宝山那张为什么没被发现？</span><span class="e">→ 意图 reconcile.one；回答含：11.82%、门限、假设 A-S1、不会为了对上真实工单去改规则；写入 0 条审计</span></li><li><span class="nm">03</span><span class="b">崇明那张真实工单和系统里的结果一致吗？</span><span class="e">→ 意图 reconcile.one；回答含：与真实派单一致、命中 7 天；写入 0 条审计</span></li><li><span class="nm">04</span><span class="b">杨浦那张呢</span><span class="e">→ 意图 scope.out；回答含：重叠覆盖、不在本 SPEC 范围内；写入 0 条审计</span></li><li><span class="nm">05</span><span class="b">这些数据是真实的吗？</span><span class="e">→ 意图 provenance；回答含：provenance.csv、取自原文的关键事实；写入 0 条审计</span></li><li><span class="nm">06</span><span class="b">10月份有哪些小区弱覆盖？</span><span class="e">→ 意图 scan；回答含：达到 2、未达到 2、证据不足 1、宝泰支HR05H_112：未达到派单条件；写入 0 条审计</span></li></ol>
+          <p class="sup-meta">角色：优化主管／地市优化工程师　起始状态：清晨</p>
+        </details></div>
+    </details>
+  </section>
+    <section class="tech">
+    <button class="tech-strip" aria-expanded="false"><span class="t-label">技术这一层</span><span class="t-sum">3 对象 · 2 关系 · 3 函数 · 1 动作 · 2 规则 · 4 约束</span><span class="t-plus" aria-hidden="true">＋</span></button>
+    <div class="tech-body">
+      <div class="chain" aria-label="本幕的技术链路"><span class="node"><b>OT_CELL_MR</b><span>12 小区 × 7 天</span></span><span class="arrow" aria-hidden="true">→</span><span class="node"><b>F_05</b><span>单日是否命中</span></span><span class="arrow" aria-hidden="true">→</span><span class="node"><b>F_06</b><span>7 天出现 3 天</span></span><span class="arrow" aria-hidden="true">→</span><span class="node"><b>F_12</b><span>范围内批量发现（只读）</span></span><span class="arrow" aria-hidden="true">→</span><span class="node"><b>A_01</b><span>重算 F_06 后建单</span></span><span class="arrow" aria-hidden="true">→</span><span class="node"><b>OT_TICKET</b><span>discovery 快照 + 7 条证据</span></span></div>
+      <div class="chips"><button class="chip" data-el="OT_CELL_MR"><b>OT_CELL_MR</b><span>对象</span></button><button class="chip" data-el="OT_CELL"><b>OT_CELL</b><span>对象</span></button><button class="chip" data-el="OT_TICKET"><b>OT_TICKET</b><span>对象</span></button><button class="chip" data-el="RT_16"><b>RT_16</b><span>关系</span></button><button class="chip" data-el="RT_17"><b>RT_17</b><span>关系</span></button><button class="chip" data-el="F_05"><b>F_05</b><span>函数</span></button><button class="chip" data-el="F_06"><b>F_06</b><span>函数</span></button><button class="chip" data-el="F_12"><b>F_12</b><span>函数</span></button><button class="chip" data-el="A_01"><b>A_01</b><span>动作</span></button><button class="chip" data-el="RULE_D01"><b>RULE_D01</b><span>规则</span></button><button class="chip" data-el="RULE_F01"><b>RULE_F01</b><span>规则</span></button><button class="chip" data-el="INV_09"><b>INV_09</b><span>约束</span></button><button class="chip" data-el="INV_14"><b>INV_14</b><span>约束</span></button><button class="chip" data-el="INV_16"><b>INV_16</b><span>约束</span></button><button class="chip" data-el="INV_17"><b>INV_17</b><span>约束</span></button></div>
+      <div class="tech-cols">
+        <div><h4>这一步守住了什么</h4><ul class="guards"><li><b>INV_16</b>没有前置数据支撑的工单建不出来：建单时必须重算为“达到”，且证据指向窗口内真实存在的 MR。</li><li><b>INV_09</b>缺天、缺规则、缺工参只记“未知／证据不足”，不得写 0，也不得默认结论。</li><li><b>INV_14</b>同一小区同一问题类型已有未关闭工单时，不重复建单，返回原单。</li><li><b>INV_17</b>前置数据只追加：更正产生新版本，已建工单仍按引用的版本读回。</li></ul></div>
+        <div><h4>口径与机制</h4><dl class="facts"><dt>锚点</dt><dd>OT_CELL_MR（小区 × 自然日的 MR 统计），不是工单</dd><dt>问题身份</dt><dd>problemKey＝{cellKey}@{问题类型}@{窗口末日}</dd><dt>只读</dt><dd>F_12 的发现清单不落库，可由数据与规则版本重算</dd><dt>去重口径</dt><dd>按（小区，问题类型），不按 problemKey</dd></dl></div>
+      </div>
+    </div>
+  </section>
+  </article><article class="act" id="act-diagnose" data-key="diagnose">
+    <header class="act-head">
+      <div class="act-num" aria-hidden="true">02</div>
+      <div class="act-titles">
+        <div class="kicker">第二幕 · DIAGNOSE &amp; PLAN</div>
+        <h2>定因与方案</h2>
+        <p class="headline">原因要有证据，方案要有边界</p>
+      </div>
+      <dl class="act-meta">
+        <div><dt>时间</dt><dd>2026-09-11 上午</dd></div>
+        <div><dt>角色</dt><dd>地市优化工程师、优化本体、优化专家</dd></div>
+        <div><dt>状态跨度</dt><dd>工单待核验 → 方案待确认</dd></div>
+      </dl>
+    </header>
+    <p class="act-lede">工单只说明“数据判到了”，还说明不了“为什么弱”。假性排除、次因排除、幅度与周边影响，一步都不能省。</p>
+    <div class="prose"><p>工单停在“待核验”。工程师先看发现依据：逐日占比、命中日、门限、规则版本都在 discovery 快照里；建单时系统按当时数据重算过 F_06，不采信清单里的旧结果。</p><p>F_07 先排除假性弱覆盖：把 7 个命中日与告警、退服记录对齐，只有 1 天重合（14.29%），判“部分重合”，不排除——告警只解释了七分之一，剩下的仍按覆盖结构处理。</p><p>F_08 定因：天线机械下倾 3.00°、电子下倾 3.00°，总下倾 6.00°；按目标半径 500 m 反推应下倾 7.35°，缺口 1.35°，远端实际覆盖到 725.1 m。功率、方位、遮挡三项次因逐项排除后，主因是“弱覆盖小区天线下倾角过小”。</p><p>F_09 出幅度：机械下倾分辨率 1°、单次上限 2°，缺口 1.35° 取 Δ＝1°、1 轮。F_10 评周边：同天线的两个小区（目标 500 m / 400 m）调整后远端 543.4 m 仍在目标内；两个重叠邻区的重叠指数从 210.5 m 降到 28.8 m、从 168 m 降到 0，判“通过”。</p></div>
+    <div class="kpis"><div class="kpi"><div class="v">1 / 7</div><div class="l">命中日与告警重合</div><div class="h">14.29% → 部分重合，不排除</div></div><div class="kpi"><div class="v">1.35°</div><div class="l">下倾角缺口</div><div class="h">现状 6.00°，推荐 7.35°</div></div><div class="kpi"><div class="v">Δ 1°</div><div class="l">单次调整幅度 · 1 轮</div><div class="h">机械分辨率 1°，上限 2°</div></div><div class="kpi"><div class="v">4 项</div><div class="l">周边影响检查全部通过</div><div class="h">同天线 2 个 + 重叠邻区 2 个</div></div></div>
+    <figure class="figure">
+      <figcaption>缺口 1.35°，为什么只调 1°</figcaption>
+      <svg viewBox="0 0 760 214" role="img" aria-label="总下倾角现状 6 度、推荐 7.35 度、调整后 7 度"><rect x="546.6666666666666" y="82" width="66.66666666666674" height="60" fill="#a8791c" opacity="0.13"/><text x="580" y="60" text-anchor="middle" class="ax">命中容差 ±0.5°</text><line x1="90" y1="136" x2="90" y2="142" stroke="#8a7f6d"/><text x="90" y="160" text-anchor="middle" class="ax">0°</text><line x1="156.66666666666666" y1="136" x2="156.66666666666666" y2="142" stroke="#8a7f6d"/><text x="156.66666666666666" y="160" text-anchor="middle" class="ax">1°</text><line x1="223.33333333333331" y1="136" x2="223.33333333333331" y2="142" stroke="#8a7f6d"/><text x="223.33333333333331" y="160" text-anchor="middle" class="ax">2°</text><line x1="290" y1="136" x2="290" y2="142" stroke="#8a7f6d"/><text x="290" y="160" text-anchor="middle" class="ax">3°</text><line x1="356.66666666666663" y1="136" x2="356.66666666666663" y2="142" stroke="#8a7f6d"/><text x="356.66666666666663" y="160" text-anchor="middle" class="ax">4°</text><line x1="423.33333333333337" y1="136" x2="423.33333333333337" y2="142" stroke="#8a7f6d"/><text x="423.33333333333337" y="160" text-anchor="middle" class="ax">5°</text><line x1="490" y1="136" x2="490" y2="142" stroke="#8a7f6d"/><text x="490" y="160" text-anchor="middle" class="ax">6°</text><line x1="556.6666666666667" y1="136" x2="556.6666666666667" y2="142" stroke="#8a7f6d"/><text x="556.6666666666667" y="160" text-anchor="middle" class="ax">7°</text><line x1="623.3333333333333" y1="136" x2="623.3333333333333" y2="142" stroke="#8a7f6d"/><text x="623.3333333333333" y="160" text-anchor="middle" class="ax">8°</text><line x1="690" y1="136" x2="690" y2="142" stroke="#8a7f6d"/><text x="690" y="160" text-anchor="middle" class="ax">9°</text><line x1="90" y1="112" x2="690" y2="112" stroke="#241f17" stroke-width="1"/><line x1="580" y1="90" x2="580" y2="134" stroke="#a8341b" stroke-width="1.5" stroke-dasharray="5 4"/><text x="588" y="76" class="red">推荐总下倾 7.35°</text><circle cx="490" cy="112" r="6" fill="#241f17"/><text x="490" y="98" text-anchor="middle" class="val">现状 6.00°</text><circle cx="556.6666666666667" cy="112" r="6" fill="#f7f2e6" stroke="#1b5a52" stroke-width="2"/><text x="556.6666666666667" y="138" text-anchor="middle" class="grn">调整后 7.00°</text><line x1="490" y1="112" x2="556.6666666666667" y2="112" stroke="#1b5a52" stroke-width="2" opacity="0.5"/><text x="223.33333333333331" y="182" class="grn">Δ 1° · 1 轮（剩余缺口下一轮再评）</text></svg>
+      <p class="note">带＝命中容差 ±0.5°；缺口大于容差才判“命中”。单次不超过上限 2°，且必须是分辨率的整数倍，剩余缺口留给下一轮，避免一次调过头伤到同天线小区。</p>
+    </figure>
+    <section class="panel">
+      <div class="panel-head"><span class="tag">决策主线</span><h3>决策主线：核验、写复核意见、确认</h3></div>
+      <p class="panel-note">“确认”不是点一下同意：已确认必须有带证据的主因；症状级标签不能当主因。</p>
+      <div class="case-block">
+      <div class="case-head"><span class="case-id">BD-05</span><span class="case-title">接单核验：看依据、看告警、写复核意见后确认</span>
+        <span class="case-stat">12 步 · 41/41 项核对</span></div>
+      <p class="case-scene">工程师今天的待办里有一张待核验工单：先看发现依据，再看定因结果，告警与命中日部分重合时必须写明复核判断才能确认。</p>
+      <ol class="steps"><li class="step" data-kind="q">
+      <div class="step-n">01</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">地市优化工程师</span><span class="badge q">提问</span></div>
+        <p class="step-biz">我今天有哪些待办？</p>
+        <p class="step-expect">预期：意图 queue；回答含：待核验、确认或排除；写入 0 条审计；提示人工 A_03</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">“地市优化工程师”当前有 1 项待办：TK-LTE-156514014-001（崇贤达NF02H_222）待核验：确认或排除。优化本体只做建单、规则定因、生成方案、写入效果；确认、审批、回填、关单、入库、裁定都由人工角色执行。</pre>
+      </div>
+    </li><li class="step" data-kind="q">
+      <div class="step-n">02</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">地市优化工程师</span><span class="badge q">提问</span></div>
+        <p class="step-biz">崇贤达NF02H_222 这张工单的发现依据有哪些MR？</p>
+        <p class="step-expect">预期：意图 ticket.evidence；回答含：7 条 OT_CELL_MR；写入 0 条审计</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">TK-LTE-156514014-001 的发现依据快照引用了 7 条 OT_CELL_MR（2026-09-04 v1、2026-09-05 v1、2026-09-06 v1…），每条可展开到有效采样点与弱覆盖采样点。快照建单后不改；数据后来被更正只产生新版本，已建工单仍按其引用的版本读回，重新发现的结果由 F_12 另行给出（INV_17）。</pre>
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">03</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">优化本体</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">优化本体按规则定因（F_07 排除假性弱覆盖，F_08 判下倾角）</p>
+        <p class="step-expect">预期：F_07 部分重合、F_08 命中，主因写入</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">成功 {&quot;written&quot;:true,&quot;round&quot;:1,&quot;f07&quot;:&quot;部分重合&quot;,&quot;f08&quot;:&quot;命中&quot;,&quot;otherCauses&quot;:[]}</pre>
+      </div>
+    </li><li class="step" data-kind="q">
+      <div class="step-n">04</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">地市优化工程师</span><span class="badge q">提问</span></div>
+        <p class="step-biz">有告警吗，会不会是假性弱覆盖？</p>
+        <p class="step-expect">预期：意图 falseweak；回答含：部分重合、14.29%、BASE STATION INFORMATION；写入 0 条审计</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">F_07（CL-TK-LTE-156514014-001-002）：命中日 7 天中有 1 天落在告警区间内，占比 14.29%（门限 TH07＝0.5）→“部分重合”。转人工：工程师确认前必须写明复核判断。所用告警：alarm#1:LTE:156514014:BASE STATION INFORMATION:2026-09-07~2026-09-07（告警是来源事实，不入本体，只经诊断记录引用）。</pre>
+      </div>
+    </li><li class="step" data-kind="q">
+      <div class="step-n">05</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">地市优化工程师</span><span class="badge q">提问</span></div>
+        <p class="step-biz">功率和方位角有没有问题？</p>
+        <p class="step-expect">预期：意图 cause.other；回答含：发射功率、覆盖方向、周边遮挡、没有次因与主因并列；写入 0 条审计</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">崇贤达NF02H_222 的次因逐项核查（F_08＝命中）：发射功率：现网 12.2 dBm，规划 12.2 dBm，不低于规划，未命中；覆盖方向：方位偏差 5°，门限 20°（TH08），未超过；周边遮挡：证据“否”，不记次因。没有次因与主因并列。次因只作线索，本期措施字典里没有针对它们的措施，需要处理的由工程师人工安排。</pre>
+      </div>
+    </li><li class="step" data-kind="q">
+      <div class="step-n">06</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">地市优化工程师</span><span class="badge q">提问</span></div>
+        <p class="step-biz">能直接确认吗？</p>
+        <p class="step-expect">预期：意图 can；回答含：须在确认时写明复核判断；写入 0 条审计；提示人工 A_03</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">TK-LTE-156514014-001（状态“待核验”）可以，但须在确认时写明复核判断：告警与命中日部分重合，是否影响主因由你判断（A_03）。</pre>
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">07</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">地市优化工程师</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">工程师没写复核意见就点确认</p>
+        <p class="step-expect">预期：被拒绝：REVIEW_REQUIRED（告警部分重合，必须写明复核判断）</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">拒绝 REVIEW_REQUIRED：告警与命中日部分重合，须人工写明复核判断</pre>
+      </div>
+    </li><li class="step" data-kind="q">
+      <div class="step-n">08</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">地市优化工程师</span><span class="badge q">提问</span></div>
+        <p class="step-biz">为什么刚才确认没成功？</p>
+        <p class="step-expect">预期：意图 why.rejected；回答含：REVIEW_REQUIRED、复核判断、补写复核判断；写入 0 条审计</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">最近一次被拒绝的是 A_03 确认或排除（地市优化工程师，对象 TK-LTE-156514014-001）：REVIEW_REQUIRED——告警与命中日部分重合，须人工写明复核判断。下一步：补写复核判断后重新确认。拒绝也会留审计记录，不产生任何业务记录。</pre>
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">09</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">地市优化工程师</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">工程师写明复核意见后确认</p>
+        <p class="step-expect">预期：工单已确认</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">成功 {&quot;status&quot;:&quot;已确认&quot;}</pre>
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">10</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">地市优化工程师</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">核对：根因第 1 轮的证据是小区 MR 窗口和天线工参；诊断记录 3 条</p>
+        <p class="step-expect">预期：只读核对</p>
+        
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">11</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">地市优化工程师</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">有人又点了一次确认</p>
+        <p class="step-expect">预期：被拒绝：STATE（只能对待核验的工单确认或排除）</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">拒绝 STATE：工单状态“已确认”，只能对待核验工单确认或排除</pre>
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">12</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">现场维护人员</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">现场维护人员误点了确认</p>
+        <p class="step-expect">预期：被拒绝：PERMISSION_DENIED</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">拒绝 PERMISSION_DENIED：角色“现场维护人员”无权执行 A_03（SPEC 允许：地市优化工程师／优化专家）</pre>
+      </div>
+    </li></ol>
+    </div>
+    </section>
+    <section class="panel qa-panel">
+      <div class="panel-head"><span class="tag">问答现场</span><h3>同一件事，三个人会怎么问</h3></div>
+      <p class="panel-note">接单核验的工程师、追问计算过程的工程师、关心机械还是电子的工程师，问法不同，答案都落到同一套函数结果。</p>
+      <p class="caveat">每段问答都在同一份种子数据的独立副本上执行：问法与回答是真实的系统输出，个别分支（如方案形态、时间点）可能与左侧决策主线不同；主线以决策步骤为准。</p>
+      <div class="case-block qa-block">
+      <div class="case-head"><span class="case-id">BQ-02</span><span class="case-title">接单核验：这张工单怎么回事、依据、根因、告警，能不能确认</span>
+        <span class="case-stat">11 问</span></div>
+      <p class="case-scene">工程师接到优化本体建好的工单：先问是什么情况和依据，让系统定因，再追问根因、告警和次因，最后问能不能直接确认并按提示自己确认。</p>
+      <div class="chat"><div class="turn" style="--i:0">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“我今天有哪些待办？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">“地市优化工程师”当前有 1 项待办：TK-LTE-156514014-001（崇贤达NF02H_222）待核验：确认或排除。优化本体只做建单、规则定因、生成方案、写入效果；确认、审批、回填、关单、入库、裁定都由人工角色执行。</div></div></div>
+    </div><div class="turn" style="--i:1">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“这张工单是什么情况？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">TK-LTE-156514014-001：宏站弱覆盖小区（覆盖结构／MR弱覆盖小区），状态“待核验”。发现依据：RULE_D01 v1.0，窗口 2026-09-04～2026-09-10，命中 7 天（9月4日、9月5日、9月6日、9月7日、9月8日、9月9日、9月10日），引用 7 条 MR 日统计（RT_17）；问题键 LTE:156514014@MR弱覆盖小区@2026-09-10。根因 0 条，诊断记录 1 条。</div></div></div>
+    </div><div class="turn" style="--i:2">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“它的依据是哪些MR？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">TK-LTE-156514014-001 的发现依据快照引用了 7 条 OT_CELL_MR（2026-09-04 v1、2026-09-05 v1、2026-09-06 v1…），每条可展开到有效采样点与弱覆盖采样点。快照建单后不改；数据后来被更正只产生新版本，已建工单仍按其引用的版本读回，重新发现的结果由 F_12 另行给出（INV_17）。</div></div></div>
+    </div><div class="turn" style="--i:3">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“请对它定因”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">A_02 写入根因 已由优化本体执行（本次写入 1 条动作审计）：根因第 1 轮已写入（F_07＝部分重合，F_08＝命中）。</div></div></div>
+    </div><div class="turn" style="--i:4">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“它的根因是什么？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">F_08（CL-TK-LTE-156514014-001-003，v0.2）：总下倾 6°，推荐下倾 7.35°，缺口 1.35°（容差 0.5°），理论覆盖半径近端 239.9 m／远端 725.1 m，判“命中”；功率、方位、遮挡逐项排除或未核查。已写入根因第 1 轮：主因“弱覆盖小区天线下倾角过小”，证据：小区MR、工参（RT_08）；依据 RULE_W06，措施对应 RULE_M01。</div></div></div>
+    </div><div class="turn" style="--i:5">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“有告警吗，会不会是假性弱覆盖？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">F_07（CL-TK-LTE-156514014-001-002）：命中日 7 天中有 1 天落在告警区间内，占比 14.29%（门限 TH07＝0.5）→“部分重合”。转人工：工程师确认前必须写明复核判断。所用告警：alarm#1:LTE:156514014:BASE STATION INFORMATION:2026-09-07~2026-09-07（告警是来源事实，不入本体，只经诊断记录引用）。</div></div></div>
+    </div><div class="turn" style="--i:6">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“功率和方位角有没有问题？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">崇贤达NF02H_222 的次因逐项核查（F_08＝命中）：发射功率：现网 12.2 dBm，规划 12.2 dBm，不低于规划，未命中；覆盖方向：方位偏差 5°，门限 20°（TH08），未超过；周边遮挡：证据“否”，不记次因。没有次因与主因并列。次因只作线索，本期措施字典里没有针对它们的措施，需要处理的由工程师人工安排。</div></div></div>
+    </div><div class="turn" style="--i:7">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“能直接确认吗？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">TK-LTE-156514014-001（状态“待核验”）可以，但须在确认时写明复核判断：告警与命中日部分重合，是否影响主因由你判断（A_03）。</div></div></div>
+    </div><div class="turn" style="--i:8">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“帮我确认”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">A_03 确认或排除 须人工执行，优化本体不代办：允许角色 地市优化工程师／优化专家。对象：TK-LTE-156514014-001（状态“待核验”）。你的角色“地市优化工程师”在 SPEC 允许范围内，请在系统里由你本人执行，系统会记录审计。所需输入：输入：`ticketNo`、`decision`、`reason`。前提：工单待核验；已有主因证据，或F_07＝排除</div></div></div>
+    </div><div class="turn" style="--i:9">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“它现在什么状态？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">TK-LTE-156514014-001：宏站弱覆盖小区（覆盖结构／MR弱覆盖小区），状态“已确认”。发现依据：RULE_D01 v1.0，窗口 2026-09-04～2026-09-10，命中 7 天（9月4日、9月5日、9月6日、9月7日、9月8日、9月9日、9月10日），引用 7 条 MR 日统计（RT_17）；问题键 LTE:156514014@MR弱覆盖小区@2026-09-10。根因 1 条，诊断记录 3 条。</div></div></div>
+    </div><div class="turn" style="--i:10">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“下一步该做什么？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">TK-LTE-156514014-001 状态“已确认”，下一步：A_04 生成优化方案（优化本体）。其中人工动作（确认、审批、回填、关单、入库、裁定）优化本体只提示不代办；它自己可以执行的只有建单、规则定因、生成方案、写入效果。</div></div></div>
+    </div></div>
+    </div><div class="case-block qa-block">
+      <div class="case-head"><span class="case-id">BQ-03</span><span class="case-title">定因追问：为什么是下倾角、怎么算的、有几成把握</span>
+        <span class="case-stat">7 问</span></div>
+      <p class="case-scene">工程师对系统给出的根因不放心，追问推理过程：推荐下倾角怎么算的、缺口多大、有几成把握、功率方位遮挡排除了吗、目标半径怎么定的、5G 能不能这样判。</p>
+      <div class="chat"><div class="turn" style="--i:0">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“为什么判断是下倾角过小？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">F_08（CL-TK-LTE-156514014-001-003，v0.2）：总下倾 6°，推荐下倾 7.35°，缺口 1.35°（容差 0.5°），理论覆盖半径近端 239.9 m／远端 725.1 m，判“命中”；功率、方位、遮挡逐项排除或未核查。已写入根因第 1 轮：主因“弱覆盖小区天线下倾角过小”，证据：小区MR、工参（RT_08）；依据 RULE_W06，措施对应 RULE_M01。</div></div></div>
+    </div><div class="turn" style="--i:1">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“推荐下倾角是怎么算出来的？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">崇贤达NF02H_222（F_08，v0.2）：推荐总下倾 θ_t＝arctan(h／Rt)＋β／2＝arctan(38／500)＋6／2＝7.35°（挂高 h＝38 m，目标覆盖半径 Rt＝500 m，垂直波束宽 β＝6°）；现网总下倾＝机械 3°＋电子 3°＝6°；缺口＝7.35°−6°＝1.35°，大于容差 0.5°（TH01）才判“命中”。理论覆盖半径（F_02，简化平地模型，TH15）：近端 239.9 m、远端 725.1 m，与目标半径 500 m 对照。</div></div></div>
+    </div><div class="turn" style="--i:2">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“这个判断有几成把握？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">SPEC 没有定义“置信度”或概率，本体不给百分比，也不会编一个。这次的依据是确定性规则：F_08 缺口 1.35°，大于容差 0.5°（TH01），判“命中”；容差（TH01）和理论半径简化模型（TH15）都是测试假设，业务确认前判断保持“待确认”，所以每条根因都带证据回链（MR 窗口与工参），请以证据为准复核。</div></div></div>
+    </div><div class="turn" style="--i:3">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“那功率、方位和遮挡呢？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">崇贤达NF02H_222 的次因逐项核查（F_08＝命中）：发射功率：现网 12.2 dBm，规划 12.2 dBm，不低于规划，未命中；覆盖方向：方位偏差 5°，门限 20°（TH08），未超过；周边遮挡：证据“否”，不记次因。没有次因与主因并列。次因只作线索，本期措施字典里没有针对它们的措施，需要处理的由工程师人工安排。</div></div></div>
+    </div><div class="turn" style="--i:4">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“崇贤达NF02H_222 的理论覆盖半径是多少？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">崇贤达NF02H_222（F_08，v0.2）：推荐总下倾 θ_t＝arctan(h／Rt)＋β／2＝arctan(38／500)＋6／2＝7.35°（挂高 h＝38 m，目标覆盖半径 Rt＝500 m，垂直波束宽 β＝6°）；现网总下倾＝机械 3°＋电子 3°＝6°；缺口＝7.35°−6°＝1.35°，大于容差 0.5°（TH01）才判“命中”。理论覆盖半径（F_02，简化平地模型，TH15）：近端 239.9 m、远端 725.1 m，与目标半径 500 m 对照。</div></div></div>
+    </div><div class="turn" style="--i:5">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“目标覆盖半径是怎么定的？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">崇贤达NF02H_222 的目标覆盖半径样例直接给定为 500 m；若缺失，RULE_G01 默认取 TH14（k＝0.5）×最近站间距：最近站间距 800 m，默认半径 400 m，可人工覆盖并留痕。</div></div></div>
+    </div><div class="turn" style="--i:6">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“5G 小区能用这个方法判断吗？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">5G（NR）小区可以按 RULE_D03／D04 发现并建单；但 NR 的理论覆盖半径与推荐下倾公式 SPEC 没有定义（规则缺口），F_08 对 NR 返回“未知”，不套用 LTE 公式，不生成下倾方案，转人工处理。</div></div></div>
+    </div></div>
+    </div><div class="case-block qa-block">
+      <div class="case-head"><span class="case-id">BQ-04</span><span class="case-title">方案怎么出：机械还是电子、一次调多少、分几轮、对周边的影响</span>
+        <span class="case-stat">9 问</span></div>
+      <p class="case-scene">工程师确认根因后，在让系统出方案之前先比较各种做法：机械还是电子、一次调多少分几轮、如果同天线小区的目标半径更大会怎样；再让系统出方案并追问周边影响。</p>
+      <div class="chat"><div class="turn" style="--i:0">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“现在该做什么？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">TK-LTE-156514014-001 状态“已确认”，下一步：A_04 生成优化方案（优化本体）。其中人工动作（确认、审批、回填、关单、入库、裁定）优化本体只提示不代办；它自己可以执行的只有建单、规则定因、生成方案、写入效果。</div></div></div>
+    </div><div class="turn" style="--i:1">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“一次调多少？要分几轮？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">TK-LTE-156514014-001 暂无方案（状态“已确认”）。F_08 当前：命中，缺口 1.35°。若生成方案：机械下倾 Δ＝1°（共 1 轮），电子下倾 Δ＝1.3°（共 1 轮），单次上限 2°。须先由工程师确认根因（A_03），再由优化本体生成方案（A_04）。</div></div></div>
+    </div><div class="turn" style="--i:2">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“机械下倾和电子下倾哪个合适？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">崇贤达NF02H_222 两种措施的只读演算（按当前事实，不写入任何记录）：机械下倾：作用于整副天线 611382-2-1，承载的小区都受影响（崇贤达NF02H_222、崇贤达NF08H_223）；缺口 1.35° → 单次 Δ＝1°（分辨率 1°，共 1 轮）；周边影响“通过”，Δ最终 1°；执行方“现场维护”，不可远程；电子下倾：只作用于 崇贤达NF02H_222 的阵列；缺口 1.35° → 单次 Δ＝1.3°（分辨率 0.1°，共 1 轮）；周边影响“通过”，Δ最终 1.3°；执行方“参数平台或优化人员”，可远程。SPEC 没有规定两者的优先顺序，哪种可行看周边影响是否通过，选哪种由工程师决定；确认后方案由优化本体生成。</div></div></div>
+    </div><div class="turn" style="--i:3">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“如果同天线小区目标半径改成560米，机械下倾会怎样？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">假设演算（只读，在内存中重算，不写入；按当前工参事实）：崇贤达NF02H_222 改用机械下倾，同天线小区目标半径改为 560 m：F_08 缺口 1.35°，Δ计划 1°，影响范围 崇贤达NF02H_222、崇贤达NF08H_223，周边影响“不通过”。演算结果不改变任何工单、方案或工参。</div></div></div>
+    </div><div class="turn" style="--i:4">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“如果改电子下倾呢？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">假设演算（只读，在内存中重算，不写入；按当前工参事实）：崇贤达NF02H_222 改用电子下倾：F_08 缺口 1.35°，Δ计划 1.3°，影响范围 崇贤达NF02H_222，周边影响“通过”，Δ最终 1.3°。演算结果不改变任何工单、方案或工参。</div></div></div>
+    </div><div class="turn" style="--i:5">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“请对它生成电子下倾方案”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">A_04 生成优化方案 已由优化本体执行（本次写入 1 条动作审计）：方案 PL-TK-LTE-156514014-001-R1（待确认），缺口 1.35°，Δ 1.3°，共 1 轮，周边影响“通过”。</div></div></div>
+    </div><div class="turn" style="--i:6">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“请对它再生成一次方案”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">A_04 被拒绝：ROUND_IN_PROGRESS——方案 PL-TK-LTE-156514014-001-R1 尚未结束（待确认），不能再生成新一轮。</div></div></div>
+    </div><div class="turn" style="--i:7">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“对周边有什么影响？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">PL-TK-LTE-156514014-001-R1 涉及 1 个小区，周边影响“通过”（Δ计划 1.3°，Δ最终 1.3°）。影响范围按调整方式确定：电子下倾只影响对应阵列小区；RT_10：崇贤达NF02H_222（主作用）。逐项：崇贤达NF02H_222 远端 725.1→505.4 m（目标 500，满足）；邻区 崇贤北NF02H_141（站间距 800 m）预测重叠指数 210.5→0（不增大）；邻区 陈家镇东NF02H_87（站间距 900 m）预测重叠指数 168→0（不增大）。</div></div></div>
+    </div><div class="turn" style="--i:8">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“会不会影响崇贤达NF08H_223？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">崇贤达NF08H_223不在本方案的作用范围内（电子下倾只作用于目标小区的阵列），不会被这次调整改变；PL-TK-LTE-156514014-001-R1 涉及 1 个小区，周边影响“通过”（Δ计划 1.3°，Δ最终 1.3°）。影响范围按调整方式确定：电子下倾只影响对应阵列小区；RT_10：崇贤达NF02H_222（主作用）。逐项：崇贤达NF02H_222 远端 725.1→505.4 m（目标 500，满足）；邻区 崇贤北NF02H_141（站间距 800 m）预测重叠指数 210.5→0（不增大）；邻区 陈家镇东NF02H_87（站间距 900 m）预测重叠指数 168→0（不增大）。</div></div></div>
+    </div></div>
+    </div>
+    </section>
+    <section class="panel support-panel">
+    <details>
+      <summary><span class="tag">支撑</span><span class="sum-title">同一幕上的异常与边界</span><span class="sum-count">5 个用例</span></summary>
+      <div class="sup-list"><details class="sup">
+          <summary><span class="sid">BD-06</span><span class="stitle">假性弱覆盖：告警盖住大部分命中日，工单排除</span><span class="ssteps">6 步</span></summary>
+          <p class="one">假性弱覆盖：告警盖住 6/7 命中日 → F_07 判“排除”，工单排除、不出方案</p>
+          <ol class="sup-steps"><li><span class="nm">01</span><span class="b">优化本体按规则定因</span><span class="e">→ F_07＝排除，不写根因</span></li><li><span class="nm">02</span><span class="b">有告警吗，会不会是假性弱覆盖？</span><span class="e">→ 意图 falseweak；回答含：排除、假性弱覆盖，工单应排除；写入 0 条审计</span></li><li><span class="nm">03</span><span class="b">能直接确认吗？</span><span class="e">→ 意图 can；回答含：不该确认、应当排除；写入 0 条审计；提示人工 A_03</span></li><li><span class="nm">04</span><span class="b">工程师想确认</span><span class="e">→ 被拒绝：INV_03（没有主因证据不能确认）</span></li><li><span class="nm">05</span><span class="b">工程师排除工单</span><span class="e">→ 工单已排除</span></li><li><span class="nm">06</span><span class="b">优化本体想生成方案</span><span class="e">→ 被拒绝：INV_04（已排除的工单不得生成方案）</span></li></ol>
+          <p class="sup-meta">角色：地市优化工程师　起始状态：工单待核验　数据： 增加一条告警：崇贤达NF02H_222 小区退服，9 月 4 日～9 日</p>
+        </details><details class="sup">
+          <summary><span class="sid">BD-07</span><span class="stitle">次因并列：发射功率偏低，须工程师写明复核判断</span><span class="ssteps">6 步</span></summary>
+          <p class="one">次因并列：发射功率偏低同时成立，工程师必须写明复核判断</p>
+          <ol class="sup-steps"><li><span class="nm">01</span><span class="b">优化本体按规则定因</span><span class="e">→ F_08 命中，次因“发射功率”并列</span></li><li><span class="nm">02</span><span class="b">功率和方位角有没有问题？</span><span class="e">→ 意图 cause.other；回答含：低于规划、记次因“发射功率”、与主因并列；写入 0 条审计</span></li><li><span class="nm">03</span><span class="b">工程师没写复核意见</span><span class="e">→ 被拒绝：REVIEW_REQUIRED（次因同时命中，须写明复核判断）</span></li><li><span class="nm">04</span><span class="b">工程师写明：功率偏低另行处理，本方案只针对下倾</span><span class="e">→ 工单已确认</span></li><li><span class="nm">05</span><span class="b">帮我把功率调高两个dB</span><span class="e">→ 意图 unsupported；回答含：措施字典、不会生成这类方案；写入 0 条审计</span></li><li><span class="nm">06</span><span class="b">优化本体生成方案（只针对主因）</span><span class="e">→ 方案与主线一致：缺口、Δ＝1°、周边影响通过</span></li></ol>
+          <p class="sup-meta">角色：地市优化工程师　起始状态：工单待核验　数据： 崇贤达NF02H_222 现网发射功率 10.8 dBm（低于规划值），去掉原有告警</p>
+        </details><details class="sup">
+          <summary><span class="sid">BD-08</span><span class="stitle">工参缺失：补录挂高后重新定因</span><span class="ssteps">8 步</span></summary>
+          <p class="one">工参缺失：挂高未知时 F_08 返回“未知”，补录后重新定因</p>
+          <ol class="sup-steps"><li><span class="nm">01</span><span class="b">优化本体按规则定因</span><span class="e">→ F_08＝未知，缺项 antenna.height，不写根因</span></li><li><span class="nm">02</span><span class="b">它的根因是什么？</span><span class="e">→ 意图 cause；回答含：F_08＝未知、antenna.height、转人工；写入 0 条审计</span></li><li><span class="nm">03</span><span class="b">推荐下倾角是怎么算出来的？</span><span class="e">→ 意图 explain.calc；回答含：缺必需输入、不判“不命中”；写入 0 条审计</span></li><li><span class="nm">04</span><span class="b">工程师想确认</span><span class="e">→ 被拒绝：INV_03（没有主因证据）</span></li><li><span class="nm">05</span><span class="b">优化本体想生成方案</span><span class="e">→ 被拒绝：INV_04（待核验不得生成方案）</span></li><li><span class="nm">06</span><span class="b">资源系统补录挂高 38 m（9 月 11 日 08:00 生效）</span><span class="e">→ 只读核对</span></li><li><span class="nm">07</span><span class="b">优化本体重新定因</span><span class="e">→ F_08 命中，根因第 1 轮写入</span></li><li><span class="nm">08</span><span class="b">推荐下倾角是怎么算出来的？</span><span class="e">→ 意图 explain.calc；回答含：arctan(38、θ_t、7.35、1.35、TH01；写入 0 条审计</span></li></ol>
+          <p class="sup-meta">角色：地市优化工程师　起始状态：工单待核验　数据： 崇贤达NF02H_222 的天线挂高为空</p>
+        </details><details class="sup">
+          <summary><span class="sid">BD-28</span><span class="stitle">目标覆盖半径缺失：不静默套用默认值，补录留痕后重新定因</span><span class="ssteps">4 步</span></summary>
+          <p class="one">目标半径缺失：不静默套默认值，补录留痕后重新定因</p>
+          <ol class="sup-steps"><li><span class="nm">01</span><span class="b">优化本体按规则定因</span><span class="e">→ F_08＝未知，缺项 cell.targetRadius，不写根因</span></li><li><span class="nm">02</span><span class="b">目标覆盖半径默认怎么取？</span><span class="e">→ 意图 radius；回答含：目标覆盖半径缺失、返回“未知”、不会静默套用默认值、RULE_G01、TH14；写入 0 条审计</span></li><li><span class="nm">03</span><span class="b">工程师确认按 500 m 补录目标覆盖半径（人工覆盖，留下新版本）</span><span class="e">→ 只读核对</span></li><li><span class="nm">04</span><span class="b">优化本体重新定因</span><span class="e">→ F_08 命中，根因第 1 轮写入</span></li></ol>
+          <p class="sup-meta">角色：地市优化工程师／优化专家　起始状态：工单待核验　数据： 崇贤达NF02H_222 的目标覆盖半径为空</p>
+        </details><details class="sup">
+          <summary><span class="sid">BD-09</span><span class="stitle">专家复核改因：症状级标签与无证据主因被拒，改因追加新一轮</span><span class="ssteps">5 步</span></summary>
+          <p class="one">专家改因：症状级标签、无证据主因被拒，改因追加新一轮而非覆盖历史</p>
+          <ol class="sup-steps"><li><span class="nm">01</span><span class="b">专家把主因写成“弱覆盖”</span><span class="e">→ 被拒绝：INV_02（症状级标签不得作主因）</span></li><li><span class="nm">02</span><span class="b">专家写了主因但没附证据</span><span class="e">→ 被拒绝：INV_03（主因至少要有一条真实证据）</span></li><li><span class="nm">03</span><span class="b">专家附上勘察记录，改判为“天线接反”</span><span class="e">→ 追加第 2 轮根因</span></li><li><span class="nm">04</span><span class="b">现场维护人员想改根因</span><span class="e">→ 被拒绝：PERMISSION_DENIED</span></li><li><span class="nm">05</span><span class="b">崇贤达NF02H_222 这张工单的根因是什么？</span><span class="e">→ 意图 cause；回答含：天线接反、命中；写入 0 条审计</span></li></ol>
+          <p class="sup-meta">角色：地市优化工程师／优化专家　起始状态：已定因</p>
+        </details></div>
+    </details>
+  </section>
+    <section class="tech">
+    <button class="tech-strip" aria-expanded="false"><span class="t-label">技术这一层</span><span class="t-sum">7 函数 · 3 动作 · 2 对象 · 3 关系 · 4 规则 · 5 约束 · 2 假设</span><span class="t-plus" aria-hidden="true">＋</span></button>
+    <div class="tech-body">
+      <div class="chain" aria-label="本幕的技术链路"><span class="node"><b>OT_TICKET</b><span>discovery 快照</span></span><span class="arrow" aria-hidden="true">→</span><span class="node"><b>F_07</b><span>假性弱覆盖排除</span></span><span class="arrow" aria-hidden="true">→</span><span class="node"><b>F_08</b><span>下倾角命中 + 次因</span></span><span class="arrow" aria-hidden="true">→</span><span class="node"><b>A_02 / A_03</b><span>写根因 / 确认</span></span><span class="arrow" aria-hidden="true">→</span><span class="node"><b>F_09 → F_10</b><span>幅度 → 周边影响</span></span><span class="arrow" aria-hidden="true">→</span><span class="node"><b>OT_PLAN</b><span>方案待确认</span></span></div>
+      <div class="chips"><button class="chip" data-el="F_07"><b>F_07</b><span>函数</span></button><button class="chip" data-el="F_08"><b>F_08</b><span>函数</span></button><button class="chip" data-el="F_09"><b>F_09</b><span>函数</span></button><button class="chip" data-el="F_10"><b>F_10</b><span>函数</span></button><button class="chip" data-el="F_02"><b>F_02</b><span>函数</span></button><button class="chip" data-el="F_03"><b>F_03</b><span>函数</span></button><button class="chip" data-el="F_04"><b>F_04</b><span>函数</span></button><button class="chip" data-el="A_02"><b>A_02</b><span>动作</span></button><button class="chip" data-el="A_03"><b>A_03</b><span>动作</span></button><button class="chip" data-el="A_04"><b>A_04</b><span>动作</span></button><button class="chip" data-el="OT_PLAN"><b>OT_PLAN</b><span>对象</span></button><button class="chip" data-el="OT_ANTENNA"><b>OT_ANTENNA</b><span>对象</span></button><button class="chip" data-el="RT_02"><b>RT_02</b><span>关系</span></button><button class="chip" data-el="RT_06"><b>RT_06</b><span>关系</span></button><button class="chip" data-el="RT_08"><b>RT_08</b><span>关系</span></button><button class="chip" data-el="RULE_W04"><b>RULE_W04</b><span>规则</span></button><button class="chip" data-el="RULE_W06"><b>RULE_W06</b><span>规则</span></button><button class="chip" data-el="RULE_W13"><b>RULE_W13</b><span>规则</span></button><button class="chip" data-el="RULE_M01"><b>RULE_M01</b><span>规则</span></button><button class="chip" data-el="INV_02"><b>INV_02</b><span>约束</span></button><button class="chip" data-el="INV_03"><b>INV_03</b><span>约束</span></button><button class="chip" data-el="INV_06"><b>INV_06</b><span>约束</span></button><button class="chip" data-el="INV_12"><b>INV_12</b><span>约束</span></button><button class="chip" data-el="INV_13"><b>INV_13</b><span>约束</span></button><button class="chip" data-el="TH01"><b>TH01</b><span>假设</span></button><button class="chip" data-el="TH11"><b>TH11</b><span>假设</span></button></div>
+      <div class="tech-cols">
+        <div><h4>这一步守住了什么</h4><ul class="guards"><li><b>INV_02</b>“弱覆盖”“远端弱覆盖”这类症状标签不得作主因，必须先找到原因族。</li><li><b>INV_03</b>主因至少一条直接证据：小区 MR、工参、告警记录或现场勘察。</li><li><b>INV_06</b>周边影响“不通过／未评估”的方案不得批准；“调减”的按调减后幅度写入。</li><li><b>INV_09</b>工参缺失＝“未知”，不判“不命中”，不套默认值。</li></ul></div>
+        <div><h4>口径与机制</h4><dl class="facts"><dt>计算口径</dt><dd>haversine 站间距 → 理论半径 → 推荐下倾（球面几何，非经验拟合）</dd><dt>容差</dt><dd>命中容差 eps＝0.5°（TH01）</dd><dt>影响范围</dt><dd>机械下倾＝天线承载的全部小区；电子下倾＝仅对应阵列小区</dd><dt>版本</dt><dd>方案记录所依据的工参版本，派单前会校验是否过期</dd></dl></div>
+      </div>
+    </div>
+  </section>
+  </article><article class="act" id="act-execute" data-key="execute">
+    <header class="act-head">
+      <div class="act-num" aria-hidden="true">03</div>
+      <div class="act-titles">
+        <div class="kicker">第三幕 · APPROVE &amp; EXECUTE</div>
+        <h2>审批与执行</h2>
+        <p class="headline">动整副天线，就不是一个人能签的事</p>
+      </div>
+      <dl class="act-meta">
+        <div><dt>时间</dt><dd>2026-09-12 ～ 09-14</dd></div>
+        <div><dt>角色</dt><dd>地市优化工程师、优化主管、现场维护人员</dd></div>
+        <div><dt>状态跨度</dt><dd>方案待确认 → 已派单 → 待评估</dd></div>
+      </dl>
+    </header>
+    <p class="act-lede">机械下倾同时改变同天线两个小区，必须追加主管批准；天馈措施不得自动执行；现场回填的实际值才是后续评估的输入。</p>
+    <div class="prose"><p>方案 R1 是机械下倾 Δ＝1°。整副天线上的 崇贤达NF02H_222 与 崇贤达NF08H_223 都会变，工程师一个人签不够：只带自己的意见提交会被拒（SUPERVISOR_REQUIRED），必须追加优化主管批准。</p><p>任何角色都不能让系统自动下发天馈措施——包括优化本体自己。审批、派单、现场执行、回填，四个动作分属三个角色，每一步都写审计。</p><p>9 月 12 日派单，9 月 14 日现场把机械下倾从 3° 调到 4° 并回填。回填的实际值（不是计划值）进入效果评估；同一派单号重复提交同值幂等，提交不同的值按 INV_15 判冲突转人工，不覆盖第一条记录。</p><p>如果派单前别的部门已把下倾改成 4°，方案依据的工参版本已变，派单会被 STALE_FACTS 挡下、方案退回草案；如果现场没回执，工单停在处置中，不得评估。</p></div>
+    <div class="kpis"><div class="kpi"><div class="v">2</div><div class="l">受影响小区（同一副天线）</div><div class="h">机械下倾作用于整副天线</div></div><div class="kpi"><div class="v">2 个签名</div><div class="l">工程师 + 优化主管</div><div class="h">涉及 2 个小区必须追加批准</div></div><div class="kpi"><div class="v">3° → 4°</div><div class="l">现场回填机械下倾</div><div class="h">2026-09-14 09:30 实施</div></div><div class="kpi"><div class="v">0</div><div class="l">自动执行的天馈措施</div><div class="h">不可自动下发（INV_05）</div></div></div>
+    <figure class="figure">
+      <figcaption>这一调，周边发生了什么</figcaption>
+      <svg viewBox="0 0 760 342" role="img" aria-label="周边影响：同天线小区与重叠邻区调整前后对比"><text x="0" y="16" class="cap">远端覆盖半径（m，越大越好，虚线＝目标半径）</text><line x1="224" y1="30" x2="224" y2="36" stroke="#8a7f6d"/><text x="224" y="25" text-anchor="middle" class="ax">0</text><line x1="329" y1="30" x2="329" y2="36" stroke="#8a7f6d"/><text x="329" y="25" text-anchor="middle" class="ax">200</text><line x1="434" y1="30" x2="434" y2="36" stroke="#8a7f6d"/><text x="434" y="25" text-anchor="middle" class="ax">400</text><line x1="539" y1="30" x2="539" y2="36" stroke="#8a7f6d"/><text x="539" y="25" text-anchor="middle" class="ax">600</text><line x1="644" y1="30" x2="644" y2="36" stroke="#8a7f6d"/><text x="644" y="25" text-anchor="middle" class="ax">800</text><text x="0" y="58" class="ax">崇贤达NF02H_222　目标 500 m</text><rect x="224" y="46" width="380.6775" height="14" fill="#241f17" opacity="0.82"/><rect x="224" y="66" width="285.285" height="14" fill="#1b5a52" opacity="0.95"/><line x1="486.5" y1="40" x2="486.5" y2="84" stroke="#a8341b" stroke-dasharray="4 3"/><text x="611.6775" y="57" class="val">725.1</text><text x="516.2850000000001" y="77" class="val grn">543.4</text><text x="0" y="118" class="ax">崇贤达NF08H_223　目标 400 m</text><rect x="224" y="106" width="380.6775" height="14" fill="#241f17" opacity="0.82"/><rect x="224" y="126" width="285.285" height="14" fill="#1b5a52" opacity="0.95"/><line x1="434" y1="100" x2="434" y2="144" stroke="#a8341b" stroke-dasharray="4 3"/><text x="611.6775" y="117" class="val">725.1</text><text x="516.2850000000001" y="137" class="val grn">543.4</text><text x="0" y="168" class="cap">重叠指数（m，越小越好）</text><line x1="224" y1="178" x2="224" y2="184" stroke="#8a7f6d"/><text x="224" y="173" text-anchor="middle" class="ax">0</text><line x1="308" y1="178" x2="308" y2="184" stroke="#8a7f6d"/><text x="308" y="173" text-anchor="middle" class="ax">50</text><line x1="392" y1="178" x2="392" y2="184" stroke="#8a7f6d"/><text x="392" y="173" text-anchor="middle" class="ax">100</text><line x1="476" y1="178" x2="476" y2="184" stroke="#8a7f6d"/><text x="476" y="173" text-anchor="middle" class="ax">150</text><line x1="560" y1="178" x2="560" y2="184" stroke="#8a7f6d"/><text x="560" y="173" text-anchor="middle" class="ax">200</text><line x1="644" y1="178" x2="644" y2="184" stroke="#8a7f6d"/><text x="644" y="173" text-anchor="middle" class="ax">250</text><text x="0" y="194" class="ax">崇贤北NF02H_141　800 m 处</text><rect x="224" y="182" width="353.64" height="14" fill="#241f17" opacity="0.82"/><rect x="224" y="202" width="48.384" height="14" fill="#1b5a52" opacity="0.95"/><text x="584.64" y="193" class="val">210.5</text><text x="279.384" y="213" class="val grn">28.8</text><text x="0" y="254" class="ax">陈家镇东NF02H_87　900 m 处</text><rect x="224" y="242" width="282.24" height="14" fill="#241f17" opacity="0.82"/><rect x="224" y="262" width="1" height="14" fill="#1b5a52" opacity="0.95"/><text x="513.24" y="253" class="val">168</text><text x="231" y="273" class="val grn">0</text><g transform="translate(224,308)"><rect x="0" y="-10" width="12" height="10" fill="#241f17" opacity=".82"/><text x="18" y="0" class="ax">调整前</text><rect x="92" y="-10" width="12" height="10" fill="#1b5a52"/><text x="110" y="0" class="ax">调整后</text><line x1="182" y1="-12" x2="182" y2="2" stroke="#a8341b" stroke-dasharray="4 3"/><text x="190" y="0" class="ax">目标半径</text></g></svg>
+      <p class="note">前两根：同天线两个小区的远端覆盖半径，调整后仍不小于各自目标半径（500 m / 400 m）。后两根：重叠邻区的重叠指数（米），越小越好；两根都下降。</p>
+    </figure>
+    <section class="panel">
+      <div class="panel-head"><span class="tag">决策主线</span><h3>决策主线：审批派单、现场回填</h3></div>
+      <p class="panel-note">一个管“能不能签、谁来签”，一个管“调了什么、以谁为准”。</p>
+      <div class="case-block">
+      <div class="case-head"><span class="case-id">BD-10</span><span class="case-title">主管审批：方案作用于 2 个小区，必须追加优化主管批准</span>
+        <span class="case-stat">10 步 · 34/34 项核对</span></div>
+      <p class="case-scene">机械下倾作用于整副天线，同天线的两个小区都受影响，所以工程师确认后还要优化主管追加批准；任何情况下天馈类措施都不能自动执行。</p>
+      <ol class="steps"><li class="step" data-kind="q">
+      <div class="step-n">01</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">优化主管</span><span class="badge q">提问</span></div>
+        <p class="step-biz">有什么要我批的？</p>
+        <p class="step-expect">预期：意图 queue；回答含：追加优化主管批准、作用于 2 个小区；写入 0 条审计；提示人工 A_05</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">“优化主管”当前有 1 项待办：PL-TK-LTE-156514014-001-R1 作用于 2 个小区，须追加优化主管批准（RULE_W14）。优化本体只做建单、规则定因、生成方案、写入效果；确认、审批、回填、关单、入库、裁定都由人工角色执行。</pre>
+      </div>
+    </li><li class="step" data-kind="q">
+      <div class="step-n">02</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">优化主管</span><span class="badge q">提问</span></div>
+        <p class="step-biz">为什么要我批？</p>
+        <p class="step-expect">预期：意图 approval；回答含：优化主管批准（RULE_W14）、不得自动执行；写入 0 条审计</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">PL-TK-LTE-156514014-001-R1（状态“待确认”）：天馈类措施（增大机械下倾角，执行方“现场维护”）不得自动执行，必须由地市优化工程师确认并派单、由现场维护人员执行并回填（INV_05）；周边影响为“通过”或“调减”才可批准（INV_06）；作用于 2 个及以上小区或 VIP／VVIP 场景须追加优化主管批准（RULE_W14）。目前尚未审批。</pre>
+      </div>
+    </li><li class="step" data-kind="q">
+      <div class="step-n">03</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">优化主管</span><span class="badge q">提问</span></div>
+        <p class="step-biz">这个方案涉及几个小区？</p>
+        <p class="step-expect">预期：意图 impact；回答含：涉及 2 个小区、崇贤达NF02H_222（受影响）、崇贤达NF08H_223（受影响）；写入 0 条审计</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">PL-TK-LTE-156514014-001-R1 涉及 2 个小区，周边影响“通过”（Δ计划 1°，Δ最终 1°）。影响范围按调整方式确定：机械下倾作用于整副天线，承载的所有小区都要校验；RT_10：611382-2-1（主作用）、崇贤达NF02H_222（受影响）、崇贤达NF08H_223（受影响）。逐项：崇贤达NF02H_222 远端 725.1→543.4 m（目标 500，满足）；崇贤达NF08H_223 远端 725.1→543.4 m（目标 400，满足）；邻区 崇贤北NF02H_141（站间距 800 m）预测重叠指数 210.5→28.8（不增大）；邻区 陈家镇东NF02H_87（站间距 900 m）预测重叠指数 168→0（不增大）。</pre>
+      </div>
+    </li><li class="step" data-kind="q">
+      <div class="step-n">04</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">优化主管</span><span class="badge q">提问</span></div>
+        <p class="step-biz">这个方案能自动下发到现场吗？</p>
+        <p class="step-expect">预期：意图 approval；回答含：不得自动执行、INV_05；写入 0 条审计</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">PL-TK-LTE-156514014-001-R1（状态“待确认”）：天馈类措施（增大机械下倾角，执行方“现场维护”）不得自动执行，必须由地市优化工程师确认并派单、由现场维护人员执行并回填（INV_05）；周边影响为“通过”或“调减”才可批准（INV_06）；作用于 2 个及以上小区或 VIP／VVIP 场景须追加优化主管批准（RULE_W14）。目前尚未审批。</pre>
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">05</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">地市优化工程师</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">工程师只带自己的意见提交</p>
+        <p class="step-expect">预期：被拒绝：SUPERVISOR_REQUIRED（作用于 2 个小区，须追加优化主管批准）</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">拒绝 SUPERVISOR_REQUIRED：作用于 2 个小区，须追加优化主管批准</pre>
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">06</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">地市优化工程师</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">有人尝试让系统自动执行</p>
+        <p class="step-expect">预期：被拒绝：INV_05（天馈类措施不得自动执行）</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">拒绝 INV_05：天馈类措施不得自动执行：须人工确认并派给现场维护人员</pre>
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">07</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">优化本体</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">优化本体想自己确认派单</p>
+        <p class="step-expect">预期：被拒绝：PERMISSION_DENIED</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">拒绝 PERMISSION_DENIED：角色“优化本体”无权执行 A_05（SPEC 允许：地市优化工程师）</pre>
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">08</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">地市优化工程师</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">工程师与优化主管共同批准，派给现场维护人员</p>
+        <p class="step-expect">预期：派单成功，工单进入处置中</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">成功 {&quot;dispatchNo&quot;:&quot;DP-PL-TK-LTE-156514014-001-R1&quot;,&quot;status&quot;:&quot;已派单&quot;,&quot;supervisor&quot;:true}</pre>
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">09</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">地市优化工程师</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">重复提交同一方案</p>
+        <p class="step-expect">预期：幂等：返回同一派单号，不重复派单</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">成功 {&quot;dispatchNo&quot;:&quot;DP-PL-TK-LTE-156514014-001-R1&quot;,&quot;deduped&quot;:true,&quot;status&quot;:&quot;已派单&quot;}</pre>
+      </div>
+    </li><li class="step" data-kind="q">
+      <div class="step-n">10</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">优化主管</span><span class="badge q">提问</span></div>
+        <p class="step-biz">有什么要我批的？</p>
+        <p class="step-expect">预期：意图 queue；回答含：没有待办；写入 0 条审计</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">“优化主管”当前没有待办（时钟 2026-09-11T09:00:23）。</pre>
+      </div>
+    </li></ol>
+    </div><div class="case-block">
+      <div class="case-head"><span class="case-id">BD-13</span><span class="case-title">现场回填：实际值、重复提交与冲突</span>
+        <span class="case-stat">10 步 · 33/33 项核对</span></div>
+      <p class="case-scene">现场维护人员按派单调完天线后回填实际值：缺实际值不能记为已实施，重复提交同值幂等，同一派单号回填不同值按冲突转人工。回填后工参新版本的生效时间是实施时间，不是回填接收时间。</p>
+      <ol class="steps"><li class="step" data-kind="q">
+      <div class="step-n">01</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">现场维护人员</span><span class="badge q">提问</span></div>
+        <p class="step-biz">我有哪些单子要回填？</p>
+        <p class="step-expect">预期：意图 queue；回答含：已派单、待现场回填、DP-；写入 0 条审计；提示人工 A_06</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">“现场维护人员”当前有 1 项待办：PL-TK-LTE-156514014-001-R1 已派单（DP-PL-TK-LTE-156514014-001-R1）：待现场回填。优化本体只做建单、规则定因、生成方案、写入效果；确认、审批、回填、关单、入库、裁定都由人工角色执行。</pre>
+      </div>
+    </li><li class="step" data-kind="at">
+      <div class="step-n">02</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">（时间）</span><span class="badge at">时间推进</span></div>
+        <p class="step-biz">现场回填时间</p>
+        <p class="step-expect">预期：时钟推进，到达的 MR 日统计入库</p>
+        
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">03</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">现场维护人员</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">现场维护人员没填实际值就提交</p>
+        <p class="step-expect">预期：被拒绝：INV_07（缺现场实际值，不得记为已实施）</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">拒绝 INV_07：缺现场实际值，不得记为已实施（不得用计划值代替）</pre>
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">04</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">现场维护人员</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">现场维护人员回填：机械下倾由 3° 调到 4°</p>
+        <p class="step-expect">预期：已实施，工单待评估</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">成功 {&quot;status&quot;:&quot;已实施&quot;,&quot;ticketStatus&quot;:&quot;待评估&quot;,&quot;recheck&quot;:null,&quot;failed&quot;:null}</pre>
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">05</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">现场维护人员</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">网络不好，又提交了一次同样的值</p>
+        <p class="step-expect">预期：幂等：不重复记录</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">成功 {&quot;deduped&quot;:true,&quot;status&quot;:&quot;已实施&quot;}</pre>
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">06</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">现场维护人员</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">另一位同事又回填成 5°</p>
+        <p class="step-expect">预期：被拒绝：INV_15（同一派单号取值不同，按冲突转人工，不覆盖）</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">拒绝 INV_15：同一派单号同一目标已回填且取值不同，按冲突转人工，不覆盖</pre>
+      </div>
+    </li><li class="step" data-kind="q">
+      <div class="step-n">07</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">地市优化工程师</span><span class="badge q">提问</span></div>
+        <p class="step-biz">调完了吗？现场实际调到多少？</p>
+        <p class="step-expect">预期：意图 execution；回答含：4°、一致；写入 0 条审计</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">PL-TK-LTE-156514014-001-R1 的执行：派单号 DP-PL-TK-LTE-156514014-001-R1，实施时间 2026-09-14T09:30:00，回执“成功”，现场实际 mechTilt＝4°（计划 4°，一致）。天线 611382-2-1 新增工参版本 v2，生效时间＝实施时间 2026-09-14T09:30:00（不是回填接收时间），当前状态正常（INV_07、INV_15）。</pre>
+      </div>
+    </li><li class="step" data-kind="q">
+      <div class="step-n">08</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">地市优化工程师</span><span class="badge q">提问</span></div>
+        <p class="step-biz">天线现在的下倾角是多少？</p>
+        <p class="step-expect">预期：意图 antenna.now；回答含：机械下倾 4°、总下倾 7°、回填；写入 0 条审计</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">崇贤达NF02H_222 由天线 611382-2-1 覆盖，当前机械下倾 4°（状态正常，生效 2026-09-14T09:30:00）＋电子下倾 3°＝总下倾 7°。该天线共 2 个工参版本，最近一个版本的来源“回填”；历史判断按判断时点读回当时有效的版本（INV_11、INV_15）。</pre>
+      </div>
+    </li><li class="step" data-kind="q">
+      <div class="step-n">09</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">地市优化工程师</span><span class="badge q">提问</span></div>
+        <p class="step-biz">9月13日那天的天线下倾角是多少</p>
+        <p class="step-expect">预期：意图 asof；回答含：3°、611382-2-1；写入 0 条审计</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">9月13日当时 611382-2-1 的机械下倾角是 3°（生效时间 2026-01-01T00:00:00，状态正常）；该天线共有 2 个工参版本，按判断时点读回当时有效的版本，历史判断不用后来才出现的工参（INV_11）。</pre>
+      </div>
+    </li><li class="step" data-kind="q">
+      <div class="step-n">10</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">地市优化工程师</span><span class="badge q">提问</span></div>
+        <p class="step-biz">回填时间和实施时间为什么不一样？</p>
+        <p class="step-expect">预期：意图 execution；回答含：生效时间＝实施时间 2026-09-14T09:30:00、不是回填接收时间；写入 0 条审计</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">PL-TK-LTE-156514014-001-R1 的执行：派单号 DP-PL-TK-LTE-156514014-001-R1，实施时间 2026-09-14T09:30:00，回执“成功”，现场实际 mechTilt＝4°（计划 4°，一致）。天线 611382-2-1 新增工参版本 v2，生效时间＝实施时间 2026-09-14T09:30:00（不是回填接收时间），当前状态正常（INV_07、INV_15）。</pre>
+      </div>
+    </li></ol>
+    </div>
+    </section>
+    <section class="panel qa-panel">
+      <div class="panel-head"><span class="tag">问答现场</span><h3>签字的人和动手的人，各自要问清什么</h3></div>
+      <p class="panel-note">主管问风险与回退，现场问调到多少、算不算完成；两者的回答都必须落到方案、派单与工参版本上。</p>
+      <p class="caveat">每段问答都在同一份种子数据的独立副本上执行：问法与回答是真实的系统输出，个别分支（如方案形态、时间点）可能与左侧决策主线不同；主线以决策步骤为准。</p>
+      <div class="case-block qa-block">
+      <div class="case-head"><span class="case-id">BQ-05</span><span class="case-title">主管审批前：要我批什么、为什么、风险与回退、能不能自动下发</span>
+        <span class="case-stat">9 问</span></div>
+      <p class="case-scene">优化主管打开待办，核对方案涉及几个小区、周边影响、回退条件，问清为什么要自己批；让系统代批只会得到提示，工程师提交后再回头看派单号。</p>
+      <div class="chat"><div class="turn" style="--i:0">
+      <div class="who"><span class="role">优化主管</span><span class="t">问</span></div>
+      <p class="q">“有什么要我批的？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">“优化主管”当前有 1 项待办：PL-TK-LTE-156514014-001-R1 作用于 2 个小区，须追加优化主管批准（RULE_W14）。优化本体只做建单、规则定因、生成方案、写入效果；确认、审批、回填、关单、入库、裁定都由人工角色执行。</div></div></div>
+    </div><div class="turn" style="--i:1">
+      <div class="who"><span class="role">优化主管</span><span class="t">问</span></div>
+      <p class="q">“这个方案涉及几个小区？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">PL-TK-LTE-156514014-001-R1 涉及 2 个小区，周边影响“通过”（Δ计划 1°，Δ最终 1°）。影响范围按调整方式确定：机械下倾作用于整副天线，承载的所有小区都要校验；RT_10：611382-2-1（主作用）、崇贤达NF02H_222（受影响）、崇贤达NF08H_223（受影响）。逐项：崇贤达NF02H_222 远端 725.1→543.4 m（目标 500，满足）；崇贤达NF08H_223 远端 725.1→543.4 m（目标 400，满足）；邻区 崇贤北NF02H_141（站间距 800 m）预测重叠指数 210.5→28.8（不增大）；邻区 陈家镇东NF02H_87（站间距 900 m）预测重叠指数 168→0（不增大）。</div></div></div>
+    </div><div class="turn" style="--i:2">
+      <div class="who"><span class="role">优化主管</span><span class="t">问</span></div>
+      <p class="q">“周边影响怎么样？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">PL-TK-LTE-156514014-001-R1 涉及 2 个小区，周边影响“通过”（Δ计划 1°，Δ最终 1°）。影响范围按调整方式确定：机械下倾作用于整副天线，承载的所有小区都要校验；RT_10：611382-2-1（主作用）、崇贤达NF02H_222（受影响）、崇贤达NF08H_223（受影响）。逐项：崇贤达NF02H_222 远端 725.1→543.4 m（目标 500，满足）；崇贤达NF08H_223 远端 725.1→543.4 m（目标 400，满足）；邻区 崇贤北NF02H_141（站间距 800 m）预测重叠指数 210.5→28.8（不增大）；邻区 陈家镇东NF02H_87（站间距 900 m）预测重叠指数 168→0（不增大）。</div></div></div>
+    </div><div class="turn" style="--i:3">
+      <div class="who"><span class="role">优化主管</span><span class="t">问</span></div>
+      <p class="q">“为什么要我批？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">PL-TK-LTE-156514014-001-R1（状态“待确认”）：天馈类措施（增大机械下倾角，执行方“现场维护”）不得自动执行，必须由地市优化工程师确认并派单、由现场维护人员执行并回填（INV_05）；周边影响为“通过”或“调减”才可批准（INV_06）；作用于 2 个及以上小区或 VIP／VVIP 场景须追加优化主管批准（RULE_W14）。目前尚未审批。</div></div></div>
+    </div><div class="turn" style="--i:4">
+      <div class="who"><span class="role">优化主管</span><span class="t">问</span></div>
+      <p class="q">“回退条件是什么？如果调坏了怎么办？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">PL-TK-LTE-156514014-001-R1 记录了回退值 3°（611382-2-1 的 mechTilt 调整前的值）和回退条件“保护指标恶化或超门限”。回退动作 A_10 本期只定义、不运行：系统不会自动回退，也没有回退的执行记录，回退怎么做 SPEC 没有定义。效果评估若判“劣化”（目标改善但保护指标恶化），工单转“改善未解决”，案例入库时记“无效”（A_09）。</div></div></div>
+    </div><div class="turn" style="--i:5">
+      <div class="who"><span class="role">优化主管</span><span class="t">问</span></div>
+      <p class="q">“这个方案能自动下发到现场吗？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">PL-TK-LTE-156514014-001-R1（状态“待确认”）：天馈类措施（增大机械下倾角，执行方“现场维护”）不得自动执行，必须由地市优化工程师确认并派单、由现场维护人员执行并回填（INV_05）；周边影响为“通过”或“调减”才可批准（INV_06）；作用于 2 个及以上小区或 VIP／VVIP 场景须追加优化主管批准（RULE_W14）。目前尚未审批。</div></div></div>
+    </div><div class="turn" style="--i:6">
+      <div class="who"><span class="role">优化主管</span><span class="t">问</span></div>
+      <p class="q">“帮我批了吧”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">A_05 确认并派单 须人工执行，优化本体不代办：允许角色 地市优化工程师。对象：TK-LTE-156514014-001（状态“已确认”）。你的角色“优化主管”不在 SPEC 允许的角色内，需要由允许的角色执行。所需输入：输入：`planNo`、`decision`、`executor`。前提：方案待确认；`impact`为通过或调减；方案所依据的工参版本等于当前版本</div></div></div>
+    </div><div class="turn" style="--i:7">
+      <div class="who"><span class="role">优化主管</span><span class="t">问</span></div>
+      <p class="q">“派单号是多少？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">PL-TK-LTE-156514014-001-R1（状态“已派单”）：天馈类措施（增大机械下倾角，执行方“现场维护”）不得自动执行，必须由地市优化工程师确认并派单、由现场维护人员执行并回填（INV_05）；周边影响为“通过”或“调减”才可批准（INV_06）；作用于 2 个及以上小区或 VIP／VVIP 场景须追加优化主管批准（RULE_W14）。本方案审批：地市优化工程师＋优化主管，批准，派单号 DP-PL-TK-LTE-156514014-001-R1。</div></div></div>
+    </div><div class="turn" style="--i:8">
+      <div class="who"><span class="role">优化主管</span><span class="t">问</span></div>
+      <p class="q">“有什么要我批的？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">“优化主管”当前没有待办（时钟 2026-09-11T09:00:23）。</div></div></div>
+    </div></div>
+    </div><div class="case-block qa-block">
+      <div class="case-head"><span class="case-id">BQ-06</span><span class="case-title">现场回填后核对：调完没有、和方案一致吗、下倾角现在多少</span>
+        <span class="case-stat">6 问</span></div>
+      <p class="case-scene">现场维护人员先在待办里看到派单，调完回填；工程师随后核对：现场实际调到多少、是否与方案一致、天线现在的下倾角、回填前某天的值、什么时候能评估效果。</p>
+      <div class="chat"><div class="turn" style="--i:0">
+      <div class="who"><span class="role">现场维护人员</span><span class="t">问</span></div>
+      <p class="q">“我有哪些单子要回填？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">“现场维护人员”当前有 1 项待办：PL-TK-LTE-156514014-001-R1 已派单（DP-PL-TK-LTE-156514014-001-R1）：待现场回填。优化本体只做建单、规则定因、生成方案、写入效果；确认、审批、回填、关单、入库、裁定都由人工角色执行。</div></div></div>
+    </div><div class="turn" style="--i:1">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“调完了吗？现场实际调到多少？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">PL-TK-LTE-156514014-001-R1 的执行：派单号 DP-PL-TK-LTE-156514014-001-R1，实施时间 2026-09-14T09:30:00，回执“成功”，现场实际 mechTilt＝4°（计划 4°，一致）。天线 611382-2-1 新增工参版本 v2，生效时间＝实施时间 2026-09-14T09:30:00（不是回填接收时间），当前状态正常（INV_07、INV_15）。</div></div></div>
+    </div><div class="turn" style="--i:2">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“和方案一致吗？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">PL-TK-LTE-156514014-001-R1 的执行：派单号 DP-PL-TK-LTE-156514014-001-R1，实施时间 2026-09-14T09:30:00，回执“成功”，现场实际 mechTilt＝4°（计划 4°，一致）。天线 611382-2-1 新增工参版本 v2，生效时间＝实施时间 2026-09-14T09:30:00（不是回填接收时间），当前状态正常（INV_07、INV_15）。</div></div></div>
+    </div><div class="turn" style="--i:3">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“天线现在的下倾角是多少？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">崇贤达NF02H_222 由天线 611382-2-1 覆盖，当前机械下倾 4°（状态正常，生效 2026-09-14T09:30:00）＋电子下倾 3°＝总下倾 7°。该天线共 2 个工参版本，最近一个版本的来源“回填”；历史判断按判断时点读回当时有效的版本（INV_11、INV_15）。</div></div></div>
+    </div><div class="turn" style="--i:4">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“9月13日那天的天线下倾角是多少”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">9月13日当时 611382-2-1 的机械下倾角是 3°（生效时间 2026-01-01T00:00:00，状态正常）；该天线共有 2 个工参版本，按判断时点读回当时有效的版本，历史判断不用后来才出现的工参（INV_11）。</div></div></div>
+    </div><div class="turn" style="--i:5">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“现在能评估效果吗？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">TK-LTE-156514014-001 尚无效果评估（方案“已实施”）。方案实施后，由优化本体按 F_11 评估（A_07）：后窗至少 7 天，持续有效看 14 天。</div></div></div>
+    </div></div>
+    </div>
+    </section>
+    <section class="panel support-panel">
+    <details>
+      <summary><span class="tag">支撑</span><span class="sum-title">同一幕上的异常与边界</span><span class="sum-count">9 个用例</span></summary>
+      <div class="sup-list"><details class="sup">
+          <summary><span class="sid">BD-11</span><span class="stitle">同天线小区受限：机械方案停在草案，工程师不批准，改电子下倾后派单、回填</span><span class="ssteps">12 步</span></summary>
+          <p class="one">同天线小区目标半径 560 m：机械方案周边不通过，工程师否决，改电子下倾只影响本小区阵列</p>
+          <ol class="sup-steps"><li><span class="nm">01</span><span class="b">机械下倾和电子下倾哪个合适？</span><span class="e">→ 意图 compare；回答含：机械下倾：、周边影响“不通过”、电子下倾：、周边影响“通过”、1.3°、SPEC 没有规定两者的优先顺序；写入 0 条审计</span></li><li><span class="nm">02</span><span class="b">优化本体生成机械下倾方案</span><span class="e">→ 方案停在草案：周边影响不通过，转人工</span></li><li><span class="nm">03</span><span class="b">这个方案能派单吗？</span><span class="e">→ 意图 can；回答含：不能、周边影响“不通过”、INV_06；写入 0 条审计</span></li><li><span class="nm">04</span><span class="b">工程师想硬批</span><span class="e">→ 被拒绝：INV_06（不通过的方案不得批准）</span></li><li><span class="nm">05</span><span class="b">优化本体想再出一轮机械方案</span><span class="e">→ 被拒绝：ROUND_IN_PROGRESS（上一轮方案还没结束）</span></li><li><span class="nm">06</span><span class="b">我今天有哪些待办？</span><span class="e">→ 意图 queue；回答含：停在草案、不得批准；写入 0 条审计</span></li><li><span class="nm">07</span><span class="b">工程师不批准机械方案，写明理由</span><span class="e">→ 方案“未批准”</span></li><li><span class="nm">08</span><span class="b">优化本体改出电子下倾方案（第 2 轮）</span><span class="e">→ 方案 R2 待确认：只作用于本小区阵列，Δ＝1.3°，周边影响通过</span></li><li><span class="nm">09</span><span class="b">对周边有什么影响？</span><span class="e">→ 意图 impact；回答含：涉及 1 个小区、电子下倾只影响对应阵列小区；写入 0 条审计</span></li><li><span class="nm">10</span><span class="b">工程师确认派单（只涉及 1 个小区，无须主管追加批准）</span><span class="e">→ 派单成功，不要求主管批准</span></li><li><span class="nm">12</span><span class="b">现场维护人员回填：电子下倾已调到方案值</span><span class="e">→ 已实施，小区阵列的电子下倾更新</span></li></ol>
+          <p class="sup-meta">角色：地市优化工程师　起始状态：已确认　数据： 崇贤达NF08H_223 的目标覆盖半径改为 560 m</p>
+        </details><details class="sup">
+          <summary><span class="sid">BD-12</span><span class="stitle">派单前别的部门已调整了天线：方案过期，退回草案</span><span class="ssteps">7 步</span></summary>
+          <p class="one">派单前工参被别的部门改了：方案过期退回草案，重算 F_08 已不命中</p>
+          <ol class="sup-steps"><li><span class="nm">01</span><span class="b">资源系统记录：该天线机械下倾已被改为 4°（9 月 12 日 08:00 生效）</span><span class="e">→ 只读核对</span></li><li><span class="nm">03</span><span class="b">工程师与主管批准派单</span><span class="e">→ 被拒绝：STALE_FACTS（方案所依据的工参版本已变，退回草案）</span></li><li><span class="nm">04</span><span class="b">崇贤达NF02H_222 现在的下倾角是多少？</span><span class="e">→ 意图 antenna.now；回答含：机械下倾 4°、总下倾 7°、资源系统；写入 0 条审计</span></li><li><span class="nm">05</span><span class="b">工程师不批准这个过期方案</span><span class="e">→ 方案“未批准”</span></li><li><span class="nm">06</span><span class="b">优化本体重新生成方案</span><span class="e">→ 被拒绝：NOT_MATCHED（F_08 不命中（总下倾 7° 已够），转其他原因族）</span></li><li><span class="nm">07</span><span class="b">核对：按新工参重算 F_08＝不命中，总下倾 7°</span><span class="e">→ 只读核对</span></li></ol>
+          <p class="sup-meta">角色：地市优化工程师　起始状态：方案待确认</p>
+        </details><details class="sup">
+          <summary><span class="sid">BD-14</span><span class="stitle">现场实际值与方案不一致：事后复核，回退只定义、不运行</span><span class="ssteps">6 步</span></summary>
+          <p class="one">现场实际值与方案不一致：事后复核；回退只定义、不运行</p>
+          <ol class="sup-steps"><li><span class="nm">02</span><span class="b">现场维护人员回填：实际调到 6°（方案是 4°）</span><span class="e">→ 已实施，事后复核周边影响不通过</span></li><li><span class="nm">03</span><span class="b">和方案一致吗？</span><span class="e">→ 意图 execution；回答含：不一致、事后复核、6°；写入 0 条审计</span></li><li><span class="nm">04</span><span class="b">如果调坏了怎么办？</span><span class="e">→ 意图 rollback；回答含：回退值 3°、A_10、本期只定义、不运行；写入 0 条审计</span></li><li><span class="nm">05</span><span class="b">工程师想执行回退</span><span class="e">→ 被拒绝：DEFINED_ONLY（回退动作本期只定义、不运行）</span></li><li><span class="nm">06</span><span class="b">优化本体想执行回退</span><span class="e">→ 被拒绝：PERMISSION_DENIED（SPEC 只允许地市优化工程师发起）</span></li></ol>
+          <p class="sup-meta">角色：现场维护人员／地市优化工程师　起始状态：已派单</p>
+        </details><details class="sup">
+          <summary><span class="sid">BD-15</span><span class="stitle">回执缺失：催办后补回执，期间不得评估</span><span class="ssteps">9 步</span></summary>
+          <p class="one">回执缺失：催办后补回执，期间不得推进到待评估</p>
+          <ol class="sup-steps"><li><span class="nm">02</span><span class="b">现场只回了一句“已处理”，没有回执</span><span class="e">→ 回执记“未知”，工单仍处置中</span></li><li><span class="nm">03</span><span class="b">我今天有哪些待办？</span><span class="e">→ 意图 queue；回答含：回执缺失、先核对原派单记录；写入 0 条审计</span></li><li><span class="nm">04</span><span class="b">现场实际执行了什么？</span><span class="e">→ 意图 execution；回答含：回执“未知”、不得评估或关闭；写入 0 条审计</span></li><li><span class="nm">06</span><span class="b">优化本体想评估效果</span><span class="e">→ 被拒绝：INV_08（回执未知，不得评估）</span></li><li><span class="nm">07</span><span class="b">能关单吗？</span><span class="e">→ 意图 close；回答含：暂不能关闭、尚无效果评估；写入 0 条审计</span></li><li><span class="nm">08</span><span class="b">工程师催办后，现场补上回执和实际值</span><span class="e">→ 已实施，工单待评估</span></li><li><span class="nm">09</span><span class="b">优化本体评估效果</span><span class="e">→ 效果“改善”</span></li></ol>
+          <p class="sup-meta">角色：现场维护人员／地市优化工程师　起始状态：已派单</p>
+        </details><details class="sup">
+          <summary><span class="sid">BD-16</span><span class="stitle">工参来源冲突：回填与资源系统不一致，裁定前不评估</span><span class="ssteps">11 步</span></summary>
+          <p class="one">回填与资源系统两个来源冲突：裁定前不评估，裁定留痕</p>
+          <ol class="sup-steps"><li><span class="nm">02</span><span class="b">现场回填 4°，资源系统同期记录仍是 3°</span><span class="e">→ 工参状态“冲突”，转人工裁定</span></li><li><span class="nm">03</span><span class="b">现在有工参冲突吗？</span><span class="e">→ 意图 conflict；回答含：611382-2-1、回填 4°、资源系统 3°、A_11；写入 0 条审计</span></li><li><span class="nm">04</span><span class="b">我今天有哪些待办？</span><span class="e">→ 意图 queue；回答含：工参来源冲突、待裁定；写入 0 条审计；提示人工 A_11</span></li><li><span class="nm">06</span><span class="b">优化本体想评估效果</span><span class="e">→ 被拒绝：INV_15（裁定前不评估）</span></li><li><span class="nm">07</span><span class="b">优化本体想自己裁定</span><span class="e">→ 被拒绝：PERMISSION_DENIED（优化本体无权裁定）</span></li><li><span class="nm">08</span><span class="b">工程师没写理由就裁定</span><span class="e">→ 被拒绝：INV_15（裁定须写明理由）</span></li><li><span class="nm">09</span><span class="b">工程师裁定：以现场回填为准（实测 4°）</span><span class="e">→ 裁定成功，因冲突停在处置中的工单转待评估</span></li><li><span class="nm">10</span><span class="b">优化本体评估效果</span><span class="e">→ 效果“改善”</span></li><li><span class="nm">11</span><span class="b">有人又来裁定一次</span><span class="e">→ 被拒绝：INV_15（没有未裁定的冲突）</span></li></ol>
+          <p class="sup-meta">角色：地市优化工程师／现场维护人员　起始状态：已派单</p>
+        </details><details class="sup">
+          <summary><span class="sid">BD-24</span><span class="stitle">权限矩阵：每个角色只能做 SPEC 允许的动作</span><span class="ssteps">30 步</span></summary>
+          <p class="one">权限矩阵：每个角色只能做 SPEC 允许的动作（30 步逐个校验）</p>
+          <ol class="sup-steps"><li><span class="nm">01</span><span class="b">现场维护人员 越权执行 A_01</span><span class="e">→ 被拒绝：PERMISSION_DENIED</span></li><li><span class="nm">02</span><span class="b">现场维护人员 越权执行 A_03</span><span class="e">→ 被拒绝：PERMISSION_DENIED</span></li><li><span class="nm">03</span><span class="b">现场维护人员 越权执行 A_04</span><span class="e">→ 被拒绝：PERMISSION_DENIED</span></li><li><span class="nm">04</span><span class="b">现场维护人员 越权执行 A_05</span><span class="e">→ 被拒绝：PERMISSION_DENIED</span></li><li><span class="nm">05</span><span class="b">现场维护人员 越权执行 A_07</span><span class="e">→ 被拒绝：PERMISSION_DENIED</span></li><li><span class="nm">06</span><span class="b">现场维护人员 越权执行 A_08</span><span class="e">→ 被拒绝：PERMISSION_DENIED</span></li><li><span class="nm">07</span><span class="b">现场维护人员 越权执行 A_09</span><span class="e">→ 被拒绝：PERMISSION_DENIED</span></li><li><span class="nm">08</span><span class="b">现场维护人员 越权执行 A_11</span><span class="e">→ 被拒绝：PERMISSION_DENIED</span></li><li><span class="nm">09</span><span class="b">优化本体 越权执行 A_03</span><span class="e">→ 被拒绝：PERMISSION_DENIED</span></li><li><span class="nm">10</span><span class="b">优化本体 越权执行 A_05</span><span class="e">→ 被拒绝：PERMISSION_DENIED</span></li><li><span class="nm">11</span><span class="b">优化本体 越权执行 A_06</span><span class="e">→ 被拒绝：PERMISSION_DENIED</span></li><li><span class="nm">12</span><span class="b">优化本体 越权执行 A_08</span><span class="e">→ 被拒绝：PERMISSION_DENIED</span></li><li><span class="nm">13</span><span class="b">优化本体 越权执行 A_09</span><span class="e">→ 被拒绝：PERMISSION_DENIED</span></li><li><span class="nm">14</span><span class="b">优化本体 越权执行 A_10</span><span class="e">→ 被拒绝：PERMISSION_DENIED</span></li><li><span class="nm">15</span><span class="b">优化本体 越权执行 A_11</span><span class="e">→ 被拒绝：PERMISSION_DENIED</span></li><li><span class="nm">16</span><span class="b">优化主管 越权执行 A_01</span><span class="e">→ 被拒绝：PERMISSION_DENIED</span></li><li><span class="nm">17</span><span class="b">优化主管 越权执行 A_04</span><span class="e">→ 被拒绝：PERMISSION_DENIED</span></li><li><span class="nm">18</span><span class="b">优化主管 越权执行 A_05</span><span class="e">→ 被拒绝：PERMISSION_DENIED</span></li><li><span class="nm">19</span><span class="b">优化主管 越权执行 A_09</span><span class="e">→ 被拒绝：PERMISSION_DENIED</span></li><li><span class="nm">20</span><span class="b">地市优化工程师 越权执行 A_04</span><span class="e">→ 被拒绝：PERMISSION_DENIED</span></li><li><span class="nm">21</span><span class="b">地市优化工程师 越权执行 A_08</span><span class="e">→ 被拒绝：PERMISSION_DENIED</span></li><li><span class="nm">22</span><span class="b">地市优化工程师 越权执行 A_09</span><span class="e">→ 被拒绝：PERMISSION_DENIED</span></li><li><span class="nm">23</span><span class="b">知识维护人 越权执行 A_01</span><span class="e">→ 被拒绝：PERMISSION_DENIED</span></li><li><span class="nm">24</span><span class="b">知识维护人 越权执行 A_03</span><span class="e">→ 被拒绝：PERMISSION_DENIED</span></li><li><span class="nm">25</span><span class="b">知识维护人 越权执行 A_08</span><span class="e">→ 被拒绝：PERMISSION_DENIED</span></li><li><span class="nm">26</span><span class="b">优化专家 越权执行 A_01</span><span class="e">→ 被拒绝：PERMISSION_DENIED</span></li><li><span class="nm">27</span><span class="b">优化专家 越权执行 A_04</span><span class="e">→ 被拒绝：PERMISSION_DENIED</span></li><li><span class="nm">28</span><span class="b">优化专家 越权执行 A_05</span><span class="e">→ 被拒绝：PERMISSION_DENIED</span></li><li><span class="nm">29</span><span class="b">优化专家 越权执行 A_08</span><span class="e">→ 被拒绝：PERMISSION_DENIED</span></li><li><span class="nm">30</span><span class="b">矩阵核对：SPEC 11 个动作 × 6 个角色，凡不在允许范围内的组合都被拒绝，且没有改变任何业务记录</span><span class="e">→ 只读核对</span></li></ol>
+          <p class="sup-meta">角色：全部角色　起始状态：已关单入库</p>
+        </details><details class="sup">
+          <summary><span class="sid">BD-26</span><span class="stitle">关系变了判断跟着变：同天线小区改挂别的天线</span><span class="ssteps">3 步</span></summary>
+          <p class="one">同天线小区改挂别的天线：影响范围跟着关系变，判断随之变</p>
+          <ol class="sup-steps"><li><span class="nm">01</span><span class="b">优化本体生成机械下倾方案</span><span class="e">→ 周边影响通过，范围只含 1 个小区</span></li><li><span class="nm">02</span><span class="b">这个方案涉及几个小区？</span><span class="e">→ 意图 impact；回答含：涉及 1 个小区；写入 0 条审计</span></li><li><span class="nm">03</span><span class="b">核对：工单里 RT_06 没有“同天线小区”</span><span class="e">→ 只读核对</span></li></ol>
+          <p class="sup-meta">角色：地市优化工程师　起始状态：已确认　数据： 崇贤达NF08H_223 的目标覆盖半径改为 560 m，并改挂另一副天线</p>
+        </details><details class="sup">
+          <summary><span class="sid">BD-27</span><span class="stitle">改名不改写历史：小区更名后工单仍指向同一小区</span><span class="ssteps">3 步</span></summary>
+          <p class="one">小区改名：工单仍指向同一小区，历史不改写</p>
+          <ol class="sup-steps"><li><span class="nm">01</span><span class="b">小区名称改为“崇贤达NF02H_222（改名）”</span><span class="e">→ 只读核对</span></li><li><span class="nm">02</span><span class="b">核对：工单仍指向同一个 cellKey，工单内容没有被改写</span><span class="e">→ 只读核对</span></li><li><span class="nm">03</span><span class="b">对象版本不允许就地改写（INV_11）</span><span class="e">→ 只读核对</span></li></ol>
+          <p class="sup-meta">角色：网管维护　起始状态：工单待核验</p>
+        </details><details class="sup">
+          <summary><span class="sid">BQ-10</span><span class="stitle">越界请求：自动下发、调功率、加站、预测、范围外工单、5G</span><span class="ssteps">9 步</span></summary>
+          <p class="one">越界请求：自动下发、调功率、加站、预测、范围外工单——如实回答“没有定义”</p>
+          <ol class="sup-steps"><li><span class="nm">01</span><span class="b">请自动下发调整崇贤达NF02H_222 的下倾角</span><span class="e">→ 意图 approval；回答含：不得自动执行、INV_05、地市优化工程师确认并派单；写入 0 条审计</span></li><li><span class="nm">02</span><span class="b">帮我把功率调高两个dB</span><span class="e">→ 意图 unsupported；回答含：措施字典、不会生成这类方案；写入 0 条审计</span></li><li><span class="nm">03</span><span class="b">新建一个站点解决吧</span><span class="e">→ 意图 unsupported；回答含：措施字典、增大机械下倾角；写入 0 条审计</span></li><li><span class="nm">04</span><span class="b">预测下个月会不会继续恶化</span><span class="e">→ 意图 unsupported；回答含：没有预测模型、假设演算；写入 0 条审计</span></li><li><span class="nm">05</span><span class="b">杨浦那张重叠覆盖的工单怎么处理</span><span class="e">→ 意图 scope.out；回答含：重叠覆盖、不在本 SPEC 范围内；写入 0 条审计</span></li><li><span class="nm">06</span><span class="b">5G 小区也能自动出下倾方案吗？</span><span class="e">→ 意图 unsupported；回答含：NR、不生成下倾方案；写入 0 条审计</span></li><li><span class="nm">07</span><span class="b">帮我直接关单</span><span class="e">→ 意图 human；回答含：A_08、须人工执行、优化主管；写入 0 条审计；提示人工 A_08</span></li><li><span class="nm">08</span><span class="b">哪些措施可以用？</span><span class="e">→ 意图 measure.list；回答含：增大机械下倾角、TILT_UP_MECH、TILT_UP_ELEC、现场维护；写入 0 条审计</span></li><li><span class="nm">09</span><span class="b">今天天气怎么样？</span><span class="e">→ 意图 fallback；回答含：超出了本体与 SPEC 的范围；写入 0 条审计</span></li></ol>
+          <p class="sup-meta">角色：地市优化工程师　起始状态：方案待确认</p>
+        </details></div>
+    </details>
+  </section>
+    <section class="tech">
+    <button class="tech-strip" aria-expanded="false"><span class="t-label">技术这一层</span><span class="t-sum">4 动作 · 3 对象 · 2 关系 · 1 规则 · 5 约束</span><span class="t-plus" aria-hidden="true">＋</span></button>
+    <div class="tech-body">
+      <div class="chain" aria-label="本幕的技术链路"><span class="node"><b>OT_PLAN</b><span>待确认</span></span><span class="arrow" aria-hidden="true">→</span><span class="node"><b>A_05</b><span>审批 + 派单（DP）</span></span><span class="arrow" aria-hidden="true">→</span><span class="node"><b>A_06</b><span>现场回填实际值</span></span><span class="arrow" aria-hidden="true">→</span><span class="node"><b>OT_ANTENNA</b><span>新版本（生效时间＝实施时间）</span></span><span class="arrow" aria-hidden="true">→</span><span class="node"><b>OT_TICKET</b><span>处置中 → 待评估</span></span></div>
+      <div class="chips"><button class="chip" data-el="A_05"><b>A_05</b><span>动作</span></button><button class="chip" data-el="A_06"><b>A_06</b><span>动作</span></button><button class="chip" data-el="A_10"><b>A_10</b><span>动作</span></button><button class="chip" data-el="A_11"><b>A_11</b><span>动作</span></button><button class="chip" data-el="OT_PLAN"><b>OT_PLAN</b><span>对象</span></button><button class="chip" data-el="OT_ANTENNA"><b>OT_ANTENNA</b><span>对象</span></button><button class="chip" data-el="OT_TICKET"><b>OT_TICKET</b><span>对象</span></button><button class="chip" data-el="RT_09"><b>RT_09</b><span>关系</span></button><button class="chip" data-el="RT_10"><b>RT_10</b><span>关系</span></button><button class="chip" data-el="RULE_W14"><b>RULE_W14</b><span>规则</span></button><button class="chip" data-el="INV_05"><b>INV_05</b><span>约束</span></button><button class="chip" data-el="INV_07"><b>INV_07</b><span>约束</span></button><button class="chip" data-el="INV_08"><b>INV_08</b><span>约束</span></button><button class="chip" data-el="INV_11"><b>INV_11</b><span>约束</span></button><button class="chip" data-el="INV_15"><b>INV_15</b><span>约束</span></button></div>
+      <div class="tech-cols">
+        <div><h4>这一步守住了什么</h4><ul class="guards"><li><b>INV_05</b>天馈类措施不得自动执行：必须人工确认并派单，现场执行并回填。</li><li><b>RULE_W14</b>作用于多个小区的方案须追加优化主管批准；天馈措施一律不自动下发。</li><li><b>INV_07</b>效果评估与复核使用现场回填的实际值，不使用计划值。</li><li><b>INV_08</b>回执或回填缺失记“未知”，不得推进到待评估或关闭。</li><li><b>INV_15</b>同一区间两个来源冲突不自动裁决，转人工；裁定前相关函数返回“冲突”。</li></ul></div>
+        <div><h4>口径与机制</h4><dl class="facts"><dt>权限</dt><dd>A_05 只有地市优化工程师；主管批准通过 approvals 列表追加，不能代替发起</dd><dt>幂等</dt><dd>同一派单号重复提交同值不重复记录；异值→冲突转人工</dd><dt>生效时间</dt><dd>工参新版本的生效时间＝现场实施时间，不是回填接收时间</dd><dt>过期校验</dt><dd>派单时比对方案所依据的工参版本，变了就退回草案</dd></dl></div>
+      </div>
+    </div>
+  </section>
+  </article><article class="act" id="act-verify" data-key="verify">
+    <header class="act-head">
+      <div class="act-num" aria-hidden="true">04</div>
+      <div class="act-titles">
+        <div class="kicker">第四幕 · VERIFY &amp; REUSE</div>
+        <h2>效果、关单与案例复用</h2>
+        <p class="headline">“改善了”不等于“可以关单”</p>
+      </div>
+      <dl class="act-meta">
+        <div><dt>时间</dt><dd>2026-09-15 ～ 10-06</dd></div>
+        <div><dt>角色</dt><dd>优化本体、优化主管、知识维护人、地市优化工程师</dd></div>
+        <div><dt>状态跨度</dt><dd>待评估 → 已改善 → 持续有效 → 已关闭 → 复发新建</dd></div>
+      </dl>
+    </header>
+    <p class="act-lede">效果与派单同一口径：后窗 7 天不再命中才算改善，14 天每个滑窗都不命中才算持续有效；保护指标缺数据也只能待评估。</p>
+    <div class="prose"><p>9 月 15 日起后窗 MR 逐日到达。实施次日开始连续有数据的 7 天里，弱覆盖占比从 37.28% 降到 8.64%，7 天没有一天达到派单门限 → 第 1 周判“改善”，但“持续有效”仍为空：此时关单会被 INV_10 拒绝。</p><p>保护指标同时检查：同天线 崇贤达NF08H_223 7.99%→7.30%，邻区 崇贤北NF02H_141 24.91%→18.33%、陈家镇东NF02H_87 19.81%→15.90%，都没有变差——目标改善不能拿邻区变差换。</p><p>9 月 29 日后窗满 14 天，每个 7 天滑窗都不再命中 → “持续有效”。优化主管关单（优化本体无权关闭）；案例入库必须填适用条件，缺了会被拒，入库后标“有效可复现、未验证”。</p><p>10 月 6 日该小区弱覆盖复发：系统新建 -002 号工单并用“复发关联”接上原单，原单保持已关闭。一条数据就这样走完了发现、定因、执行、验证、沉淀、复发的完整闭环。</p></div>
+    <div class="kpis"><div class="kpi"><div class="v">37.28% → 8.64%</div><div class="l">前窗 → 后窗弱覆盖占比</div><div class="h">同一口径：7 天窗口、同一规则</div></div><div class="kpi"><div class="v">14 天</div><div class="l">后窗满期才判持续有效</div><div class="h">每个 7 天滑窗都不再命中</div></div><div class="kpi"><div class="v">3 个</div><div class="l">保护指标均未变差</div><div class="h">同天线小区 + 2 个重叠邻区</div></div><div class="kpi"><div class="v">1 + 1</div><div class="l">案例入库 + 复发新建</div><div class="h">复发新建 -002 并关联原单</div></div></div>
+    <figure class="figure">
+      <figcaption>同一把尺子：前窗 7 天 vs 后窗 7 天</figcaption>
+      <svg viewBox="0 0 760 230" role="img" aria-label="前窗 37.28% 到后窗 8.64%，低于 20% 门限"><line x1="70" y1="180" x2="420" y2="180" stroke="#d8cdb8"/><text x="62" y="184" text-anchor="end" class="ax">0%</text><line x1="70" y1="150.66666666666666" x2="420" y2="150.66666666666666" stroke="#d8cdb8"/><text x="62" y="154.66666666666666" text-anchor="end" class="ax">10%</text><line x1="70" y1="121.33333333333333" x2="420" y2="121.33333333333333" stroke="#d8cdb8"/><text x="62" y="125.33333333333333" text-anchor="end" class="ax">20%</text><line x1="70" y1="91.99999999999999" x2="420" y2="91.99999999999999" stroke="#d8cdb8"/><text x="62" y="95.99999999999999" text-anchor="end" class="ax">30%</text><line x1="70" y1="62.66666666666666" x2="420" y2="62.66666666666666" stroke="#d8cdb8"/><text x="62" y="66.66666666666666" text-anchor="end" class="ax">40%</text><rect x="80" y="70.64533333333334" width="96" height="109.35466666666666" fill="#241f17" opacity="0.88"/><text x="128" y="60.64533333333334" text-anchor="middle" class="val">37.28%</text><text x="128" y="200" text-anchor="middle" class="ax">前窗 · 9/4–9/10</text><rect x="240" y="154.656" width="96" height="25.343999999999994" fill="#1b5a52" opacity="0.92"/><text x="288" y="144.656" text-anchor="middle" class="val">8.64%</text><text x="288" y="200" text-anchor="middle" class="ax">后窗 · 9/15–9/21</text><line x1="70" y1="121.33333333333333" x2="420" y2="121.33333333333333" stroke="#a8341b" stroke-width="1.4" stroke-dasharray="6 5"/><text x="420" y="113.33333333333333" text-anchor="end" class="red">派单门限 20%</text><text x="470" y="40" class="cap">保护指标（同天线小区 / 重叠邻区）</text><line x1="470" y1="48" x2="740" y2="48" stroke="#d8cdb8"/><text x="470" y="66" class="ax">崇贤达NF08H_223</text><text x="740" y="66" text-anchor="end" class="val">7.85% → 7.09%</text><text x="470" y="92" class="ax">崇贤北NF02H_141</text><text x="740" y="92" text-anchor="end" class="val">24.93% → 17.97%</text><text x="470" y="118" class="ax">陈家镇东NF02H_87</text><text x="740" y="118" text-anchor="end" class="val">20.03% → 15.99%</text><text x="470" y="154" class="ax">均未变差（容差 2%）</text></svg>
+      <p class="note">前窗取 discovery.evidenceRefs 所指的 7 条 MR 日统计（建单时固定的版本），后窗取实施日次日起连续有数据的 7 天；占比为窗口内合计。</p>
+    </figure>
+    <section class="panel">
+      <div class="panel-head"><span class="tag">决策主线</span><h3>决策主线：完整闭环（从第一幕一路走到复发）</h3></div>
+      <p class="panel-note">BD-17 用 22 步把四幕串了一遍，并补上原单已关闭后复发如何接上。</p>
+      <div class="case-block">
+      <div class="case-head"><span class="case-id">BD-17</span><span class="case-title">完整闭环：发现→建单→定因→确认→方案→派单→回填→评估→关单→入库→复发</span>
+        <span class="case-stat">22 步 · 33/33 项核对</span></div>
+      <p class="case-scene">崇明崇贤达NF02H_222 从前置数据被发现开始，经过 4 个角色接力走完整个闭环，关单入库后一周该小区弱覆盖复发，系统新建工单并关联原单。</p>
+      <ol class="steps"><li class="step" data-kind="ok">
+      <div class="step-n">01</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">优化本体</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">优化本体依发现结果建单</p>
+        <p class="step-expect">预期：工单待核验</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">成功 {&quot;ticketNo&quot;:&quot;TK-LTE-156514014-001&quot;,&quot;status&quot;:&quot;待核验&quot;,&quot;discovery&quot;:{&quot;problemKey&quot;:&quot;LTE:156514014@MR弱覆盖小区@2026-09-10&quot;,&quot;ruleId&quot;:&quot;RULE_D01&quot;,&quot;ruleVersion&quot;:&quot;1.0&quot;,&quot;window&quot;:…</pre>
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">02</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">优化本体</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">优化本体按规则定因</p>
+        <p class="step-expect">预期：F_08 命中，缺口 1.35°</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">成功 {&quot;written&quot;:true,&quot;round&quot;:1,&quot;f07&quot;:&quot;部分重合&quot;,&quot;f08&quot;:&quot;命中&quot;,&quot;otherCauses&quot;:[]}</pre>
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">03</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">地市优化工程师</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">工程师写明复核意见后确认</p>
+        <p class="step-expect">预期：工单已确认</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">成功 {&quot;status&quot;:&quot;已确认&quot;}</pre>
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">04</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">优化本体</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">优化本体生成机械下倾方案</p>
+        <p class="step-expect">预期：Δ＝1°，周边影响通过</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">成功 {&quot;planNo&quot;:&quot;PL-TK-LTE-156514014-001-R1&quot;,&quot;status&quot;:&quot;待确认&quot;,&quot;gap&quot;:1.35,&quot;delta&quot;:1,&quot;rounds&quot;:1,&quot;impact&quot;:&quot;通过&quot;,&quot;deltaFinal&quot;:1,&quot;caseRefs&quot;:[],&quot;toHuman&quot;:false}</pre>
+      </div>
+    </li><li class="step" data-kind="at">
+      <div class="step-n">05</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">（时间）</span><span class="badge at">时间推进</span></div>
+        <p class="step-biz">9 月 12 日</p>
+        <p class="step-expect">预期：时钟推进，到达的 MR 日统计入库</p>
+        
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">06</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">地市优化工程师</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">工程师与优化主管批准，派给现场维护人员</p>
+        <p class="step-expect">预期：派单成功</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">成功 {&quot;dispatchNo&quot;:&quot;DP-PL-TK-LTE-156514014-001-R1&quot;,&quot;status&quot;:&quot;已派单&quot;,&quot;supervisor&quot;:true}</pre>
+      </div>
+    </li><li class="step" data-kind="at">
+      <div class="step-n">07</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">（时间）</span><span class="badge at">时间推进</span></div>
+        <p class="step-biz">现场回填时间</p>
+        <p class="step-expect">预期：时钟推进，到达的 MR 日统计入库</p>
+        
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">08</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">现场维护人员</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">现场维护人员回填：机械下倾 3°→4°</p>
+        <p class="step-expect">预期：已实施，工单待评估</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">成功 {&quot;status&quot;:&quot;已实施&quot;,&quot;ticketStatus&quot;:&quot;待评估&quot;,&quot;recheck&quot;:null,&quot;failed&quot;:null}</pre>
+      </div>
+    </li><li class="step" data-kind="at">
+      <div class="step-n">09</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">（时间）</span><span class="badge at">时间推进</span></div>
+        <p class="step-biz">实施后一周</p>
+        <p class="step-expect">预期：时钟推进，到达的 MR 日统计入库</p>
+        
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">10</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">优化本体</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">优化本体写入第 1 周效果</p>
+        <p class="step-expect">预期：改善，持续有效为空，保护指标通过</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">成功 {&quot;effectNo&quot;:&quot;EF-TK-LTE-156514014-001-R1-E1&quot;,&quot;status&quot;:&quot;改善&quot;,&quot;beforeRatio&quot;:0.3728,&quot;afterRatio&quot;:0.0864,&quot;afterHitDays&quot;:0,&quot;improved&quot;:true,&quot;achieved&quot;:true,&quot;sustained&quot;:…</pre>
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">11</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">优化主管</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">优化主管想现在关单</p>
+        <p class="step-expect">预期：被拒绝：INV_10（持续有效为空，不得关单）</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">拒绝 INV_10：持续有效为空，工单不得关闭</pre>
+      </div>
+    </li><li class="step" data-kind="at">
+      <div class="step-n">12</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">（时间）</span><span class="badge at">时间推进</span></div>
+        <p class="step-biz">实施后两周</p>
+        <p class="step-expect">预期：时钟推进，到达的 MR 日统计入库</p>
+        
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">13</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">优化本体</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">优化本体写入第 2 周效果</p>
+        <p class="step-expect">预期：持续有效</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">成功 {&quot;effectNo&quot;:&quot;EF-TK-LTE-156514014-001-R1-E2&quot;,&quot;status&quot;:&quot;持续有效&quot;,&quot;beforeRatio&quot;:0.3728,&quot;afterRatio&quot;:0.0864,&quot;afterHitDays&quot;:0,&quot;improved&quot;:true,&quot;achieved&quot;:true,&quot;sustained…</pre>
+      </div>
+    </li><li class="step" data-kind="at">
+      <div class="step-n">14</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">（时间）</span><span class="badge at">时间推进</span></div>
+        <p class="step-biz">时间推进到 2026-09-29 10:00:00（此前到达的 MR 日统计已入库）</p>
+        <p class="step-expect">预期：时钟推进，到达的 MR 日统计入库</p>
+        
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">15</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">优化本体</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">优化本体想关单</p>
+        <p class="step-expect">预期：被拒绝：PERMISSION_DENIED（优化本体无权关闭）</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">拒绝 PERMISSION_DENIED：角色“优化本体”无权执行 A_08（SPEC 允许：优化主管）</pre>
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">16</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">优化主管</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">优化主管关闭工单</p>
+        <p class="step-expect">预期：工单已关闭</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">成功 {&quot;status&quot;:&quot;已关闭&quot;}</pre>
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">17</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">知识维护人</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">知识维护人入库，但没填适用条件</p>
+        <p class="step-expect">预期：被拒绝：APPLICABILITY_REQUIRED（缺适用条件，拒绝入库）</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">拒绝 APPLICABILITY_REQUIRED：缺适用条件（制式、站点类型、场景等级、原因族），拒绝入库</pre>
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">18</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">知识维护人</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">知识维护人填写适用条件后入库</p>
+        <p class="step-expect">预期：案例入库：有效可复现、未验证</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">成功 {&quot;caseNo&quot;:&quot;CS-TK-LTE-156514014-001-R1&quot;,&quot;outcome&quot;:&quot;有效可复现&quot;,&quot;validation&quot;:&quot;未验证&quot;}</pre>
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">19</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">地市优化工程师</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">重开系统后读回：工单、方案、效果、案例一致；天线工参 as-of 读回回填前后</p>
+        <p class="step-expect">预期：只读核对</p>
+        
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">20</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">MR 平台</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">9 月 29 日起该小区弱覆盖复发：新到达一周 MR 日统计</p>
+        <p class="step-expect">预期：只读核对</p>
+        
+      </div>
+    </li><li class="step" data-kind="at">
+      <div class="step-n">21</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">（时间）</span><span class="badge at">时间推进</span></div>
+        <p class="step-biz">10 月 6 日</p>
+        <p class="step-expect">预期：时钟推进，到达的 MR 日统计入库</p>
+        
+      </div>
+    </li><li class="step" data-kind="ok">
+      <div class="step-n">22</div>
+      <div class="step-main">
+        <div class="step-meta"><span class="role">优化本体</span><span class="badge ok">成功</span></div>
+        <p class="step-biz">优化本体对复发的小区建单</p>
+        <p class="step-expect">预期：新建 -002 号工单并关联原单，原单保持已关闭</p>
+        <button class="result-toggle" aria-expanded="false">实际结果</button><pre class="result">成功 {&quot;ticketNo&quot;:&quot;TK-LTE-156514014-002&quot;,&quot;status&quot;:&quot;待核验&quot;,&quot;discovery&quot;:{&quot;problemKey&quot;:&quot;LTE:156514014@MR弱覆盖小区@2026-10-05&quot;,&quot;ruleId&quot;:&quot;RULE_D01&quot;,&quot;ruleVersion&quot;:&quot;1.0&quot;,&quot;window&quot;:…</pre>
+      </div>
+    </li></ol>
+    </div>
+    </section>
+    <section class="panel qa-panel">
+      <div class="panel-head"><span class="tag">问答现场</span><h3>看效果、办关单、查旧账</h3></div>
+      <p class="panel-note">“能不能关单”“谁来入库”“这个小区以前出过几次”是三个角色最常问的三件事。</p>
+      <p class="caveat">每段问答都在同一份种子数据的独立副本上执行：问法与回答是真实的系统输出，个别分支（如方案形态、时间点）可能与左侧决策主线不同；主线以决策步骤为准。</p>
+      <div class="case-block qa-block">
+      <div class="case-head"><span class="case-id">BQ-07</span><span class="case-title">效果跟踪：效果怎么样、邻区变差没有、能不能关单、第二周复发没有</span>
+        <span class="case-stat">7 问</span></div>
+      <p class="case-scene">实施后一周和两周，工程师分别问效果：前后窗占比、邻区有没有变差、还差什么才能关单、第二周有没有复发；第二周评估由优化本体执行。</p>
+      <div class="chat"><div class="turn" style="--i:0">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“效果怎么样？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">EF-TK-LTE-156514014-001-R1-E1（共 1 次评估）：前窗 2026-09-04～2026-09-10 占比 37.28%，后窗 2026-09-15～2026-09-21（7 天）占比 8.64%；改善是（差值门限 TH09＝0.05）、达标是（后窗前 7 天命中 0 天）、持续有效为空；保护指标MR弱覆盖占比(崇贤达NF08H_223) 0.0785→0.0709；实测重叠覆盖度(崇贤北NF02H_141) 0.2493→0.1797；实测重叠覆盖度(陈家镇东NF02H_87) 0.2003→0.1599（均未恶化）；状态“改善”（保护容差 TH13＝0.02）。</div></div></div>
+    </div><div class="turn" style="--i:1">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“邻区有没有变差？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">EF-TK-LTE-156514014-001-R1-E1（共 1 次评估）：前窗 2026-09-04～2026-09-10 占比 37.28%，后窗 2026-09-15～2026-09-21（7 天）占比 8.64%；改善是（差值门限 TH09＝0.05）、达标是（后窗前 7 天命中 0 天）、持续有效为空；保护指标MR弱覆盖占比(崇贤达NF08H_223) 0.0785→0.0709；实测重叠覆盖度(崇贤北NF02H_141) 0.2493→0.1797；实测重叠覆盖度(陈家镇东NF02H_87) 0.2003→0.1599（均未恶化）；状态“改善”（保护容差 TH13＝0.02）。</div></div></div>
+    </div><div class="turn" style="--i:2">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“能关单吗？还差什么？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">TK-LTE-156514014-001：暂不能关闭——最近一次效果“改善”，持续有效为空（INV_10）。还差：后窗满 14 天后再次评估（TH12），期间没有再次达到派单条件，才记持续有效。关单与入库须人工：关闭由优化主管，案例入库由优化专家或知识维护人。</div></div></div>
+    </div><div class="turn" style="--i:3">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“请对崇贤达NF02H_222评估效果”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">A_07 写入优化效果 已由优化本体执行（本次写入 1 条动作审计）：效果 EF-TK-LTE-156514014-001-R1-E2：持续有效。</div></div></div>
+    </div><div class="turn" style="--i:4">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“第二周有复发吗？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">EF-TK-LTE-156514014-001-R1-E2（共 2 次评估）：前窗 2026-09-04～2026-09-10 占比 37.28%，后窗 2026-09-15～2026-09-28（14 天）占比 8.64%；改善是（差值门限 TH09＝0.05）、达标是（后窗前 7 天命中 0 天）、持续有效是；保护指标MR弱覆盖占比(崇贤达NF08H_223) 0.0785→0.0709；实测重叠覆盖度(崇贤北NF02H_141) 0.2493→0.1797；实测重叠覆盖度(陈家镇东NF02H_87) 0.2003→0.1599（均未恶化）；状态“持续有效”（保护容差 TH13＝0.02）。</div></div></div>
+    </div><div class="turn" style="--i:5">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“现在能关单吗”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">TK-LTE-156514014-001：效果已“持续有效”，可由优化主管关闭（A_08）；优化本体无权关闭。关单与入库须人工：关闭由优化主管，案例入库由优化专家或知识维护人。</div></div></div>
+    </div><div class="turn" style="--i:6">
+      <div class="who"><span class="role">优化主管</span><span class="t">问</span></div>
+      <p class="q">“有哪些工单可以关？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">“优化主管”当前有 1 项待办：TK-LTE-156514014-001（崇贤达NF02H_222）效果“持续有效”：可以关闭。优化本体只做建单、规则定因、生成方案、写入效果；确认、审批、回填、关单、入库、裁定都由人工角色执行。</div></div></div>
+    </div></div>
+    </div><div class="case-block qa-block">
+      <div class="case-head"><span class="case-id">BQ-08</span><span class="case-title">关单入库与案例复用：谁来关、谁来入库、新小区能不能参考</span>
+        <span class="case-stat">6 问</span></div>
+      <p class="case-scene">优化主管关单，知识维护人入库案例；之后庙镇新村出现类似问题，工程师问能不能参考崇明案例、5G 小区能不能、当时是怎么处理的。</p>
+      <div class="chat"><div class="turn" style="--i:0">
+      <div class="who"><span class="role">优化主管</span><span class="t">问</span></div>
+      <p class="q">“有哪些工单可以关？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">“优化主管”当前有 1 项待办：TK-LTE-156514014-001（崇贤达NF02H_222）效果“持续有效”：可以关闭。优化本体只做建单、规则定因、生成方案、写入效果；确认、审批、回填、关单、入库、裁定都由人工角色执行。</div></div></div>
+    </div><div class="turn" style="--i:1">
+      <div class="who"><span class="role">知识维护人</span><span class="t">问</span></div>
+      <p class="q">“现在还有待办吗？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">“知识维护人”当前有 1 项待办：TK-LTE-156514014-001（崇贤达NF02H_222）已关闭：案例待入库。优化本体只做建单、规则定因、生成方案、写入效果；确认、审批、回填、关单、入库、裁定都由人工角色执行。</div></div></div>
+    </div><div class="turn" style="--i:2">
+      <div class="who"><span class="role">知识维护人</span><span class="t">问</span></div>
+      <p class="q">“案例库里有什么？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">案例库共 1 条：CS-TK-LTE-156514014-001-R1（结论“有效可复现”，验证状态“未验证”，措施 增大机械下倾角，Δ 1°，适用：LTE宏站、农村、下倾角过小）。PL-TK-LTE-156514014-001-R1 引用了 0 个案例（RT_15），只作参考，幅度仍由 F_09 按本小区事实计算。引用须匹配适用条件，不匹配不得复用。</div></div></div>
+    </div><div class="turn" style="--i:3">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“庙镇新村NF02H_126 能参考崇明的案例吗？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">庙镇新村NF02H_126 的适用条件：制式＝LTE、站点类型＝宏站、场景等级＝一般、区域场景＝乡镇道路、城乡＝农村、室内外＝室外、原因族＝下倾角过小。案例 CS-TK-LTE-156514014-001-R1（结论“有效可复现”，验证状态“未验证”）条件一致，可以参考；只作参考，不照搬幅度——案例 Δ＝1°，本小区的 Δ 仍由 F_09 按缺口计算。</div></div></div>
+    </div><div class="turn" style="--i:4">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“海剑HR03H_121 也能参考吗？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">海剑HR03H_121 的适用条件：制式＝NR、站点类型＝宏站、场景等级＝一般、原因族＝下倾角过小。案例 CS-TK-LTE-156514014-001-R1 不匹配（制式：本小区 NR，案例 LTE），不得复用。</div></div></div>
+    </div><div class="turn" style="--i:5">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“当时崇明那个案例是怎么处理的？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">案例库共 1 条：CS-TK-LTE-156514014-001-R1（结论“有效可复现”，验证状态“未验证”，措施 增大机械下倾角，Δ 1°，适用：LTE宏站、农村、下倾角过小）。PL-TK-LTE-156514014-001-R1 引用了 0 个案例（RT_15），只作参考，幅度仍由 F_09 按本小区事实计算。引用须匹配适用条件，不匹配不得复用。</div></div></div>
+    </div></div>
+    </div><div class="case-block qa-block">
+      <div class="case-head"><span class="case-id">BQ-14</span><span class="case-title">复发：关单后又出现，这个小区以前出过几次工单</span>
+        <span class="case-stat">5 问</span></div>
+      <p class="case-scene">工单关闭后一周该小区弱覆盖复发，系统新建工单并关联原单；工程师追问这个小区的工单历史、现在能不能再建单。</p>
+      <div class="chat"><div class="turn" style="--i:0">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“今天哪些小区弱覆盖？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">在判断时点 2026-10-06、窗口 2026-09-29～2026-10-05 对 13 个小区做发现（只读、不建单）：达到 1、未达到 0、证据不足 12。崇贤达NF02H_222：达到派单条件（RULE_D01，命中7天）；新河镇政府NF02H_58：证据不足（数据缺口：窗口内无任何OT_CELL_MR）；港沿路NF02H_73：证据不足（数据缺口：窗口内无任何OT_CELL_MR）；崇明体育中心NF02H_215：证据不足（规则缺口：[派单规则]无 LTE×宏站×VIP 的规则（规则缺口））；崇明医院门诊楼ND08H_12：证据不足（数据缺口：窗口内无任何OT_CELL_MR）；堡镇中心NF02H_132：证据不足（数据缺口：窗口内无任何OT_CELL_MR）；东滩公园NF02H_164：证据不足（数据缺口：窗口内无任何OT_CELL_MR）；崇贤达NF08H_223：证据不足（数据缺口：窗口内无任何OT_CELL_MR）；崇贤北NF02H_141：证据不足（数据缺口：窗口内无任何OT_CELL_MR）；陈家镇东NF02H_87：证据不足（数据缺口：窗口内无任何OT_CELL_MR）；陈家镇北NF02H_196：证据不足（数据缺口：窗口内无任何OT_CELL_MR）；陈家镇HR05H_36：证据不足（数据缺口：窗口内无任何OT_CELL_MR）；长兴客运码头HR12H_9：证据不足（数据缺口：窗口内无任何OT_CELL_MR）。</div></div></div>
+    </div><div class="turn" style="--i:1">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“帮我给崇贤达NF02H_222建个单”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">A_01 建单（依发现结果） 已由优化本体执行（本次写入 1 条动作审计）：新建工单 TK-LTE-156514014-002（状态“待核验”）。</div></div></div>
+    </div><div class="turn" style="--i:2">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“它现在什么状态？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">TK-LTE-156514014-002：宏站弱覆盖小区（覆盖结构／MR弱覆盖小区），状态“待核验”。发现依据：RULE_D01 v1.0，窗口 2026-09-29～2026-10-05，命中 7 天（9月29日、9月30日、10月1日、10月2日、10月3日、10月4日、10月5日），引用 7 条 MR 日统计（RT_17）；问题键 LTE:156514014@MR弱覆盖小区@2026-10-05。复发工单，关联原单 TK-LTE-156514014-001。根因 0 条，诊断记录 1 条。</div></div></div>
+    </div><div class="turn" style="--i:3">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“这个小区以前出过几次工单？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">崇贤达NF02H_222 共有 2 张弱覆盖工单：TK-LTE-156514014-001（已关闭）；TK-LTE-156514014-002（待核验，复发，关联原单 TK-LTE-156514014-001（RT_07））。同一小区同一问题类型只允许有一张未关闭的工单（INV_14）；原单关闭后该小区再次达到派单条件，才会新建工单并关联原单，原单保持已关闭。</div></div></div>
+    </div><div class="turn" style="--i:4">
+      <div class="who"><span class="role">地市优化工程师</span><span class="t">问</span></div>
+      <p class="q">“能建单吗？”</p>
+      <div class="a"><span class="mark">答</span><div class="a-body"><div class="a-text">崇贤达NF02H_222：可以，但该小区已有未关闭工单 TK-LTE-156514014-002，再建只会返回原单，不会重复建单（INV_14）。</div></div></div>
+    </div></div>
+    </div>
+    </section>
+    <section class="panel support-panel">
+    <details>
+      <summary><span class="tag">支撑</span><span class="sum-title">同一幕上的异常与边界</span><span class="sum-count">7 个用例</span></summary>
+      <div class="sup-list"><details class="sup">
+          <summary><span class="sid">BD-18</span><span class="stitle">未达标：占比降下来但仍有 3 天命中，进入下一轮</span><span class="ssteps">14 步</span></summary>
+          <p class="one">未达标：占比降了但后窗仍有 3 天命中 → 改善未解决，进下一轮</p>
+          <ol class="sup-steps"><li><span class="nm">01</span><span class="b">对 庙镇新村NF02H_126 建单</span><span class="e">→ 建单成功</span></li><li><span class="nm">02</span><span class="b">优化本体按规则定因</span><span class="e">→ F_08 命中</span></li><li><span class="nm">03</span><span class="b">工程师确认</span><span class="e">→ 已确认</span></li><li><span class="nm">04</span><span class="b">优化本体生成机械下倾方案（第 1 轮）</span><span class="e">→ 方案待确认</span></li><li><span class="nm">06</span><span class="b">工程师批准并派单（只涉及 1 个小区，无须主管追加批准）</span><span class="e">→ 派单成功</span></li><li><span class="nm">08</span><span class="b">现场回填：机械下倾调到 4°</span><span class="e">→ 已实施</span></li><li><span class="nm">09</span><span class="b">实施后一周的 MR 日统计到达：占比降下来，但有 3 天仍然很高</span><span class="e">→ 只读核对</span></li><li><span class="nm">11</span><span class="b">优化本体写入效果</span><span class="e">→ “未达标”：占比改善但后窗仍命中 3 天；工单改善未解决</span></li><li><span class="nm">12</span><span class="b">庙镇新村NF02H_126 下一步该做什么？</span><span class="e">→ 意图 todo；回答含：A_04、改善未解决、优化本体；写入 0 条审计</span></li><li><span class="nm">13</span><span class="b">优化本体生成下一轮方案</span><span class="e">→ R2 方案生成，R1 保留</span></li><li><span class="nm">14</span><span class="b">优化本体又想出一轮</span><span class="e">→ 被拒绝：ROUND_IN_PROGRESS（R2 还没结束）</span></li></ol>
+          <p class="sup-meta">角色：地市优化工程师／优化本体　起始状态：清晨　数据： 庙镇新村NF02H_126 的目标覆盖半径改为 300 m</p>
+        </details><details class="sup">
+          <summary><span class="sid">BD-19</span><span class="stitle">劣化：目标改善但同天线小区变差，不能当成功案例</span><span class="ssteps">9 步</span></summary>
+          <p class="one">劣化：目标改善但同天线小区变差，不能当成功案例</p>
+          <ol class="sup-steps"><li><span class="nm">02</span><span class="b">优化本体写入效果</span><span class="e">→ “劣化”：目标改善且达标，保护指标不通过</span></li><li><span class="nm">03</span><span class="b">邻区有没有变差？</span><span class="e">→ 意图 effect；回答含：劣化、有恶化、MR弱覆盖占比(崇贤达NF08H_223)；写入 0 条审计</span></li><li><span class="nm">04</span><span class="b">能关单吗？</span><span class="e">→ 意图 close；回答含：暂不能关闭、INV_10；写入 0 条审计</span></li><li><span class="nm">05</span><span class="b">优化主管想关单</span><span class="e">→ 被拒绝：INV_10（效果不是持续有效，不得关单）</span></li><li><span class="nm">06</span><span class="b">如果调坏了怎么办？</span><span class="e">→ 意图 rollback；回答含：回退值 3°、劣化、A_10；写入 0 条审计</span></li><li><span class="nm">07</span><span class="b">工程师想执行回退</span><span class="e">→ 被拒绝：DEFINED_ONLY（回退动作本期只定义、不运行）</span></li><li><span class="nm">08</span><span class="b">知识维护人入库但缺适用条件</span><span class="e">→ 被拒绝：APPLICABILITY_REQUIRED</span></li><li><span class="nm">09</span><span class="b">优化专家补全适用条件后入库</span><span class="e">→ 案例入库：结论“无效”</span></li></ol>
+          <p class="sup-meta">角色：地市优化工程师／优化专家／优化主管　起始状态：已回填　数据： 崇贤达NF08H_223 在 9 月 15 日～21 日的弱覆盖占比调为 15%</p>
+        </details><details class="sup">
+          <summary><span class="sid">BD-20</span><span class="stitle">后窗 MR 不足 7 天：效果待评估，不得关单</span><span class="ssteps">5 步</span></summary>
+          <p class="one">后窗 MR 不足 7 天：效果待评估，不得关单</p>
+          <ol class="sup-steps"><li><span class="nm">02</span><span class="b">效果怎么样？</span><span class="e">→ 意图 effect；回答含：尚无效果评估、后窗至少 7 天；写入 0 条审计</span></li><li><span class="nm">03</span><span class="b">优化本体尝试写入效果</span><span class="e">→ 效果“待评估”：后窗只有 3 天，各判定为空</span></li><li><span class="nm">04</span><span class="b">效果怎么样？</span><span class="e">→ 意图 effect；回答含：待评估、后窗；写入 0 条审计</span></li><li><span class="nm">05</span><span class="b">优化主管想关单</span><span class="e">→ 被拒绝：INV_10</span></li></ol>
+          <p class="sup-meta">角色：地市优化工程师／优化主管　起始状态：已回填</p>
+        </details><details class="sup">
+          <summary><span class="sid">BD-21</span><span class="stitle">保护指标缺数据：效果待评估</span><span class="ssteps">3 步</span></summary>
+          <p class="one">保护指标缺数据：待评估，不写“通过”</p>
+          <ol class="sup-steps"><li><span class="nm">02</span><span class="b">优化本体写入效果</span><span class="e">→ “待评估”：保护指标缺数据，protectionOk 为空</span></li><li><span class="nm">03</span><span class="b">优化主管想关单</span><span class="e">→ 被拒绝：INV_10</span></li></ol>
+          <p class="sup-meta">角色：地市优化工程师　起始状态：已回填　数据： 陈家镇东NF02H_87 在 9 月 15 日～21 日没有实测重叠覆盖度</p>
+        </details><details class="sup">
+          <summary><span class="sid">BD-22</span><span class="stitle">第二周又有 3 天命中：不是持续有效，不得关单</span><span class="ssteps">5 步</span></summary>
+          <p class="one">第二周又出现 3 天命中：不是持续有效，不得关单</p>
+          <ol class="sup-steps"><li><span class="nm">02</span><span class="b">优化本体写入第 2 周效果</span><span class="e">→ “改善”：达标但持续有效为否</span></li><li><span class="nm">03</span><span class="b">第二周有复发吗？</span><span class="e">→ 意图 effect；回答含：持续有效否、改善；写入 0 条审计</span></li><li><span class="nm">04</span><span class="b">优化主管想关单</span><span class="e">→ 被拒绝：INV_10（持续有效为否，不得关单）</span></li><li><span class="nm">05</span><span class="b">能关单吗？</span><span class="e">→ 意图 close；回答含：暂不能关闭、持续有效为false；写入 0 条审计</span></li></ol>
+          <p class="sup-meta">角色：地市优化工程师／优化主管　起始状态：第1周已评估　数据： 崇贤达NF02H_222 在 9 月 23、25、27 日的弱覆盖占比为 31%</p>
+        </details><details class="sup">
+          <summary><span class="sid">BD-23</span><span class="stitle">案例复用：新小区引用崇明案例，只作参考不照搬</span><span class="ssteps">12 步</span></summary>
+          <p class="one">案例复用：新小区引用崇明案例，只作参考不照搬</p>
+          <ol class="sup-steps"><li><span class="nm">02</span><span class="b">打开崇明崇贤达NF02H_222 的已关闭工单</span><span class="e">→ 当前工单切换</span></li><li><span class="nm">03</span><span class="b">庙镇新村NF02H_126 能参考崇明的案例吗？</span><span class="e">→ 意图 case.match；回答含：条件一致、只作参考，不照搬幅度、有效可复现；写入 0 条审计</span></li><li><span class="nm">04</span><span class="b">海剑HR03H_121 也能参考吗？</span><span class="e">→ 意图 case.match；回答含：不匹配、制式：本小区 NR，案例 LTE、不得复用；写入 0 条审计</span></li><li><span class="nm">05</span><span class="b">对 庙镇新村NF02H_126 建单</span><span class="e">→ 建单成功</span></li><li><span class="nm">06</span><span class="b">优化本体按规则定因</span><span class="e">→ F_08 命中</span></li><li><span class="nm">07</span><span class="b">工程师确认</span><span class="e">→ 已确认</span></li><li><span class="nm">08</span><span class="b">打开 庙镇新村NF02H_126 的工单</span><span class="e">→ 当前工单切换</span></li><li><span class="nm">09</span><span class="b">一次调多少？要分几轮？</span><span class="e">→ 意图 plan；回答含：若生成方案、机械下倾 Δ＝、共 2 轮；写入 0 条审计</span></li><li><span class="nm">10</span><span class="b">优化本体生成方案</span><span class="e">→ 引用 1 个案例；Δ＝2°，共 2 轮，周边影响通过</span></li><li><span class="nm">11</span><span class="b">庙镇新村NF02H_126 的方案引用了案例吗？</span><span class="e">→ 意图 case；回答含：引用了 1 个案例、RT_15；写入 0 条审计</span></li><li><span class="nm">12</span><span class="b">这个方案是第几轮？一次调多少？</span><span class="e">→ 意图 plan；回答含：共需 2 轮、本方案是第 1 轮；写入 0 条审计</span></li></ol>
+          <p class="sup-meta">角色：地市优化工程师／知识维护人　起始状态：已关单入库</p>
+        </details><details class="sup">
+          <summary><span class="sid">BQ-13</span><span class="stitle">主管全局：多少工单、哪些可以关、崇明那张到哪一步、有没有冲突</span><span class="ssteps">6 步</span></summary>
+          <p class="one">主管全局：多少工单、哪些可以关、崇明这张到哪一步、有没有冲突</p>
+          <ol class="sup-steps"><li><span class="nm">01</span><span class="b">现在一共多少张工单？各什么状态？</span><span class="e">→ 意图 stats；回答含：工单 1 张、已改善 1；写入 0 条审计</span></li><li><span class="nm">02</span><span class="b">有哪些工单可以关？</span><span class="e">→ 意图 queue；回答含：可以关闭；写入 0 条审计；提示人工 A_08</span></li><li><span class="nm">03</span><span class="b">崇明那张现在到哪一步了？</span><span class="e">→ 意图 ticket.overview；回答含：已改善、命中 7 天；写入 0 条审计</span></li><li><span class="nm">04</span><span class="b">崇明那张的审计记录和时间线</span><span class="e">→ 意图 timeline；回答含：A_01、A_02、A_05、A_07；写入 0 条审计</span></li><li><span class="nm">05</span><span class="b">今天哪些小区弱覆盖？</span><span class="e">→ 意图 scan；回答含：判断时点 2026-09-29、只读、不建单；写入 0 条审计</span></li><li><span class="nm">06</span><span class="b">有没有工参冲突？</span><span class="e">→ 意图 conflict；回答含：当前没有未裁定的工参冲突、INV_15；写入 0 条审计</span></li></ol>
+          <p class="sup-meta">角色：优化主管　起始状态：持续有效</p>
+        </details></div>
+    </details>
+  </section>
+    <section class="tech">
+    <button class="tech-strip" aria-expanded="false"><span class="t-label">技术这一层</span><span class="t-sum">1 函数 · 3 动作 · 2 对象 · 6 关系 · 1 规则 · 2 约束 · 2 假设</span><span class="t-plus" aria-hidden="true">＋</span></button>
+    <div class="tech-body">
+      <div class="chain" aria-label="本幕的技术链路"><span class="node"><b>后窗 OT_CELL_MR</b><span>实施次日起</span></span><span class="arrow" aria-hidden="true">→</span><span class="node"><b>F_11</b><span>改善 / 达成 / 持续</span></span><span class="arrow" aria-hidden="true">→</span><span class="node"><b>A_07</b><span>写入效果</span></span><span class="arrow" aria-hidden="true">→</span><span class="node"><b>A_08</b><span>关单（主管）</span></span><span class="arrow" aria-hidden="true">→</span><span class="node"><b>A_09</b><span>案例入库（带适用条件）</span></span><span class="arrow" aria-hidden="true">→</span><span class="node"><b>RT_07</b><span>复发关联新工单</span></span></div>
+      <div class="chips"><button class="chip" data-el="F_11"><b>F_11</b><span>函数</span></button><button class="chip" data-el="A_07"><b>A_07</b><span>动作</span></button><button class="chip" data-el="A_08"><b>A_08</b><span>动作</span></button><button class="chip" data-el="A_09"><b>A_09</b><span>动作</span></button><button class="chip" data-el="OT_EFFECT"><b>OT_EFFECT</b><span>对象</span></button><button class="chip" data-el="OT_CASE"><b>OT_CASE</b><span>对象</span></button><button class="chip" data-el="RT_07"><b>RT_07</b><span>关系</span></button><button class="chip" data-el="RT_11"><b>RT_11</b><span>关系</span></button><button class="chip" data-el="RT_12"><b>RT_12</b><span>关系</span></button><button class="chip" data-el="RT_13"><b>RT_13</b><span>关系</span></button><button class="chip" data-el="RT_14"><b>RT_14</b><span>关系</span></button><button class="chip" data-el="RT_15"><b>RT_15</b><span>关系</span></button><button class="chip" data-el="RULE_W16"><b>RULE_W16</b><span>规则</span></button><button class="chip" data-el="INV_10"><b>INV_10</b><span>约束</span></button><button class="chip" data-el="INV_11"><b>INV_11</b><span>约束</span></button><button class="chip" data-el="TH11"><b>TH11</b><span>假设</span></button><button class="chip" data-el="TH12"><b>TH12</b><span>假设</span></button></div>
+      <div class="tech-cols">
+        <div><h4>这一步守住了什么</h4><ul class="guards"><li><b>INV_10</b>持续有效为空或“否”时，工单不得关闭。</li><li><b>INV_07</b>效果以现场实际值为基线；前窗取发现快照引用的数据版本，不随更正漂移。</li><li><b>INV_11</b>历史不覆盖：根因修订追加轮次、工参变更带生效时间、复发新建关联原单。</li><li><b>A_09</b>案例入库必须填适用条件；失败与证据不足的案例同样入库，不只收成功案例。</li></ul></div>
+        <div><h4>口径与机制</h4><dl class="facts"><dt>三层判断</dt><dd>improved（比前窗好）／achieved（后窗不再命中）／sustained（14 天每个滑窗）</dd><dt>后窗定义</dt><dd>实施日次日起连续有数据的天，遇第一个缺天即止</dd><dt>关单权限</dt><dd>只有优化主管；优化本体关单会被 PERMISSION_DENIED 拒绝</dd><dt>复发</dt><dd>不重开原单，新建并关联；原单保持已关闭</dd></dl></div>
+      </div>
+    </div>
+  </section>
+  </article>
+  </main>
+</div>
+
+<footer class="closing">
+  <div class="closing-in">
+    <div>
+      <div class="kicker">Closing · 一条故事线的四个交接点</div>
+      <h2>数据、判断、签字、证据，各归其位</h2>
+      <p>发现交给数据与规则，定因交给可核验的计算，执行交给有权限的人，效果交给同一把尺子。四幕之间不是流程的串联，而是四次责任交接——每一次交接都留下可回溯的记录：discovery 快照、根因轮次、审批签名、工参版本、效果前后窗、案例适用条件。</p>
+      <details>
+        <summary>展开：收敛对照（29 决策 + 14 问答 → 4 幕）</summary>
+        <table class="converge">
+          <thead><tr><th>幕</th><th>主题</th><th>主线用例</th><th>支撑用例</th></tr></thead>
+          <tbody><tr><td class="c-no">01</td><td>问题发现</td>
+    <td><span class="pill main">BD-01</span> <span class="pill main">BQ-01</span></td>
+    <td><span class="pill">BD-02</span> <span class="pill">BD-25</span> <span class="pill">BD-29</span> <span class="pill">BD-03</span> <span class="pill">BD-04</span> <span class="pill">BQ-09</span> <span class="pill">BQ-11</span> <span class="pill">BQ-12</span></td></tr><tr><td class="c-no">02</td><td>定因与方案</td>
+    <td><span class="pill main">BD-05</span> <span class="pill main">BQ-02</span> <span class="pill main">BQ-03</span> <span class="pill main">BQ-04</span></td>
+    <td><span class="pill">BD-06</span> <span class="pill">BD-07</span> <span class="pill">BD-08</span> <span class="pill">BD-28</span> <span class="pill">BD-09</span></td></tr><tr><td class="c-no">03</td><td>审批与执行</td>
+    <td><span class="pill main">BD-10</span> <span class="pill main">BD-13</span> <span class="pill main">BQ-05</span> <span class="pill main">BQ-06</span></td>
+    <td><span class="pill">BD-11</span> <span class="pill">BD-12</span> <span class="pill">BD-14</span> <span class="pill">BD-15</span> <span class="pill">BD-16</span> <span class="pill">BD-24</span> <span class="pill">BD-26</span> <span class="pill">BD-27</span> <span class="pill">BQ-10</span></td></tr><tr><td class="c-no">04</td><td>效果、关单与案例复用</td>
+    <td><span class="pill main">BD-17</span> <span class="pill main">BQ-07</span> <span class="pill main">BQ-08</span> <span class="pill main">BQ-14</span></td>
+    <td><span class="pill">BD-18</span> <span class="pill">BD-19</span> <span class="pill">BD-20</span> <span class="pill">BD-21</span> <span class="pill">BD-22</span> <span class="pill">BD-23</span> <span class="pill">BQ-13</span></td></tr></tbody>
+        </table>
+      </details>
+    </div>
+    <div>
+      <ul class="meta-list">
+        <li><b>SPEC</b>spec/本体与智能应用场景SPEC编制模板_弱覆盖_Day3_V0.9.md（sha256 f0fffe9b407f…）</li>
+        <li><b>场景</b>崇明 · 崇贤达NF02H_222 主线；上海 4 张真实工单作对照样例</li>
+        <li><b>执行</b>node test/run.js → 386/386 条业务步骤断言（1236 项核对，全量 697/697）</li>
+        <li><b>数据</b>种子数据（CSV，确定性生成）；MR、工参、告警、派单均为仿真</li>
+        <li><b>生成</b>node scripts/gen-story.js · 2026/11/5 15:49:26</li>
+        <li><b>局限</b>本地仿真，不代表真实网络；SPEC 规则与测试假设待业务确认；问答为规则匹配，未接大模型</li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<div class="backdrop" id="backdrop"></div>
+<aside class="drawer" id="drawer" aria-hidden="true" aria-label="本体要素定义">
+  <div class="drawer-head">
+    <div><div class="did" id="d-id"></div><div class="dkind" id="d-kind"></div></div>
+    <button class="drawer-close" aria-label="关闭">×</button>
+  </div>
+  <div class="drawer-body">
+    <div class="dname" id="d-name"></div>
+    <p class="ddef" id="d-def"></p>
+    <dl id="d-rows"></dl>
+    <div class="drawer-foot">定义逐字取自 SPEC（经 scripts/spec-parse.js 解析），不改写、不补充。</div>
+  </div>
+</aside>
+
+<script type="application/json" id="elements">{"OT_CELL_MR":{"id":"OT_CELL_MR","kindLabel":"对象类型","name":"小区日MR统计","def":"一个小区一个自然日的MR汇聚统计：有效采样点数与RSRP＜-110 dBm的弱覆盖采样点数；[派单规则]“数据源＝MR”所指的前置数据本身，弱覆盖发现与效果前后窗比较的输入。不是MR原始采样（来源事实，不入本体），不是弱覆盖结论（占比与是否命中由F_05派生，不存储）","rows":[["身份","主键`mrKey`＝`{cellKey}@{date}`（业务发生日期）；无业务状态，只追加：同日重复到达按最新接收的一条为准、旧条保留为旧版本；缺天＝没有实例＝未知；典型：LTE:X@2026-10-01"],["业务状态","无"],["属性","mrKey、cellKey、date、sampleTotal、sampleWeak、receivedAt、version"]]},"OT_CELL":{"id":"OT_CELL","kindLabel":"对象类型","name":"小区","def":"无线覆盖的服务单元，弱覆盖派单对象，同时是邻区、功率等参数的作用对象；承载场景等级与小区级指标，逐日MR统计由OT_CELL_MR承载（RT_16）。与天线（物理载体）、站点（归属单位）区别开；没有告警状态，弱覆盖处理状态归工单","rows":[["身份","主键`cellKey`（LTE:ECI／NR:NCI），PCI与名称不作标识；改名、改PCI身份不变；典型：X（B1，派单对象）、Y（B2，同天线）、Z1、Z2（邻区）、W、N1、C2～C11（同类新实例）。样例用简称"],["业务状态","无"],["属性","cellKey、rat、band、sceneLevel、rsPower、rsPowerPlan、targetRadius、neighbors、metrics、azimuthDeviationDeg、obstructionEvidence、cellName"]]},"OT_TICKET":{"id":"OT_TICKET","kindLabel":"对象类型","name":"工单","def":"对一个已发现的弱覆盖小区的处置单（处置载体），对应[派单规则]的“类别／问题类型／派单问题”；承载发现依据快照、根因、措施与评估链条，可复发。不是问题锚点：问题由前置数据按规则发现，工单只记录“发现之后怎么处理”。不等于[覆盖汇总]的三级原因——后者是规则，不是问题实例","rows":[["身份","主键`ticketNo`（TK-{制式}-{小区标识}-{序号}，编码规则；接入派单系统后以`taskno`为准）；状态待核验→已确认／已排除→处置中→待评估→已改善／改善未解决→已关闭；典型：TK-LTE-X-001"],["业务状态","待核验 / 已确认 / 已排除 / 处置中 / 待评估 / 已改善 / 改善未解决 / 已关闭"],["属性","ticketNo、problemCategory、problemType、dispatchProblem、weakKind、rat、sceneLevel、discovery、status、relatedTicketNo、affectedUsers、diagnostics、rootCauses"]]},"RT_16":{"id":"RT_16","kindLabel":"关系类型","name":"统计对象","def":"OT_CELL_MR → OT_CELL","rows":[["基数","N:1；一个小区一个自然日至多一个当前版本；成立：MR日汇总的`cellKey`对应到本体小区"],["来源","MR平台日汇总；随数据追加；`cellKey`无法对应→不装载（映射失败，见“维护与变更约定”）；小区没有任何OT_CELL_MR＝尚无前置数据，不等于无弱覆盖"],["被用到","F_05、F_06、F_12（发现）；F_11（前后窗、保护指标）；INV_17"]]},"RT_17":{"id":"RT_17","kindLabel":"关系类型","name":"发现依据","def":"OT_TICKET → OT_CELL_MR","rows":[["基数","N:M；成立：该工单`discovery`快照引用了这条MR日统计（`mrKey`＋`version`）"],["来源","建单时写入，此后不变；引用的版本即使后来被更正仍可读回；缺天不建立该关系"],["被用到","A_01；INV_16；TC01a、TC04a"]]},"F_05":{"id":"F_05","kindLabel":"函数","name":"dailyWeakCheck","def":"小区某天是否弱覆盖（单日命中）；OT_CELL_MR（经RT_16属于OT_CELL）","rows":[["输入","当天OT_CELL_MR的`sampleTotal`、`sampleWeak`（取最新版本，或按`evidenceRefs`指定的版本）；适用的派单规则（按小区制式×站点类型×场景等级选取RULE_D01～D04）"],["方法","RULE_D01～D04：占比＝sampleWeak÷sampleTotal；`sampleWeak`≥门限（宏站2000／室分500）且占比≥门限（宏站20%／室分15%）→命中，等于门限算命中"],["输出","`{date, mrKey, version, ratio(4位小数), weakOk, ratioOk, hit∈是／否／未知}`；当天无OT_CELL_MR实例→未知，ratio为空，不得为0；无对应规则→未知（规则缺口）"],["版本","0.3"]]},"F_06":{"id":"F_06","kindLabel":"函数","name":"discoverCell","def":"小区是否达到派单条件（7天出现3天）＝该小区的前置数据是否发现了弱覆盖问题；OT_CELL","rows":[["输入","窗口（判断时点所在日之前的7个自然日）内各日OT_CELL_MR的F_05结果；规则的`windowDays`＝7、`minHitDays`＝3"],["方法","RULE_D01～D04：命中天数≥3→达到；命中＋未知＜3→未达到（缺天补满也不够）；其余→证据不足"],["输出","`{verdict∈达到派单条件／未达到派单条件／证据不足, problemKey（仅“达到”时给出）, ruleId, window, hitDays, hitDates[], unknownDates[], missDates[], daily[], evidenceRefs[]}`；`evidenceRefs[]`＝窗口内实际存在的OT_CELL_MR键与版本；无对应规则→证据不足，`unknownDates`＝全部7天，不套用其他场景门限"],["版本","0.3"]]},"F_12":{"id":"F_12","kindLabel":"函数","name":"scanWeakCells","def":"在给定范围内，哪些小区的前置数据按[派单规则]发现了弱覆盖问题；OT_CELL（范围）→OT_CELL_MR","rows":[["输入","发现范围（小区集合：显式列出，或按站点／区县展开）；判断时点；窗口＝判断时点所在日之前的7个自然日；RULE_F01"],["方法","对范围内每个小区：读其窗口内OT_CELL_MR（RT_16）、制式、站点类型（RT_01）、场景等级，逐日调F_05、再调F_06；按判定分组汇总；只读，不创建工单、不读取工单，同一数据与规则版本重复调用结果相同"],["输出","`{refTime, window, scope[], items[{cellKey, verdict, problemKey, ruleId, hitDays, unknownDates[], evidenceRefs[]}], counts{达到, 未达到, 证据不足}}`；窗口内无任何OT_CELL_MR的小区列为“证据不足（数据缺口）”，不静默跳过；站点类型未知或规则缺口→该项“证据不足”并标注缺项"],["版本","0.1"]]},"A_01":{"id":"A_01","kindLabel":"动作","name":"建单（依发现结果）","def":"优化本体或地市优化工程师；对前置数据发现的弱覆盖小区建立可追溯的处置单；目标：新建OT_TICKET","rows":[["发起角色","优化本体、地市优化工程师"],["输入","输入：`cellKey`、判断时点（缺省取运行时钟）；可附F_12清单项作参考，但不采信。前提：小区存在且能确定制式、站点类型（RT_01）；A_01自行重算F_06＝达到派单条件（窗口＝判断时点所在日之前的7个自然日），并且窗口内存在OT_CELL_MR证据"],["变更","新建工单（待核验）；写`discovery`快照（`problemKey`、规则与门限、命中／未知日、`evidenceRefs[]`）与RT_17，类别／问题类型／派单问题、场景等级快照，RT_05、RT_06，`diagnostics[]`；同小区同问题类型有未关闭工单→关联不新建；有已关闭工单→新建并填`relatedTicketNo`；不写、不改OT_CELL_MR"]]},"RULE_D01":{"id":"RULE_D01","kindLabel":"规则","name":"规则 1.0","def":"4G宏站弱覆盖小区；[派单规则]第2行原文：“宏站基站RSRP小于-110的弱覆盖采样点大于等于2000（单日），弱覆盖占比大于等于20%；7天出现3天”；类别“覆盖结构”、问题类型“MR弱覆盖小区”、派单问题“宏站弱覆盖小区”、数据源MR；规则文件原文，业务确认待补","rows":[["范围","LTE×宏站×一般场景；对OT_CELL_MR逐日判定：单日`sampleWeak`≥2000且占比≥0.20→命中；7天内命中≥3天→达到派单条件"],["输出","缺天→未知；命中＋未知＜3→未达到；其余→证据不足"],["只登记","否"]]},"RULE_F01":{"id":"RULE_F01","kindLabel":"规则","name":"规则 0.1","def":"发现范围与窗口：从前置数据发现弱覆盖问题时，窗口＝判断时点所在日之前的7个自然日（窗口末日＝判断日前一天）；范围内每个小区都要有结论；本组拟定，参照场景收敛文档SC-WC-01的每日09:00批量识别；待确认","rows":[["范围","范围＝给定小区集合（显式列出或按站点／区县展开）；窗口内无OT_CELL_MR的小区→“证据不足（数据缺口）”，不静默跳过，也不判“未达到”；规则缺口（VIP／VVIP或场景等级缺失）→“证据不足”；发现只读，不依赖工单；每日一次的调度时点与MR到齐时间"],["输出","证据不足分项列出缺天日期或缺失的规则"],["只登记","否"]]},"INV_09":{"id":"INV_09","kindLabel":"核心约束","name":"核心约束","def":"MR缺天、规则缺失（含场景等级无对应派单规则）、工参缺失一律记“未知／证据不足”，不得写0或默认结论","rows":[["检查点","F_05、F_06、F_12、F_08、F_10、F_11、A_01"]]},"INV_14":{"id":"INV_14","kindLabel":"核心约束","name":"核心约束","def":"同一小区同一问题类型存在未关闭工单时，不重复建单，关联已有工单","rows":[["检查点","A_01"]]},"INV_16":{"id":"INV_16","kindLabel":"核心约束","name":"核心约束","def":"问题须由前置数据发现：工单只能依发现结果建立——建单时F_06对窗口内OT_CELL_MR判定为“达到派单条件”，且`discovery.evidenceRefs[]`指向窗口内实际存在的OT_CELL_MR；无前置数据支撑的工单（未达到、证据不足、窗口无MR）不得建立；工单的状态、关闭与删除不改变前置数据与发现判定","rows":[["检查点","A_01、RT_17"]]},"INV_17":{"id":"INV_17","kindLabel":"核心约束","name":"核心约束","def":"前置数据只追加：OT_CELL_MR不被覆盖改写——同日重复到达新增版本，迟到数据按业务日期归日；已建工单的`discovery`快照与效果前窗按其引用的数据版本读回，不因数据更正而重算改写；更正后的发现结果由F_12另行给出","rows":[["检查点","DM_01、A_01、F_11、F_12"]]},"F_07":{"id":"F_07","kindLabel":"函数","name":"falseWeakCheck","def":"弱覆盖是否由退服、告警等造成；OT_TICKET（派单小区及RT_06涉及的小区）","rows":[["输入","派单窗口的命中日集合；派单小区、同天线小区、重叠邻区的告警区间（来源事实，取自告警系统）；TH07"],["方法","RULE_W04：重合占比＝落在告警区间内的命中日数÷命中日数；≥TH07＝排除；0＜占比＜TH07＝部分重合，转人工；＝0＝无重合"],["输出","`{结论∈排除／部分重合／无重合／不适用, 重合天数, 命中日数, 占比, 所用告警引用}`；无命中日→不适用"],["版本","0.2"]]},"F_08":{"id":"F_08","kindLabel":"函数","name":"matchTiltCause","def":"弱覆盖是否由下倾角过小引起，并排除次因；OT_TICKET→OT_CELL→OT_ANTENNA","rows":[["输入","必需：h、`mechTilt`、`elecTilt`、β、Rt；可选参考：`rsPower`／`rsPowerPlan`、`azimuthDeviationDeg`、`obstructionEvidence`（MR距离—电平分布本次无输入）"],["方法","RULE_W06、W05／W08／W09，顺序见下文“函数填写要求”"],["输出","`{match∈命中／不命中／未知／冲突, totalTilt, thetaTarget, deficit, rNear, rFar, otherCauses[], role, missing[]}`；缺任一必需输入→未知并列缺项；`rat`＝NR→未知（规则缺口）；站点类型＝室分→未知（不适用宏站下倾模型）；工参待回填→未知；工参冲突→冲突"],["版本","0.2"]]},"F_09":{"id":"F_09","kindLabel":"函数","name":"planTilt","def":"一次调多少、需几轮；OT_PLAN","rows":[["输入","缺口（F_08）；调整方式（机械／电子）；单次上限TH02；调节分辨率TH03"],["方法","RULE_W14：Δ＝⌊min(缺口,TH02)÷分辨率⌋×分辨率；轮次＝⌈缺口÷TH02⌉"],["输出","`{Δ(°), 轮次, executable}`；Δ＝0（缺口小于分辨率）→不可执行；F_08未命中→不生成"],["版本","0.1"]]},"F_10":{"id":"F_10","kindLabel":"函数","name":"assessImpact","def":"调整会不会伤到同天线小区和重叠邻区；OT_PLAN→OT_CELL","rows":[["输入","调整方式与Δ；影响范围小区集（RT_10、RT_02派生）及各小区h、总下倾、β、Rt；重叠邻区集（RT_03）及其站点距离（F_01）、h、总下倾、β"],["方法","RULE_W13，逐级尝试见下文"],["输出","`{result∈通过／调减／不通过／未评估, deltaPlan, deltaFinal, affectedCells[], attempts[], checks[]}`；邻区工参缺失→该项“未评估”，整体不得为“通过”"],["版本","0.1"]]},"F_02":{"id":"F_02","kindLabel":"函数","name":"theoryRadius","def":"小区的理论覆盖范围；OT_CELL（经RT_02取天线）","rows":[["输入","挂高h（m）、总下倾θ（°）、垂直波束宽β（°）"],["方法","RULE_W06：rNear＝h÷tan(θ＋β/2)；rFar＝h÷tan(θ－β/2)"],["输出","`{rNear, rFar}`（m，1位小数）；h、θ、β≤0或θ＋β/2≥90°→无效；θ－β/2≤0→rFar＝不收敛（∞），不得当作0；`rat`＝NR→未定义（H6）"],["版本","0.1"]]},"F_03":{"id":"F_03","kindLabel":"函数","name":"totalTilt","def":"小区实际总下倾角；OT_CELL","rows":[["输入","天线引用（`mechTilt`及版本）、RT_02引用（`elecTilt`）"],["方法","总下倾＝`mechTilt`＋`elecTilt`"],["输出","°；任一缺失→空"],["版本","0.1"]]},"F_04":{"id":"F_04","kindLabel":"函数","name":"recommendTilt","def":"为让远端落在目标半径应下倾多少；OT_CELL","rows":[["输入","h、β、目标半径Rt"],["方法","RULE_W06：θ_t＝arctan(h÷Rt)＋β/2（主瓣上沿落在Rt上）"],["输出","°；h、Rt、β≤0→无效"],["版本","0.1"]]},"A_02":{"id":"A_02","kindLabel":"动作","name":"写入根因","def":"优化本体（规则命中）、优化工程师、专家；记录定因结论；目标：OT_TICKET的`rootCauses[]`","rows":[["发起角色","优化本体、地市优化工程师、优化专家"],["输入","输入：`ticketNo`、`causeLabel`、`causeFamily`、`role`、`evidenceRefs`、`source`。前提：工单为待核验或已确认；F_07结论不是“排除”"],["变更","追加一轮根因，不覆盖旧轮"]]},"A_03":{"id":"A_03","kindLabel":"动作","name":"确认或排除","def":"地市优化工程师（疑难转专家）；确认定因或排除假性弱覆盖；目标：OT_TICKET状态","rows":[["发起角色","地市优化工程师、优化专家"],["输入","输入：`ticketNo`、`decision`、`reason`。前提：工单待核验；已有主因证据，或F_07＝排除"],["变更","待核验→已确认／已排除；记录确认人与理由"]]},"A_04":{"id":"A_04","kindLabel":"动作","name":"生成优化方案","def":"优化本体；为已确认工单生成带周边校验的方案；目标：新建OT_PLAN","rows":[["发起角色","优化本体"],["输入","输入：`ticketNo`、`adjustType`。前提：工单已确认；F_08＝命中；电子下倾要求`supportsRET`为真"],["变更","调F_09、F_10建方案，`measureType`取字典快照；通过或调减→状态“待确认”，`actions`写调减后的Δ；不通过或未评估→状态“草案”，标“转人工”"]]},"OT_PLAN":{"id":"OT_PLAN","kindLabel":"对象类型","name":"优化方案","def":"针对工单根因的措施方案：措施类型快照、动作明细、周边影响结果、审批、执行信息、回退条件。措施类型与执行记录都是它的属性，不单设对象","rows":[["身份","主键`planNo`（工单号＋轮次）；执行状态草案→待确认→已批准→已派单→已实施／失败／未知→已回退；典型：PL-TK-LTE-X-001-R1"],["业务状态","草案 / 待确认 / 已批准 / 未批准 / 已派单 / 已实施 / 失败 / 未知 / 已回退"],["属性","planNo、ticketNo、round、measureType、status、actions、impact、approval、rollbackCondition、execution"]]},"OT_ANTENNA":{"id":"OT_ANTENNA","kindLabel":"对象类型","name":"天线","def":"下倾角、挂高、方位角的物理载体，天馈类措施的作用对象；一副天线可承载多个小区（多频、多制式共天馈）。是资源，小区是它提供的服务，二者通过RT_02关联","rows":[["身份","主键`antennaId`（站点＋扇区＋天线序号，编码规则）；随工参版本变化（`effectiveTime`）；典型：AN1（承载X、Y）、AN2"],["业务状态","无"],["属性","antennaId、siteId、height、mechTilt、supportsRET、azimuth、effectiveTime"]]},"RT_02":{"id":"RT_02","kindLabel":"关系类型","name":"由…提供覆盖","def":"OT_CELL → OT_ANTENNA","rows":[["基数","N:1（天线1:N）；属性`elecTilt`、`vBeam`、`arrayPort`；实际角色；成立：工参小区—天线对应与现场核对一致"],["来源","工参；随工参版本有效；天线接反时对应错位，须核对；缺失＝未知"],["被用到","F_02～F_04、F_08；F_10决定同天线小区范围（INV_12）"]]},"RT_06":{"id":"RT_06","kindLabel":"关系类型","name":"涉及","def":"OT_TICKET → OT_CELL","rows":[["基数","N:M；`role`同天线小区／重叠邻区"],["来源","同天线小区由RT_02派生，重叠邻区由RT_03派生；建单时写入；关系变更后新建的工单按新关系派生（TC02f）"],["被用到","F_07告警范围；F_10保护范围"]]},"RT_08":{"id":"RT_08","kindLabel":"关系类型","name":"根因依据","def":"OT_TICKET → OT_CELL／OT_ANTENNA","rows":[["基数","N:M；`evidenceKind`；成立：某轮根因引用了该小区的MR窗口、指标或天线工参版本"],["来源","证据回链，不只引用结论文字；引用的MR窗口须有OT_CELL_MR数据，`evidenceKind`＝小区MR时`evidenceRefs`落到具体的OT_CELL_MR实例；告警、勘察是来源事实，经`evidenceRefs`引用，不建关系"],["被用到","F_08、A_02；INV_03"]]},"RULE_W04":{"id":"RULE_W04","kindLabel":"规则","name":"规则 0.2","def":"先排除假性弱覆盖；Day1 W4，[覆盖汇总]第12行含“处理邻区故障站点”；按命中日计；待确认","rows":[["范围","取派单小区及其同天线小区、重叠邻区的告警区间；重合占比＝落在告警区间内的命中日数÷命中日数；≥TH07排除；0～TH07之间部分重合；＝0无重合"],["输出","排除→工单“已排除”，不调参；部分重合→转人工；无命中日→不适用"],["只登记","否"]]},"RULE_W06":{"id":"RULE_W06","kindLabel":"规则","name":"规则 0.1","def":"下倾角过小：总下倾偏离推荐下倾；Day1 W6，[覆盖汇总]A族6行；公式；待确认","rows":[["范围","LTE宏站；rNear＝h÷tan(θ＋β/2)，rFar＝h÷tan(θ－β/2)，θ_t＝arctan(h÷Rt)＋β/2；缺口＝θ_t－θ＞TH01→命中。主因证据＝工参推算＋小区按派单规则达到派单条件（MR派单窗口）；MR距离—电平分布为补强证据，本次无输入（见未决事项）"],["输出","缺任一必需输入→未知并列缺项；NR→未知（公式未定义）；室分→未知（不适用）；不命中→转其他原因族"],["只登记","否"]]},"RULE_W13":{"id":"RULE_W13","kindLabel":"规则","name":"规则 0.1","def":"周边影响护栏：增强类措施不得伤到同天线小区与重叠邻区；Day1 W13，几何近似；待确认","rows":[["范围","范围：机械＝天线承载全部小区，电子＝目标阵列；①范围内每小区调整后rFar≥目标半径；②派单小区对每个重叠邻区的预测重叠指数不增大；Δ逐级减一个分辨率取第一个可行值"],["输出","通过／调减／不通过；邻区工参缺失→未评估，不得批准"],["只登记","否"]]},"RULE_M01":{"id":"RULE_M01","kindLabel":"规则","name":"规则 0.1","def":"原因—措施：弱覆盖小区天线下倾角过小→增大下倾角；[覆盖汇总]LTE第27行、NR第31行（备选“或在远端增强信号覆盖”本期不实现）；规则未验证，待确认","rows":[["范围","本小区侧；措施类型TILT_UP_MECH或TILT_UP_ELEC"],["输出","未命中F_08→不推荐；NR→公式缺口，转人工"],["只登记","否"]]},"INV_02":{"id":"INV_02","kindLabel":"核心约束","name":"核心约束","def":"症状级标签（[覆盖汇总]K族7个：弱覆盖、远端弱覆盖、室分弱覆盖、上行弱覆盖、重叠覆盖、过覆盖、服务小区过覆盖导致重叠覆盖）不得作主因，须先下钻","rows":[["检查点","A_02"]]},"INV_03":{"id":"INV_03","kindLabel":"核心约束","name":"核心约束","def":"主因至少有一条直接证据（小区MR、工参、告警记录、勘察）","rows":[["检查点","A_02、RT_08"]]},"INV_06":{"id":"INV_06","kindLabel":"核心约束","name":"核心约束","def":"周边影响为“不通过”或“未评估”的方案不得批准；“调减”的方案必须按调减后的幅度写入","rows":[["检查点","A_04、A_05、F_10"]]},"INV_12":{"id":"INV_12","kindLabel":"核心约束","name":"核心约束","def":"影响范围由调整方式决定：机械下倾→天线承载的所有小区；电子下倾→仅对应阵列小区","rows":[["检查点","F_10、RT_10"]]},"INV_13":{"id":"INV_13","kindLabel":"核心约束","name":"核心约束","def":"单次调整幅度≤单次上限，且为调节分辨率的整数倍；缺口更大则分轮","rows":[["检查点","F_09"]]},"TH01":{"id":"TH01","kindLabel":"测试假设","name":"测试假设","def":"命中容差`eps`＝0.5°","rows":[["关联规则","RULE_W06；F_08"],["关联用例","TC01、TC06b"]]},"TH11":{"id":"TH11","kindLabel":"测试假设","name":"测试假设","def":"后窗最少天数＝7天（与派单窗口同口径），不足则待评估","rows":[["关联规则","RULE_W16；F_11"],["关联用例","TC03e"]]},"A_05":{"id":"A_05","kindLabel":"动作","name":"确认并派单","def":"地市优化工程师；作用于2个及以上小区、VIP／VVIP场景（取自小区场景等级）或跨站的方案追加优化主管批准；批准并派给现场；实际操作目标：机械＝天线AN1的`mechTilt`，电子＝X阵列的`elecTilt`","rows":[["发起角色","地市优化工程师"],["输入","输入：`planNo`、`decision`、`executor`。前提：方案待确认；`impact`为通过或调减；方案所依据的工参版本等于当前版本"],["变更","待确认→已批准→已派单；工单→处置中；写`approval`与派单号"]]},"A_06":{"id":"A_06","kindLabel":"动作","name":"回填执行信息","def":"现场维护人员回填，优化工程师复核；记录现场实际调整；目标：OT_PLAN的`execution`，并更新OT_ANTENNA的`mechTilt`（或RT_02的`elecTilt`）新版本","rows":[["发起角色","地市优化工程师、现场维护人员"],["输入","输入：`planNo`、`dispatchNo`、`executeTime`、`receipt`、`actualValues[]`。前提：方案已派单"],["变更","写`execution`；成功→方案已实施，天线新版本生效时间＝`executeTime`，工单→待评估；失败→失败；回执缺失→未知"]]},"A_10":{"id":"A_10","kindLabel":"动作","name":"回退方案","def":"优化工程师；保护指标恶化时恢复原值；目标：新建回退方案","rows":[["发起角色","地市优化工程师"],["输入","输入：`planNo`。前提：效果＝劣化，或保护指标不通过"],["变更","建回退方案（目标值＝`rollbackValue`），走A_05；原方案→已回退"]]},"A_11":{"id":"A_11","kindLabel":"动作","name":"裁定工参冲突","def":"地市优化工程师；对同一天线同一生效区间两个来源取值冲突作出裁定；目标：OT_ANTENNA 对应字段的新版本与冲突记录","rows":[["发起角色","地市优化工程师"],["输入","输入：`conflictId`、`chosenSource`、`reason`。前提：冲突记录为未裁定"],["变更","写入裁定版本（来源“ruling”，生效时间同冲突）；冲突记录置已裁定，含裁定人、理由、时间；因冲突停在“处置中”的工单→待评估"]]},"RT_09":{"id":"RT_09","kindLabel":"关系类型","name":"针对","def":"OT_PLAN → OT_TICKET","rows":[["基数","N:1；成立：工单“已确认”"],["来源","—"],["被用到","A_04；INV_04"]]},"RT_10":{"id":"RT_10","kindLabel":"关系类型","name":"作用于","def":"OT_PLAN → OT_ANTENNA／OT_CELL","rows":[["基数","N:M；`role`主作用／受影响。机械下倾：主作用＝天线，受影响＝承载的所有小区；电子下倾：主作用＝对应阵列小区，受影响＝仅该阵列"],["来源","由方案`actions`与RT_02派生；作用对象可能不是问题小区自身（如邻区侧天线）"],["被用到","F_10、A_05；INV_12"]]},"RULE_W14":{"id":"RULE_W14","kindLabel":"规则","name":"规则 0.1","def":"措施准入与约束；Day1 W14；单次上限与分辨率为测试假设；待确认","rows":[["范围","天馈类（含机械下倾）不得自动执行；单次Δ≤TH02且为TH03整数倍；缺口更大分轮；作用于2个以上小区或VIP／VVIP小区追加主管批准"],["输出","Δ＝0不可执行；越限拒绝"],["只登记","否"]]},"INV_05":{"id":"INV_05","kindLabel":"核心约束","name":"核心约束","def":"天馈类措施（`executorRole`＝现场维护）不得自动执行：须人工确认并派单，由现场维护人员执行并回填","rows":[["检查点","A_05"]]},"INV_07":{"id":"INV_07","kindLabel":"核心约束","name":"核心约束","def":"效果评估与复核使用现场回填的实际值，不使用计划值","rows":[["检查点","A_06、F_10"]]},"INV_08":{"id":"INV_08","kindLabel":"核心约束","name":"核心约束","def":"回执或回填缺失记“未知”，不得推进到待评估或关闭","rows":[["检查点","A_06、A_07"]]},"INV_11":{"id":"INV_11","kindLabel":"核心约束","name":"核心约束","def":"历史不覆盖：根因修订追加轮次；工参变更带生效时间；复发新建工单关联原单；失败与证据不足案例照常入库","rows":[["检查点","A_02、A_06、A_09"]]},"INV_15":{"id":"INV_15","kindLabel":"核心约束","name":"核心约束","def":"同一天线同一生效区间两个来源取值冲突时不自动裁决，转人工；裁定前相关函数返回“冲突”，不评估","rows":[["检查点","A_06、F_08、F_10、F_11"]]},"F_11":{"id":"F_11","kindLabel":"函数","name":"judgeEffect","def":"措施是否有效、是否持续；OT_EFFECT","rows":[["输入","前窗（派单窗口7天，取工单`discovery.evidenceRefs`所指的OT_CELL_MR版本）与后窗（实施日次日起连续有数据的天，取最新版本）的OT_CELL_MR（RT_12）；适用的派单规则；保护指标（RT_13涉及小区）；TH09、TH11～TH13；方案`execution`实际值"],["方法","RULE_W16＋RULE_D01～D04，判定顺序见下文"],["输出","`{beforeRatio, afterRatio, afterHitDays, improved, achieved, sustained, protectionOk, status, daysAfter}`；后窗＜TH11（7天）、前窗无数据或无对应规则→状态“待评估”，各判定为空"],["版本","0.3"]]},"A_07":{"id":"A_07","kindLabel":"动作","name":"写入优化效果","def":"优化本体，优化工程师复核；记录一轮效果评价；目标：新建OT_EFFECT","rows":[["发起角色","优化本体、地市优化工程师"],["输入","输入：`planNo`。前提：方案已实施；前窗取工单派单窗口，后窗取实施日次日起的小区MR，保护指标取RT_06涉及小区"],["变更","调F_11建优化效果；工单→已改善或改善未解决，或保持待评估"]]},"A_08":{"id":"A_08","kindLabel":"动作","name":"关闭工单","def":"优化主管；关闭已持续有效的问题；目标：OT_TICKET状态","rows":[["发起角色","优化主管"],["输入","输入：`ticketNo`。前提：效果状态＝持续有效"],["变更","工单→已关闭"]]},"A_09":{"id":"A_09","kindLabel":"动作","name":"历史案例入库","def":"优化专家或知识维护人；沉淀经验；目标：新建OT_CASE","rows":[["发起角色","优化专家、知识维护人"],["输入","输入：`effectNo`、`applicability`（制式、站点类型、场景等级、区域场景等）。前提：效果已评定（含劣化、未改善）"],["变更","建历史案例；`outcome`：持续有效→有效可复现（验证状态仍为“未验证”）；改善但持续有效为空→证据不足；劣化／未改善／未达标→无效"]]},"OT_EFFECT":{"id":"OT_EFFECT","kindLabel":"对象类型","name":"优化效果","def":"一次方案实施后一轮评价的结果记录，是“改善／达标／持续有效”的依据。评价过程是函数F_11，评价结果是对象——它有多轮、有状态，并被历史案例引用，需要独立追踪","rows":[["身份","主键`effectNo`（工单号＋轮次＋评估序号）；效果状态待评估→评估中→改善／未改善／劣化／未达标→持续有效；典型：EF-TK-LTE-X-001-R1-E1"],["业务状态","待评估 / 评估中 / 改善 / 未改善 / 劣化 / 未达标 / 持续有效"],["属性","effectNo、planNo、round、beforeWindow、afterWindow、beforeRatio、afterRatio、afterHitDays、improved、achieved、sustained、protectionOk、protection、status、callRef"]]},"OT_CASE":{"id":"OT_CASE","kindLabel":"对象类型","name":"历史案例","def":"已评定的“问题—根因—措施—效果”记录，含失败与证据不足，供同类问题检索复用。不是[覆盖汇总]的100行规则","rows":[["身份","主键`caseNo`（CS-{ticketNo}-R{轮次}）；验证状态未验证→已验证；当前0个实例；典型：CS-TK-LTE-X-001-R1（测试中）"],["业务状态","未验证 / 已验证"],["属性","caseNo、sourceTicketNo、planNo、effectNo、applicability、measureType、deltaValue、outcome、validation"]]},"RT_07":{"id":"RT_07","kindLabel":"关系类型","name":"复发关联","def":"OT_TICKET → OT_TICKET","rows":[["基数","N:0..1；新工单指向原工单，原工单不重开"],["来源","建单时同小区同问题类型存在已关闭工单；永久保留"],["被用到","A_01；INV_11"]]},"RT_11":{"id":"RT_11","kindLabel":"关系类型","name":"检验","def":"OT_EFFECT → OT_PLAN","rows":[["基数","N:1；成立：方案已实施"],["来源","—"],["被用到","F_11、A_07"]]},"RT_12":{"id":"RT_12","kindLabel":"关系类型","name":"比较前后指标（目标）","def":"OT_EFFECT → OT_CELL","rows":[["基数","N:1；目标＝工单针对的弱覆盖小区"],["来源","前窗＝派单窗口（取`discovery.evidenceRefs`所指的OT_CELL_MR版本），后窗＝实施日次日起；看该小区的OT_CELL_MR"],["被用到","F_11"]]},"RT_13":{"id":"RT_13","kindLabel":"关系类型","name":"比较前后指标（保护）","def":"OT_EFFECT → OT_CELL","rows":[["基数","N:M；`role`同天线小区／重叠邻区"],["来源","保护范围与RT_06、RT_10一致"],["被用到","F_11"]]},"RT_14":{"id":"RT_14","kindLabel":"关系类型","name":"沉淀为","def":"OT_EFFECT → OT_CASE","rows":[["基数","1:0..1"],["来源","评定完成后入库，含失败"],["被用到","A_09；INV_11"]]},"RT_15":{"id":"RT_15","kindLabel":"关系类型","name":"被引用于","def":"OT_CASE → OT_PLAN","rows":[["基数","N:M"],["来源","选措时检索；当前案例0条，无案例时依已确认规则继续判断，不记为“无可用措施”"],["被用到","A_04"]]},"RULE_W16":{"id":"RULE_W16","kindLabel":"规则","name":"规则 0.2","def":"效果判断：派单窗口与实施次日起的后窗同口径比较＋三层判断＋保护指标；Day1 W16，按[派单规则]口径；待确认","rows":[["范围","见“效果判断与持续观察”；达标与持续有效均以“不再满足派单规则”为准"],["输出","后窗不足7天或保护指标缺数据→待评估；未知不记0"],["只登记","否"]]},"INV_10":{"id":"INV_10","kindLabel":"核心约束","name":"核心约束","def":"持续有效为空或否时，工单不得关闭","rows":[["检查点","A_08"]]},"TH12":{"id":"TH12","kindLabel":"测试假设","name":"测试假设","def":"判“持续有效”所需后窗天数＝14天，其中每个7天滑窗都不满足派单规则","rows":[["关联规则","RULE_W16；F_11"],["关联用例","TC01、TC07f"]]}}</script>
+<script>
+(function(){
+  var body=document.body, KEY='shwo-story-mode';
+  function setMode(m){
+    body.dataset.mode=m;
+    document.querySelectorAll('[data-mode-btn]').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.modeBtn===m))});
+    try{localStorage.setItem(KEY,m)}catch(e){}
+  }
+  try{var saved=localStorage.getItem(KEY); if(saved==='tech'||saved==='biz') setMode(saved)}catch(e){}
+  document.addEventListener('click',function(e){
+    var mb=e.target.closest('[data-mode-btn]'); if(mb){setMode(mb.dataset.modeBtn);return}
+    var rt=e.target.closest('.result-toggle');
+    if(rt){var st=rt.closest('.step'),on=st.classList.toggle('open');rt.setAttribute('aria-expanded',String(on));rt.textContent=on?'收起结果':'实际结果';return}
+    var strip=e.target.closest('.tech-strip');
+    if(strip){var tech=strip.closest('.tech'),op=tech.classList.toggle('open');strip.setAttribute('aria-expanded',String(op));return}
+    var chip=e.target.closest('.chip[data-el]');
+    if(chip){openDrawer(chip.dataset.el);return}
+    if(e.target.closest('.drawer-close')||e.target.classList.contains('backdrop')) closeDrawer();
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape') closeDrawer();
+    if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft') return;
+    var acts=[].slice.call(document.querySelectorAll('.act')),idx=acts.findIndex(function(a){return a.getBoundingClientRect().top>120});
+    var cur=idx<0?acts.length-1:Math.max(0,idx-1);
+    var next=e.key==='ArrowRight'?Math.min(acts.length-1,cur+1):Math.max(0,cur-1);
+    acts[next].scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  // scroll spy + progress
+  var links=[].slice.call(document.querySelectorAll('.rail-act')), acts=[].slice.call(document.querySelectorAll('.act'));
+  function spy(){
+    var y=window.scrollY+window.innerHeight*0.32,best=0;
+    acts.forEach(function(a,i){ if(a.offsetTop<=y) best=i; });
+    links.forEach(function(l,i){ l.classList.toggle('active',i===best); });
+    var h=document.documentElement.scrollHeight-window.innerHeight;
+    document.querySelector('.progress').style.width=(h>0?Math.min(100,window.scrollY/h*100):0)+'%';
+  }
+  window.addEventListener('scroll',spy,{passive:true}); window.addEventListener('resize',spy); spy();
+  // 长回答折叠：超过 6 行时收起，避免整页被问答淹没
+  document.querySelectorAll('.a').forEach(function(a){
+    var t=a.querySelector('.a-text'); if(!t || t.scrollHeight<=150) return;
+    a.classList.add('clamp');
+    var btn=document.createElement('button');
+    btn.className='a-more'; btn.type='button'; btn.textContent='展开全部回答';
+    btn.addEventListener('click',function(){
+      var c=a.classList.toggle('clamp');
+      btn.textContent=c?'展开全部回答':'收起';
+    });
+    a.querySelector('.a-body').appendChild(btn);
+  });
+  // drawer
+  var ELEMENTS=JSON.parse(document.getElementById('elements').textContent);
+  function openDrawer(id){
+    var e=ELEMENTS[id]; if(!e) return;
+    document.getElementById('d-id').textContent=e.id;
+    document.getElementById('d-kind').textContent=e.kindLabel;
+    document.getElementById('d-name').textContent=e.name||'';
+    document.getElementById('d-def').textContent=e.def||'';
+    document.getElementById('d-rows').innerHTML=(e.rows||[]).filter(function(r){return r[1]}).map(function(r){return '<dt>'+esc(r[0])+'</dt><dd>'+esc(r[1])+'</dd>'}).join('');
+    document.getElementById('backdrop').classList.add('show');
+    var d=document.getElementById('drawer'); d.classList.add('open'); d.setAttribute('aria-hidden','false');
+  }
+  function closeDrawer(){
+    var d=document.getElementById('drawer'); d.classList.remove('open'); d.setAttribute('aria-hidden','true');
+    document.getElementById('backdrop').classList.remove('show');
+  }
+  function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  window.openDrawer=openDrawer;
+})();
+</script>
+</body>
+</html>

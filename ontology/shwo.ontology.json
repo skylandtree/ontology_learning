@@ -1,0 +1,3275 @@
+{
+ "source": {
+  "file": "spec/本体与智能应用场景SPEC编制模板_弱覆盖_Day3_V0.9.md",
+  "sha256": "f0fffe9b407f260c59f8ba223200ca5db7c24d8f7396df27d908b30ba13f161d",
+  "note": "全部要素由 scripts/spec-parse.js 从该文件的表格解析，不含任何其他来源"
+ },
+ "objectTypes": [
+  {
+   "id": "OT_AREA",
+   "name": "覆盖区域",
+   "definition": "问题发生位置与影响范围的上下文（场景、室内外、城乡、区县），对应工单`cover_area`。不是小区、不是单个栅格、也不是工单；不承载弱覆盖判定与状态（H9）",
+   "identity": "主键`areaId`；无业务状态，范围变更产生新版本；典型：A1",
+   "attributes": [
+    {
+     "name": "areaId",
+     "meaning": "`areaId` 区域编码，身份",
+     "type": "string",
+     "rule": "必填；不随服务小区、措施变化；栅格尺寸与聚合规则，不影响派单判定",
+     "basis": "区域主数据；工单`cover_area`；样例A1"
+    },
+    {
+     "name": "areaName",
+     "meaning": "`areaName`、`range`、`areaScene`、`areaLevel`、`indoorOutdoor`、`urbanRural`、`district` 展示名、范围、场景、等级、室内外、城乡、区县",
+     "type": "string；`range`＝栅格集合或边界；`areaLevel`∈一般／VIP／VVIP；`indoorOutdoor`∈室内／室外；`urbanRural`∈城区／农村",
+     "rule": "`areaScene`、`indoorOutdoor`必填，其余缺失＝未知；`range`变更产生新版本；不设区域弱覆盖状态与区域指标（H9），派单与效果看小区",
+     "basis": "场景库、GIS；工单`cover_area`、`scene`、`inoutdoor`"
+    },
+    {
+     "name": "range",
+     "meaning": "`areaName`、`range`、`areaScene`、`areaLevel`、`indoorOutdoor`、`urbanRural`、`district` 展示名、范围、场景、等级、室内外、城乡、区县",
+     "type": "string；`range`＝栅格集合或边界；`areaLevel`∈一般／VIP／VVIP；`indoorOutdoor`∈室内／室外；`urbanRural`∈城区／农村",
+     "rule": "`areaScene`、`indoorOutdoor`必填，其余缺失＝未知；`range`变更产生新版本；不设区域弱覆盖状态与区域指标（H9），派单与效果看小区",
+     "basis": "场景库、GIS；工单`cover_area`、`scene`、`inoutdoor`"
+    },
+    {
+     "name": "areaScene",
+     "meaning": "`areaName`、`range`、`areaScene`、`areaLevel`、`indoorOutdoor`、`urbanRural`、`district` 展示名、范围、场景、等级、室内外、城乡、区县",
+     "type": "string；`range`＝栅格集合或边界；`areaLevel`∈一般／VIP／VVIP；`indoorOutdoor`∈室内／室外；`urbanRural`∈城区／农村",
+     "rule": "`areaScene`、`indoorOutdoor`必填，其余缺失＝未知；`range`变更产生新版本；不设区域弱覆盖状态与区域指标（H9），派单与效果看小区",
+     "basis": "场景库、GIS；工单`cover_area`、`scene`、`inoutdoor`"
+    },
+    {
+     "name": "areaLevel",
+     "meaning": "`areaName`、`range`、`areaScene`、`areaLevel`、`indoorOutdoor`、`urbanRural`、`district` 展示名、范围、场景、等级、室内外、城乡、区县",
+     "type": "string；`range`＝栅格集合或边界；`areaLevel`∈一般／VIP／VVIP；`indoorOutdoor`∈室内／室外；`urbanRural`∈城区／农村",
+     "rule": "`areaScene`、`indoorOutdoor`必填，其余缺失＝未知；`range`变更产生新版本；不设区域弱覆盖状态与区域指标（H9），派单与效果看小区",
+     "basis": "场景库、GIS；工单`cover_area`、`scene`、`inoutdoor`"
+    },
+    {
+     "name": "indoorOutdoor",
+     "meaning": "`areaName`、`range`、`areaScene`、`areaLevel`、`indoorOutdoor`、`urbanRural`、`district` 展示名、范围、场景、等级、室内外、城乡、区县",
+     "type": "string；`range`＝栅格集合或边界；`areaLevel`∈一般／VIP／VVIP；`indoorOutdoor`∈室内／室外；`urbanRural`∈城区／农村",
+     "rule": "`areaScene`、`indoorOutdoor`必填，其余缺失＝未知；`range`变更产生新版本；不设区域弱覆盖状态与区域指标（H9），派单与效果看小区",
+     "basis": "场景库、GIS；工单`cover_area`、`scene`、`inoutdoor`"
+    },
+    {
+     "name": "urbanRural",
+     "meaning": "`areaName`、`range`、`areaScene`、`areaLevel`、`indoorOutdoor`、`urbanRural`、`district` 展示名、范围、场景、等级、室内外、城乡、区县",
+     "type": "string；`range`＝栅格集合或边界；`areaLevel`∈一般／VIP／VVIP；`indoorOutdoor`∈室内／室外；`urbanRural`∈城区／农村",
+     "rule": "`areaScene`、`indoorOutdoor`必填，其余缺失＝未知；`range`变更产生新版本；不设区域弱覆盖状态与区域指标（H9），派单与效果看小区",
+     "basis": "场景库、GIS；工单`cover_area`、`scene`、`inoutdoor`"
+    },
+    {
+     "name": "district",
+     "meaning": "`areaName`、`range`、`areaScene`、`areaLevel`、`indoorOutdoor`、`urbanRural`、`district` 展示名、范围、场景、等级、室内外、城乡、区县",
+     "type": "string；`range`＝栅格集合或边界；`areaLevel`∈一般／VIP／VVIP；`indoorOutdoor`∈室内／室外；`urbanRural`∈城区／农村",
+     "rule": "`areaScene`、`indoorOutdoor`必填，其余缺失＝未知；`range`变更产生新版本；不设区域弱覆盖状态与区域指标（H9），派单与效果看小区",
+     "basis": "场景库、GIS；工单`cover_area`、`scene`、`inoutdoor`"
+    }
+   ]
+  },
+  {
+   "id": "OT_CELL",
+   "name": "小区",
+   "definition": "无线覆盖的服务单元，弱覆盖派单对象，同时是邻区、功率等参数的作用对象；承载场景等级与小区级指标，逐日MR统计由OT_CELL_MR承载（RT_16）。与天线（物理载体）、站点（归属单位）区别开；没有告警状态，弱覆盖处理状态归工单",
+   "identity": "主键`cellKey`（LTE:ECI／NR:NCI），PCI与名称不作标识；改名、改PCI身份不变；典型：X（B1，派单对象）、Y（B2，同天线）、Z1、Z2（邻区）、W、N1、C2～C11（同类新实例）。样例用简称",
+   "attributes": [
+    {
+     "name": "cellKey",
+     "meaning": "`cellKey` 小区身份",
+     "type": "string，\"LTE:\"＋ECI／\"NR:\"＋NCI",
+     "rule": "必填；PCI与名称不作标识；样例X、Y、Z1、Z2、W、N1、C2～C11为简称，真实数据按映射表转ECI",
+     "basis": "OMC、工参；ECI＝eNB ID×256＋小区号"
+    },
+    {
+     "name": "rat",
+     "meaning": "`rat`、`band` 制式、频段",
+     "type": "enum LTE／NR；string",
+     "rule": "`rat`必填，与站点类型、场景等级共同决定适用的派单规则，并决定原因函数是否适用（NR的F_02、F_04暂不适用）；`band`选填，用于区分同天线多频小区",
+     "basis": "工参"
+    },
+    {
+     "name": "band",
+     "meaning": "`rat`、`band` 制式、频段",
+     "type": "enum LTE／NR；string",
+     "rule": "`rat`必填，与站点类型、场景等级共同决定适用的派单规则，并决定原因函数是否适用（NR的F_02、F_04暂不适用）；`band`选填，用于区分同天线多频小区",
+     "basis": "工参"
+    },
+    {
+     "name": "sceneLevel",
+     "meaning": "`sceneLevel` 场景等级",
+     "type": "enum 一般／VIP／VVIP",
+     "rule": "选取派单规则的条件之一；缺失＝未知，不默认一般场景，派单判定返回“证据不足”（规则缺口）；建单时快照到工单；VIP／VVIP的方案批准追加优化主管",
+     "basis": "场景库／网格等级；工单`scene_level`；样例全部为“一般”（TC03h改为VIP）"
+    },
+    {
+     "name": "rsPower",
+     "meaning": "`rsPower`、`rsPowerPlan` 现网功率、规划功率",
+     "type": "number，dBm／RE",
+     "rule": "选填；缺失则次因“功率偏低”记未核查；功率偏低＝`rsPower`＜`rsPowerPlan`；规划值",
+     "basis": "OMC、规划值"
+    },
+    {
+     "name": "rsPowerPlan",
+     "meaning": "`rsPower`、`rsPowerPlan` 现网功率、规划功率",
+     "type": "number，dBm／RE",
+     "rule": "选填；缺失则次因“功率偏低”记未核查；功率偏低＝`rsPower`＜`rsPowerPlan`；规划值",
+     "basis": "OMC、规划值"
+    },
+    {
+     "name": "targetRadius",
+     "meaning": "`targetRadius` 目标覆盖半径",
+     "type": "number，m，＞0",
+     "rule": "F_08、F_10必需；默认＝0.5×最近站间距（TH14），人工覆盖须留痕；缺失→相关函数返回“未知”",
+     "basis": "RULE_G01；样例直接给定"
+    },
+    {
+     "name": "neighbors",
+     "meaning": "`neighbors[]` 邻区（有向）",
+     "type": "`struct[]`：`{targetCellKey, freqType∈同频／异频, overlapWeight}`",
+     "rule": "选填；A→B与B→A分别记在各自名下；未提供＝未知，不等于无邻区；距离由F_01派生，不存储",
+     "basis": "OMC邻区表、MR"
+    },
+    {
+     "name": "metrics",
+     "meaning": "`metrics[]` 小区级其他指标（保护指标来源）",
+     "type": "`struct[]`时序`{name, date, value}`；如`实测重叠覆盖度`，0～1",
+     "rule": "缺失＝未知，保护项缺数据时效果“待评估”；实测重叠覆盖度与F_10输出的预测重叠指数不是同一个量（H5）",
+     "basis": "MR、KPI；种子`cellMetrics`"
+    },
+    {
+     "name": "azimuthDeviationDeg",
+     "meaning": "`azimuthDeviationDeg`、`obstructionEvidence` 次因输入",
+     "type": "number °；enum 是／否／未核查（引用勘察记录，不存勘察原文）",
+     "rule": "选填；缺失＝未核查，不得当作“无偏差”“无遮挡”",
+     "basis": "MR＋工参对照；勘察记录"
+    },
+    {
+     "name": "obstructionEvidence",
+     "meaning": "`azimuthDeviationDeg`、`obstructionEvidence` 次因输入",
+     "type": "number °；enum 是／否／未核查（引用勘察记录，不存勘察原文）",
+     "rule": "选填；缺失＝未核查，不得当作“无偏差”“无遮挡”",
+     "basis": "MR＋工参对照；勘察记录"
+    },
+    {
+     "name": "cellName",
+     "meaning": "字段字典",
+     "type": "string／string／enum／string／enum",
+     "rule": "`sceneLevel`缺失→规则缺口，派单判定“证据不足”（TC03h）",
+     "basis": "字段字典"
+    }
+   ]
+  },
+  {
+   "id": "OT_CELL_MR",
+   "name": "小区日MR统计",
+   "definition": "一个小区一个自然日的MR汇聚统计：有效采样点数与RSRP＜-110 dBm的弱覆盖采样点数；[派单规则]“数据源＝MR”所指的前置数据本身，弱覆盖发现与效果前后窗比较的输入。不是MR原始采样（来源事实，不入本体），不是弱覆盖结论（占比与是否命中由F_05派生，不存储）",
+   "identity": "主键`mrKey`＝`{cellKey}@{date}`（业务发生日期）；无业务状态，只追加：同日重复到达按最新接收的一条为准、旧条保留为旧版本；缺天＝没有实例＝未知；典型：LTE:X@2026-10-01",
+   "attributes": [
+    {
+     "name": "mrKey",
+     "meaning": "`mrKey`、`cellKey`、`date` 日统计身份、所属小区、业务日期",
+     "type": "string＝`{cellKey}@{date}`；string（RT_16）；date，自然日",
+     "rule": "必填；`date`取业务发生日期，不取接收日期；缺天＝没有该实例＝未知，不补0；样例X、Y为简称，真实数据按映射表转ECI／NCI",
+     "basis": "MR平台小区级日汇总；种子`cellMR`"
+    },
+    {
+     "name": "cellKey",
+     "meaning": "`mrKey`、`cellKey`、`date` 日统计身份、所属小区、业务日期",
+     "type": "string＝`{cellKey}@{date}`；string（RT_16）；date，自然日",
+     "rule": "必填；`date`取业务发生日期，不取接收日期；缺天＝没有该实例＝未知，不补0；样例X、Y为简称，真实数据按映射表转ECI／NCI",
+     "basis": "MR平台小区级日汇总；种子`cellMR`"
+    },
+    {
+     "name": "date",
+     "meaning": "`mrKey`、`cellKey`、`date` 日统计身份、所属小区、业务日期",
+     "type": "string＝`{cellKey}@{date}`；string（RT_16）；date，自然日",
+     "rule": "必填；`date`取业务发生日期，不取接收日期；缺天＝没有该实例＝未知，不补0；样例X、Y为简称，真实数据按映射表转ECI／NCI",
+     "basis": "MR平台小区级日汇总；种子`cellMR`"
+    },
+    {
+     "name": "sampleTotal",
+     "meaning": "`sampleTotal`、`sampleWeak` 有效采样点、弱覆盖采样点（派单与效果的评价对象）",
+     "type": "int，采样点；`sampleWeak`＝RSRP＜-110 dBm的采样点，且≤`sampleTotal`",
+     "rule": "必填；弱覆盖占比＝`sampleWeak`÷`sampleTotal`与单日命中由F_05派生，不存储；分母口径",
+     "basis": "MR平台；种子`cellMR`"
+    },
+    {
+     "name": "sampleWeak",
+     "meaning": "`sampleTotal`、`sampleWeak` 有效采样点、弱覆盖采样点（派单与效果的评价对象）",
+     "type": "int，采样点；`sampleWeak`＝RSRP＜-110 dBm的采样点，且≤`sampleTotal`",
+     "rule": "必填；弱覆盖占比＝`sampleWeak`÷`sampleTotal`与单日命中由F_05派生，不存储；分母口径",
+     "basis": "MR平台；种子`cellMR`"
+    },
+    {
+     "name": "receivedAt",
+     "meaning": "`receivedAt`、`version` 接收时间、版本",
+     "type": "datetime；int，从1起",
+     "rule": "同日重复到达按最新接收的一条为准，旧版本保留可读；工单`discovery.evidenceRefs[]`引用`mrKey`＋`version`，因此数据更正不改写已建工单的发现依据（INV_17）；`receivedAt`缺省取装载时间",
+     "basis": "MR平台；DM_01装载"
+    },
+    {
+     "name": "version",
+     "meaning": "`receivedAt`、`version` 接收时间、版本",
+     "type": "datetime；int，从1起",
+     "rule": "同日重复到达按最新接收的一条为准，旧版本保留可读；工单`discovery.evidenceRefs[]`引用`mrKey`＋`version`，因此数据更正不改写已建工单的发现依据（INV_17）；`receivedAt`缺省取装载时间",
+     "basis": "MR平台；DM_01装载"
+    }
+   ]
+  },
+  {
+   "id": "OT_ANTENNA",
+   "name": "天线",
+   "definition": "下倾角、挂高、方位角的物理载体，天馈类措施的作用对象；一副天线可承载多个小区（多频、多制式共天馈）。是资源，小区是它提供的服务，二者通过RT_02关联",
+   "identity": "主键`antennaId`（站点＋扇区＋天线序号，编码规则）；随工参版本变化（`effectiveTime`）；典型：AN1（承载X、Y）、AN2",
+   "attributes": [
+    {
+     "name": "antennaId",
+     "meaning": "`antennaId`、`siteId` 天线身份、所在站点",
+     "type": "string；`siteId`引用OT_SITE",
+     "rule": "必填；编码规则",
+     "basis": "工参"
+    },
+    {
+     "name": "siteId",
+     "meaning": "`antennaId`、`siteId` 天线身份、所在站点",
+     "type": "string；`siteId`引用OT_SITE",
+     "rule": "必填；编码规则",
+     "basis": "工参"
+    },
+    {
+     "name": "height",
+     "meaning": "`height` 挂高",
+     "type": "number，m，相对覆盖面，＞0",
+     "rule": "必填；缺失→F_08返回“未知（证据不足）”，不判不命中",
+     "basis": "工参"
+    },
+    {
+     "name": "mechTilt",
+     "meaning": "`mechTilt` 机械下倾角",
+     "type": "number，°，整副天线共用",
+     "rule": "必填；每次变更生成新版本，带`effectiveTime`，旧版本保留；A_06回填更新",
+     "basis": "工参、A_06回填"
+    },
+    {
+     "name": "supportsRET",
+     "meaning": "`supportsRET`、`azimuth` 是否电调、方位角",
+     "type": "bool；number，°，自正北顺时针",
+     "rule": "`supportsRET`必填，决定能否选电调；`azimuth`选填",
+     "basis": "工参"
+    },
+    {
+     "name": "azimuth",
+     "meaning": "`supportsRET`、`azimuth` 是否电调、方位角",
+     "type": "bool；number，°，自正北顺时针",
+     "rule": "`supportsRET`必填，决定能否选电调；`azimuth`选填",
+     "basis": "工参"
+    },
+    {
+     "name": "effectiveTime",
+     "meaning": "`effectiveTime` 工参版本生效时间",
+     "type": "datetime",
+     "rule": "版本属性，必填；取实施时间，不取回填接收时间",
+     "basis": "工参、A_06"
+    }
+   ]
+  },
+  {
+   "id": "OT_SITE",
+   "name": "基站／站点",
+   "definition": "小区归属单位，参数与工程的作用边界；提供坐标用于站间距，提供站点类型（宏站／室分）用于选取派单规则与派单问题。规划站点推进本次不用",
+   "identity": "主键`siteId`（eNB ID／gNB ID）；状态规划→在建→开通→退网，本场景只取“开通”；典型：S1、S2、S3",
+   "attributes": [
+    {
+     "name": "siteId",
+     "meaning": "`siteId`、`siteType`、`lifecycle`",
+     "type": "string；enum 宏站／室分；enum 规划／在建／开通／退网",
+     "rule": "必填；`siteType`决定派单规则与派单问题（宏站／室分弱覆盖小区），缺失→小区站点类型未知，A_01拒绝（INV_01）；原因与处置本场景限宏站、开通",
+     "basis": "工参、规划库"
+    },
+    {
+     "name": "siteType",
+     "meaning": "`siteId`、`siteType`、`lifecycle`",
+     "type": "string；enum 宏站／室分；enum 规划／在建／开通／退网",
+     "rule": "必填；`siteType`决定派单规则与派单问题（宏站／室分弱覆盖小区），缺失→小区站点类型未知，A_01拒绝（INV_01）；原因与处置本场景限宏站、开通",
+     "basis": "工参、规划库"
+    },
+    {
+     "name": "lifecycle",
+     "meaning": "`siteId`、`siteType`、`lifecycle`",
+     "type": "string；enum 宏站／室分；enum 规划／在建／开通／退网",
+     "rule": "必填；`siteType`决定派单规则与派单问题（宏站／室分弱覆盖小区），缺失→小区站点类型未知，A_01拒绝（INV_01）；原因与处置本场景限宏站、开通",
+     "basis": "工参、规划库"
+    },
+    {
+     "name": "lat",
+     "meaning": "`lat`、`lon` 坐标",
+     "type": "number，度",
+     "rule": "必填；缺失→F_01返回空，站间距＝未知",
+     "basis": "工参"
+    },
+    {
+     "name": "lon",
+     "meaning": "`lat`、`lon` 坐标",
+     "type": "number，度",
+     "rule": "必填；缺失→F_01返回空，站间距＝未知",
+     "basis": "工参"
+    }
+   ]
+  },
+  {
+   "id": "OT_TICKET",
+   "name": "工单",
+   "definition": "对一个已发现的弱覆盖小区的处置单（处置载体），对应[派单规则]的“类别／问题类型／派单问题”；承载发现依据快照、根因、措施与评估链条，可复发。不是问题锚点：问题由前置数据按规则发现，工单只记录“发现之后怎么处理”。不等于[覆盖汇总]的三级原因——后者是规则，不是问题实例",
+   "identity": "主键`ticketNo`（TK-{制式}-{小区标识}-{序号}，编码规则；接入派单系统后以`taskno`为准）；状态待核验→已确认／已排除→处置中→待评估→已改善／改善未解决→已关闭；典型：TK-LTE-X-001",
+   "attributes": [
+    {
+     "name": "ticketNo",
+     "meaning": "`ticketNo` 工单号",
+     "type": "string，TK-{制式}-{小区标识}-{序号}",
+     "rule": "必填、唯一；编号规则；接入派单系统后对应`taskno`",
+     "basis": "工单系统"
+    },
+    {
+     "name": "problemCategory",
+     "meaning": "`problemCategory`、`problemType`、`dispatchProblem`、`weakKind`、`rat`、`sceneLevel` 类别、问题类型、派单问题、弱覆盖分型、制式、场景等级",
+     "type": "enum 覆盖结构；enum MR弱覆盖小区；enum 宏站弱覆盖小区／室分弱覆盖小区；enum 近端／远端／室分／上行／综合；enum LTE／NR；enum 一般／VIP／VVIP",
+     "rule": "前三项取[派单规则]原文，`dispatchProblem`由站点类型决定；`rat`、`sceneLevel`为建单时的小区快照；`weakKind`未分型＝空",
+     "basis": "[派单规则]第2～5行；RULE_T01"
+    },
+    {
+     "name": "problemType",
+     "meaning": "`problemCategory`、`problemType`、`dispatchProblem`、`weakKind`、`rat`、`sceneLevel` 类别、问题类型、派单问题、弱覆盖分型、制式、场景等级",
+     "type": "enum 覆盖结构；enum MR弱覆盖小区；enum 宏站弱覆盖小区／室分弱覆盖小区；enum 近端／远端／室分／上行／综合；enum LTE／NR；enum 一般／VIP／VVIP",
+     "rule": "前三项取[派单规则]原文，`dispatchProblem`由站点类型决定；`rat`、`sceneLevel`为建单时的小区快照；`weakKind`未分型＝空",
+     "basis": "[派单规则]第2～5行；RULE_T01"
+    },
+    {
+     "name": "dispatchProblem",
+     "meaning": "`problemCategory`、`problemType`、`dispatchProblem`、`weakKind`、`rat`、`sceneLevel` 类别、问题类型、派单问题、弱覆盖分型、制式、场景等级",
+     "type": "enum 覆盖结构；enum MR弱覆盖小区；enum 宏站弱覆盖小区／室分弱覆盖小区；enum 近端／远端／室分／上行／综合；enum LTE／NR；enum 一般／VIP／VVIP",
+     "rule": "前三项取[派单规则]原文，`dispatchProblem`由站点类型决定；`rat`、`sceneLevel`为建单时的小区快照；`weakKind`未分型＝空",
+     "basis": "[派单规则]第2～5行；RULE_T01"
+    },
+    {
+     "name": "weakKind",
+     "meaning": "`problemCategory`、`problemType`、`dispatchProblem`、`weakKind`、`rat`、`sceneLevel` 类别、问题类型、派单问题、弱覆盖分型、制式、场景等级",
+     "type": "enum 覆盖结构；enum MR弱覆盖小区；enum 宏站弱覆盖小区／室分弱覆盖小区；enum 近端／远端／室分／上行／综合；enum LTE／NR；enum 一般／VIP／VVIP",
+     "rule": "前三项取[派单规则]原文，`dispatchProblem`由站点类型决定；`rat`、`sceneLevel`为建单时的小区快照；`weakKind`未分型＝空",
+     "basis": "[派单规则]第2～5行；RULE_T01"
+    },
+    {
+     "name": "rat",
+     "meaning": "`problemCategory`、`problemType`、`dispatchProblem`、`weakKind`、`rat`、`sceneLevel` 类别、问题类型、派单问题、弱覆盖分型、制式、场景等级",
+     "type": "enum 覆盖结构；enum MR弱覆盖小区；enum 宏站弱覆盖小区／室分弱覆盖小区；enum 近端／远端／室分／上行／综合；enum LTE／NR；enum 一般／VIP／VVIP",
+     "rule": "前三项取[派单规则]原文，`dispatchProblem`由站点类型决定；`rat`、`sceneLevel`为建单时的小区快照；`weakKind`未分型＝空",
+     "basis": "[派单规则]第2～5行；RULE_T01"
+    },
+    {
+     "name": "sceneLevel",
+     "meaning": "`problemCategory`、`problemType`、`dispatchProblem`、`weakKind`、`rat`、`sceneLevel` 类别、问题类型、派单问题、弱覆盖分型、制式、场景等级",
+     "type": "enum 覆盖结构；enum MR弱覆盖小区；enum 宏站弱覆盖小区／室分弱覆盖小区；enum 近端／远端／室分／上行／综合；enum LTE／NR；enum 一般／VIP／VVIP",
+     "rule": "前三项取[派单规则]原文，`dispatchProblem`由站点类型决定；`rat`、`sceneLevel`为建单时的小区快照；`weakKind`未分型＝空",
+     "basis": "[派单规则]第2～5行；RULE_T01"
+    },
+    {
+     "name": "discovery",
+     "meaning": "`discovery` 发现依据快照",
+     "type": "struct：`{problemKey, ruleId, ruleVersion, window{from,to,days}, hitDates[], hitDays, unknownDates[], minHitDays, verdict, evidenceRefs[]}`；`problemKey`＝`{cellKey}@{问题类型}@{窗口末日}`；`evidenceRefs[]`＝`{mrKey, version}`，窗口内实际存在的OT_CELL_MR（缺天不引用），经RT_17指向锚点数据",
+     "rule": "必填；建单时由A_01重算的F_06结果写入，此后不改；重算只追加诊断记录，不改快照；历史工单按当时规则版本与数据版本读回；`evidenceRefs[]`至少一条，否则拒绝建单（INV_16）",
+     "basis": "F_06；A_01；RULE_D01～D04、RULE_F01"
+    },
+    {
+     "name": "status",
+     "meaning": "`status` 工单状态",
+     "type": "enum 待核验／已确认／已排除／处置中／待评估／已改善／改善未解决／已关闭",
+     "rule": "必填；迁移见状态约束；不含“复发”（H3）",
+     "basis": "A_01～A_08"
+    },
+    {
+     "name": "relatedTicketNo",
+     "meaning": "`relatedTicketNo`、`affectedUsers`",
+     "type": "string；number，可空",
+     "rule": "复发时填原工单号；`affectedUsers`空＝未知，不是0",
+     "basis": "A_01；用户面系统"
+    },
+    {
+     "name": "affectedUsers",
+     "meaning": "`relatedTicketNo`、`affectedUsers`",
+     "type": "string；number，可空",
+     "rule": "复发时填原工单号；`affectedUsers`空＝未知，不是0",
+     "basis": "A_01；用户面系统"
+    },
+    {
+     "name": "diagnostics",
+     "meaning": "`diagnostics[]` 函数结果记录",
+     "type": "`struct[]`：`{callId, kind∈发现判定／假性弱覆盖／下倾角命中, funcId, funcVersion, inputRefs[], ruleVersions[], result, evidenceRefs[], calledAt, calledBy}`",
+     "rule": "每次调用追加，不覆盖；`inputRefs`含MR窗口与工参版本；派单判定只引用实际适用的那条派单规则；见下文“函数结果与动作记录”",
+     "basis": "F_06、F_07、F_08"
+    },
+    {
+     "name": "rootCauses",
+     "meaning": "`rootCauses[]` 根因",
+     "type": "`struct[]`：`{round, role∈主因／次因／已排除, causeFamily, causeLabel, evidenceRefs[], diagCallId, source∈规则／优化本体／人工}`",
+     "rule": "A_02追加新轮次，不覆盖旧轮；`causeLabel`取[覆盖汇总]三级原因；症状级标签不得作主因；置信度口径，定义前不输出“置信度”",
+     "basis": "A_02；RULE_W06"
+    }
+   ]
+  },
+  {
+   "id": "OT_PLAN",
+   "name": "优化方案",
+   "definition": "针对工单根因的措施方案：措施类型快照、动作明细、周边影响结果、审批、执行信息、回退条件。措施类型与执行记录都是它的属性，不单设对象",
+   "identity": "主键`planNo`（工单号＋轮次）；执行状态草案→待确认→已批准→已派单→已实施／失败／未知→已回退；典型：PL-TK-LTE-X-001-R1",
+   "attributes": [
+    {
+     "name": "planNo",
+     "meaning": "`planNo`、`ticketNo`、`round`",
+     "type": "stringPL-{ticketNo}-R{round}；string；int",
+     "rule": "必填；一张工单可有多轮方案",
+     "basis": "A_04"
+    },
+    {
+     "name": "ticketNo",
+     "meaning": "`planNo`、`ticketNo`、`round`",
+     "type": "stringPL-{ticketNo}-R{round}；string；int",
+     "rule": "必填；一张工单可有多轮方案",
+     "basis": "A_04"
+    },
+    {
+     "name": "round",
+     "meaning": "`planNo`、`ticketNo`、`round`",
+     "type": "stringPL-{ticketNo}-R{round}；string；int",
+     "rule": "必填；一张工单可有多轮方案",
+     "basis": "A_04"
+    },
+    {
+     "name": "measureType",
+     "meaning": "`measureType` 措施类型快照",
+     "type": "struct：`{measureCode, name, bigClass, midClass, smallClass, level, executorRole, remote, reversible, direction, maxStep, resolution}`",
+     "rule": "必填；生成时带入字典快照，字典日后变更不改历史方案",
+     "basis": "措施类型字典"
+    },
+    {
+     "name": "status",
+     "meaning": "`status` 执行状态",
+     "type": "enum 草案／待确认／已批准／未批准／已派单／已实施／失败／未知／已回退",
+     "rule": "必填；迁移见状态约束",
+     "basis": "A_04～A_06、A_10"
+    },
+    {
+     "name": "actions",
+     "meaning": "`actions[]` 动作明细",
+     "type": "`struct[]`：`{targetKind∈天线／小区阵列, targetKey, param∈mechTilt／elecTilt, currentValue, targetValue, deltaValue, rollbackValue}`；°",
+     "rule": "必填；`deltaValue`取F_10调减后的值，为分辨率整数倍且≤单次上限",
+     "basis": "F_09、F_10"
+    },
+    {
+     "name": "impact",
+     "meaning": "`impact` 周边影响结果",
+     "type": "struct：`{callId, result∈通过／调减／不通过／未评估, deltaPlan, deltaFinal, checks[]}`",
+     "rule": "必填；`checks[]`逐项留痕；邻区工参缺失该项＝未评估，整体不得为“通过”",
+     "basis": "F_10"
+    },
+    {
+     "name": "approval",
+     "meaning": "`approval`、`rollbackCondition` 审批、回退条件",
+     "type": "struct：`{approverRoles[], decision, time, reason}`；string",
+     "rule": "`rollbackCondition`必填＝保护指标恶化或超门限；`approval`在A_05写入",
+     "basis": "A_05；RULE_W14"
+    },
+    {
+     "name": "rollbackCondition",
+     "meaning": "`approval`、`rollbackCondition` 审批、回退条件",
+     "type": "struct：`{approverRoles[], decision, time, reason}`；string",
+     "rule": "`rollbackCondition`必填＝保护指标恶化或超门限；`approval`在A_05写入",
+     "basis": "A_05；RULE_W14"
+    },
+    {
+     "name": "execution",
+     "meaning": "`execution` 执行信息",
+     "type": "struct：`{dispatchNo, executor, executeTime, receipt∈成功／失败／未知, actualValues[]}`",
+     "rule": "A_06写入；回执缺失＝未知；`actualValues`为现场回填实际值，不得用计划值代替",
+     "basis": "A_05、A_06"
+    }
+   ]
+  },
+  {
+   "id": "OT_EFFECT",
+   "name": "优化效果",
+   "definition": "一次方案实施后一轮评价的结果记录，是“改善／达标／持续有效”的依据。评价过程是函数F_11，评价结果是对象——它有多轮、有状态，并被历史案例引用，需要独立追踪",
+   "identity": "主键`effectNo`（工单号＋轮次＋评估序号）；效果状态待评估→评估中→改善／未改善／劣化／未达标→持续有效；典型：EF-TK-LTE-X-001-R1-E1",
+   "attributes": [
+    {
+     "name": "effectNo",
+     "meaning": "`effectNo`、`planNo`、`round`、`beforeWindow`、`afterWindow`",
+     "type": "string；int；struct：`{from, to, days}`（自然日）",
+     "rule": "必填；前窗＝派单判定所用7天窗口（取`discovery.evidenceRefs`所指的OT_CELL_MR版本，不随后续更正漂移）；后窗＝实施日次日起连续有数据的天（遇第一个缺天即止）；一个方案可多轮评估",
+     "basis": "A_07"
+    },
+    {
+     "name": "planNo",
+     "meaning": "`effectNo`、`planNo`、`round`、`beforeWindow`、`afterWindow`",
+     "type": "string；int；struct：`{from, to, days}`（自然日）",
+     "rule": "必填；前窗＝派单判定所用7天窗口（取`discovery.evidenceRefs`所指的OT_CELL_MR版本，不随后续更正漂移）；后窗＝实施日次日起连续有数据的天（遇第一个缺天即止）；一个方案可多轮评估",
+     "basis": "A_07"
+    },
+    {
+     "name": "round",
+     "meaning": "`effectNo`、`planNo`、`round`、`beforeWindow`、`afterWindow`",
+     "type": "string；int；struct：`{from, to, days}`（自然日）",
+     "rule": "必填；前窗＝派单判定所用7天窗口（取`discovery.evidenceRefs`所指的OT_CELL_MR版本，不随后续更正漂移）；后窗＝实施日次日起连续有数据的天（遇第一个缺天即止）；一个方案可多轮评估",
+     "basis": "A_07"
+    },
+    {
+     "name": "beforeWindow",
+     "meaning": "`effectNo`、`planNo`、`round`、`beforeWindow`、`afterWindow`",
+     "type": "string；int；struct：`{from, to, days}`（自然日）",
+     "rule": "必填；前窗＝派单判定所用7天窗口（取`discovery.evidenceRefs`所指的OT_CELL_MR版本，不随后续更正漂移）；后窗＝实施日次日起连续有数据的天（遇第一个缺天即止）；一个方案可多轮评估",
+     "basis": "A_07"
+    },
+    {
+     "name": "afterWindow",
+     "meaning": "`effectNo`、`planNo`、`round`、`beforeWindow`、`afterWindow`",
+     "type": "string；int；struct：`{from, to, days}`（自然日）",
+     "rule": "必填；前窗＝派单判定所用7天窗口（取`discovery.evidenceRefs`所指的OT_CELL_MR版本，不随后续更正漂移）；后窗＝实施日次日起连续有数据的天（遇第一个缺天即止）；一个方案可多轮评估",
+     "basis": "A_07"
+    },
+    {
+     "name": "beforeRatio",
+     "meaning": "`beforeRatio`、`afterRatio`、`afterHitDays`、`improved`、`achieved`、`sustained`、`protectionOk`",
+     "type": "number，0～1；int（后窗前7天按派单规则的命中天数）；bool，可空",
+     "rule": "后窗不足7天时为空；判定空＝未知，不是“否”",
+     "basis": "F_11"
+    },
+    {
+     "name": "afterRatio",
+     "meaning": "`beforeRatio`、`afterRatio`、`afterHitDays`、`improved`、`achieved`、`sustained`、`protectionOk`",
+     "type": "number，0～1；int（后窗前7天按派单规则的命中天数）；bool，可空",
+     "rule": "后窗不足7天时为空；判定空＝未知，不是“否”",
+     "basis": "F_11"
+    },
+    {
+     "name": "afterHitDays",
+     "meaning": "`beforeRatio`、`afterRatio`、`afterHitDays`、`improved`、`achieved`、`sustained`、`protectionOk`",
+     "type": "number，0～1；int（后窗前7天按派单规则的命中天数）；bool，可空",
+     "rule": "后窗不足7天时为空；判定空＝未知，不是“否”",
+     "basis": "F_11"
+    },
+    {
+     "name": "improved",
+     "meaning": "`beforeRatio`、`afterRatio`、`afterHitDays`、`improved`、`achieved`、`sustained`、`protectionOk`",
+     "type": "number，0～1；int（后窗前7天按派单规则的命中天数）；bool，可空",
+     "rule": "后窗不足7天时为空；判定空＝未知，不是“否”",
+     "basis": "F_11"
+    },
+    {
+     "name": "achieved",
+     "meaning": "`beforeRatio`、`afterRatio`、`afterHitDays`、`improved`、`achieved`、`sustained`、`protectionOk`",
+     "type": "number，0～1；int（后窗前7天按派单规则的命中天数）；bool，可空",
+     "rule": "后窗不足7天时为空；判定空＝未知，不是“否”",
+     "basis": "F_11"
+    },
+    {
+     "name": "sustained",
+     "meaning": "`beforeRatio`、`afterRatio`、`afterHitDays`、`improved`、`achieved`、`sustained`、`protectionOk`",
+     "type": "number，0～1；int（后窗前7天按派单规则的命中天数）；bool，可空",
+     "rule": "后窗不足7天时为空；判定空＝未知，不是“否”",
+     "basis": "F_11"
+    },
+    {
+     "name": "protectionOk",
+     "meaning": "`beforeRatio`、`afterRatio`、`afterHitDays`、`improved`、`achieved`、`sustained`、`protectionOk`",
+     "type": "number，0～1；int（后窗前7天按派单规则的命中天数）；bool，可空",
+     "rule": "后窗不足7天时为空；判定空＝未知，不是“否”",
+     "basis": "F_11"
+    },
+    {
+     "name": "protection",
+     "meaning": "`protection[]`、`status`、`callRef`",
+     "type": "`struct[]`：`{name, before, after, pass}`；enum 待评估／评估中／改善／未改善／劣化／未达标／持续有效",
+     "rule": "`status`必填，是效果状态；保护指标取同天线小区与重叠邻区的小区级指标，任一项缺数据→待评估",
+     "basis": "F_11"
+    },
+    {
+     "name": "status",
+     "meaning": "`protection[]`、`status`、`callRef`",
+     "type": "`struct[]`：`{name, before, after, pass}`；enum 待评估／评估中／改善／未改善／劣化／未达标／持续有效",
+     "rule": "`status`必填，是效果状态；保护指标取同天线小区与重叠邻区的小区级指标，任一项缺数据→待评估",
+     "basis": "F_11"
+    },
+    {
+     "name": "callRef",
+     "meaning": "`protection[]`、`status`、`callRef`",
+     "type": "`struct[]`：`{name, before, after, pass}`；enum 待评估／评估中／改善／未改善／劣化／未达标／持续有效",
+     "rule": "`status`必填，是效果状态；保护指标取同天线小区与重叠邻区的小区级指标，任一项缺数据→待评估",
+     "basis": "F_11"
+    }
+   ]
+  },
+  {
+   "id": "OT_CASE",
+   "name": "历史案例",
+   "definition": "已评定的“问题—根因—措施—效果”记录，含失败与证据不足，供同类问题检索复用。不是[覆盖汇总]的100行规则",
+   "identity": "主键`caseNo`（CS-{ticketNo}-R{轮次}）；验证状态未验证→已验证；当前0个实例；典型：CS-TK-LTE-X-001-R1（测试中）",
+   "attributes": [
+    {
+     "name": "caseNo",
+     "meaning": "`caseNo`、`sourceTicketNo`、`planNo`、`effectNo`",
+     "type": "string",
+     "rule": "必填，可追溯到来源",
+     "basis": "A_09"
+    },
+    {
+     "name": "sourceTicketNo",
+     "meaning": "`caseNo`、`sourceTicketNo`、`planNo`、`effectNo`",
+     "type": "string",
+     "rule": "必填，可追溯到来源",
+     "basis": "A_09"
+    },
+    {
+     "name": "planNo",
+     "meaning": "`caseNo`、`sourceTicketNo`、`planNo`、`effectNo`",
+     "type": "string",
+     "rule": "必填，可追溯到来源",
+     "basis": "A_09"
+    },
+    {
+     "name": "effectNo",
+     "meaning": "`caseNo`、`sourceTicketNo`、`planNo`、`effectNo`",
+     "type": "string",
+     "rule": "必填，可追溯到来源",
+     "basis": "A_09"
+    },
+    {
+     "name": "applicability",
+     "meaning": "`applicability`、`measureType`、`deltaValue`",
+     "type": "struct：`{rat, siteType, sceneLevel, areaScene, urbanRural, indoorOutdoor, causeFamily, vendor, tiltRange}`；方案快照；number，°",
+     "rule": "必填；引用案例须匹配适用条件",
+     "basis": "A_09"
+    },
+    {
+     "name": "measureType",
+     "meaning": "`applicability`、`measureType`、`deltaValue`",
+     "type": "struct：`{rat, siteType, sceneLevel, areaScene, urbanRural, indoorOutdoor, causeFamily, vendor, tiltRange}`；方案快照；number，°",
+     "rule": "必填；引用案例须匹配适用条件",
+     "basis": "A_09"
+    },
+    {
+     "name": "deltaValue",
+     "meaning": "`applicability`、`measureType`、`deltaValue`",
+     "type": "struct：`{rat, siteType, sceneLevel, areaScene, urbanRural, indoorOutdoor, causeFamily, vendor, tiltRange}`；方案快照；number，°",
+     "rule": "必填；引用案例须匹配适用条件",
+     "basis": "A_09"
+    },
+    {
+     "name": "outcome",
+     "meaning": "`outcome`、`validation`",
+     "type": "enum 有效可复现／无效／证据不足；enum 未验证／已验证",
+     "rule": "必填；失败与证据不足必须入库；当前案例数为0",
+     "basis": "A_09"
+    },
+    {
+     "name": "validation",
+     "meaning": "`outcome`、`validation`",
+     "type": "enum 有效可复现／无效／证据不足；enum 未验证／已验证",
+     "rule": "必填；失败与证据不足必须入库；当前案例数为0",
+     "basis": "A_09"
+    }
+   ]
+  }
+ ],
+ "relationTypes": [
+  {
+   "id": "RT_01",
+   "name": "归属于",
+   "from": [
+    "OT_CELL"
+   ],
+   "to": [
+    "OT_SITE"
+   ],
+   "cardinality": "N:1；小区隶属的基站（eNB／gNB ID为ECI／NCI高位）",
+   "source": "ECI／NCI拆出；当前有效，站点迁移保留历史；未取到工参＝未知，不等于无站点",
+   "usedBy": "F_01站间距；A_04作用边界",
+   "attributes": []
+  },
+  {
+   "id": "RT_02",
+   "name": "由…提供覆盖",
+   "from": [
+    "OT_CELL"
+   ],
+   "to": [
+    "OT_ANTENNA"
+   ],
+   "cardinality": "N:1（天线1:N）；属性`elecTilt`、`vBeam`、`arrayPort`；实际角色；成立：工参小区—天线对应与现场核对一致",
+   "source": "工参；随工参版本有效；天线接反时对应错位，须核对；缺失＝未知",
+   "usedBy": "F_02～F_04、F_08；F_10决定同天线小区范围（INV_12）",
+   "attributes": [
+    {
+     "name": "elecTilt",
+     "meaning": "`elecTilt` 电子下倾角、`vBeam` 垂直波束宽、`arrayPort` 阵列端口",
+     "type": "number，°；number，°；string",
+     "rule": "`elecTilt`、`vBeam`必填，缺失→F_03、F_08返回“未知”；电调后写新版本带生效时间，历史保留；小区总下倾＝天线`mechTilt`＋本关系`elecTilt`，由F_03派生不存储",
+     "basis": "工参、电调回执"
+    },
+    {
+     "name": "vBeam",
+     "meaning": "`elecTilt` 电子下倾角、`vBeam` 垂直波束宽、`arrayPort` 阵列端口",
+     "type": "number，°；number，°；string",
+     "rule": "`elecTilt`、`vBeam`必填，缺失→F_03、F_08返回“未知”；电调后写新版本带生效时间，历史保留；小区总下倾＝天线`mechTilt`＋本关系`elecTilt`，由F_03派生不存储",
+     "basis": "工参、电调回执"
+    },
+    {
+     "name": "arrayPort",
+     "meaning": "`elecTilt` 电子下倾角、`vBeam` 垂直波束宽、`arrayPort` 阵列端口",
+     "type": "number，°；number，°；string",
+     "rule": "`elecTilt`、`vBeam`必填，缺失→F_03、F_08返回“未知”；电调后写新版本带生效时间，历史保留；小区总下倾＝天线`mechTilt`＋本关系`elecTilt`，由F_03派生不存储",
+     "basis": "工参、电调回执"
+    }
+   ]
+  },
+  {
+   "id": "RT_03",
+   "name": "邻区／重叠覆盖",
+   "from": [
+    "OT_CELL"
+   ],
+   "to": [
+    "OT_CELL"
+   ],
+   "cardinality": "N:M有向，以小区属性`neighbors`记录；重叠为派生",
+   "source": "OMC邻区表、MR邻区电平；按时段保留；缺失＝未知（F_10记“未评估”），不等于无邻区",
+   "usedBy": "F_10重叠邻区范围与预测重叠指数",
+   "attributes": []
+  },
+  {
+   "id": "RT_04",
+   "name": "主要覆盖",
+   "from": [
+    "OT_CELL"
+   ],
+   "to": [
+    "OT_AREA"
+   ],
+   "cardinality": "N:M；`role`主服务／次服务；`share`采样占比；`period`",
+   "source": "MR采样的服务小区；按时段保留历史；占比缺失＝未知",
+   "usedBy": "工单`cover_area`上下文、问答“这个区域涉及哪些小区”；不参与派单判定",
+   "attributes": [
+    {
+     "name": "role",
+     "meaning": "`role`、`share`、`period`、`evidenceKind`",
+     "type": "RT_04：`role`∈主服务／次服务，`share`0～1，`period`；RT_06：`role`∈同天线小区／重叠邻区；RT_08：`evidenceKind`∈小区MR／小区指标／工参／勘察；RT_10：`role`∈主作用／受影响；RT_13：`role`∈同天线小区／重叠邻区",
+     "rule": "`share`缺失＝未知；其余必填",
+     "basis": "见关系类型表"
+    },
+    {
+     "name": "share",
+     "meaning": "`role`、`share`、`period`、`evidenceKind`",
+     "type": "RT_04：`role`∈主服务／次服务，`share`0～1，`period`；RT_06：`role`∈同天线小区／重叠邻区；RT_08：`evidenceKind`∈小区MR／小区指标／工参／勘察；RT_10：`role`∈主作用／受影响；RT_13：`role`∈同天线小区／重叠邻区",
+     "rule": "`share`缺失＝未知；其余必填",
+     "basis": "见关系类型表"
+    },
+    {
+     "name": "period",
+     "meaning": "`role`、`share`、`period`、`evidenceKind`",
+     "type": "RT_04：`role`∈主服务／次服务，`share`0～1，`period`；RT_06：`role`∈同天线小区／重叠邻区；RT_08：`evidenceKind`∈小区MR／小区指标／工参／勘察；RT_10：`role`∈主作用／受影响；RT_13：`role`∈同天线小区／重叠邻区",
+     "rule": "`share`缺失＝未知；其余必填",
+     "basis": "见关系类型表"
+    },
+    {
+     "name": "evidenceKind",
+     "meaning": "`role`、`share`、`period`、`evidenceKind`",
+     "type": "RT_04：`role`∈主服务／次服务，`share`0～1，`period`；RT_06：`role`∈同天线小区／重叠邻区；RT_08：`evidenceKind`∈小区MR／小区指标／工参／勘察；RT_10：`role`∈主作用／受影响；RT_13：`role`∈同天线小区／重叠邻区",
+     "rule": "`share`缺失＝未知；其余必填",
+     "basis": "见关系类型表"
+    }
+   ]
+  },
+  {
+   "id": "RT_05",
+   "name": "针对",
+   "from": [
+    "OT_TICKET"
+   ],
+   "to": [
+    "OT_CELL"
+   ],
+   "cardinality": "N:1，恰好一个；派单对象＝弱覆盖小区；成立：该小区的前置数据（OT_CELL_MR）按派单规则判为“达到派单条件”（INV_16）",
+   "source": "创建后不变（小区改名不改关系）",
+   "usedBy": "A_01；INV_01、INV_14",
+   "attributes": []
+  },
+  {
+   "id": "RT_06",
+   "name": "涉及",
+   "from": [
+    "OT_TICKET"
+   ],
+   "to": [
+    "OT_CELL"
+   ],
+   "cardinality": "N:M；`role`同天线小区／重叠邻区",
+   "source": "同天线小区由RT_02派生，重叠邻区由RT_03派生；建单时写入；关系变更后新建的工单按新关系派生（TC02f）",
+   "usedBy": "F_07告警范围；F_10保护范围",
+   "attributes": [
+    {
+     "name": "role",
+     "meaning": "`role`、`share`、`period`、`evidenceKind`",
+     "type": "RT_04：`role`∈主服务／次服务，`share`0～1，`period`；RT_06：`role`∈同天线小区／重叠邻区；RT_08：`evidenceKind`∈小区MR／小区指标／工参／勘察；RT_10：`role`∈主作用／受影响；RT_13：`role`∈同天线小区／重叠邻区",
+     "rule": "`share`缺失＝未知；其余必填",
+     "basis": "见关系类型表"
+    },
+    {
+     "name": "share",
+     "meaning": "`role`、`share`、`period`、`evidenceKind`",
+     "type": "RT_04：`role`∈主服务／次服务，`share`0～1，`period`；RT_06：`role`∈同天线小区／重叠邻区；RT_08：`evidenceKind`∈小区MR／小区指标／工参／勘察；RT_10：`role`∈主作用／受影响；RT_13：`role`∈同天线小区／重叠邻区",
+     "rule": "`share`缺失＝未知；其余必填",
+     "basis": "见关系类型表"
+    },
+    {
+     "name": "period",
+     "meaning": "`role`、`share`、`period`、`evidenceKind`",
+     "type": "RT_04：`role`∈主服务／次服务，`share`0～1，`period`；RT_06：`role`∈同天线小区／重叠邻区；RT_08：`evidenceKind`∈小区MR／小区指标／工参／勘察；RT_10：`role`∈主作用／受影响；RT_13：`role`∈同天线小区／重叠邻区",
+     "rule": "`share`缺失＝未知；其余必填",
+     "basis": "见关系类型表"
+    },
+    {
+     "name": "evidenceKind",
+     "meaning": "`role`、`share`、`period`、`evidenceKind`",
+     "type": "RT_04：`role`∈主服务／次服务，`share`0～1，`period`；RT_06：`role`∈同天线小区／重叠邻区；RT_08：`evidenceKind`∈小区MR／小区指标／工参／勘察；RT_10：`role`∈主作用／受影响；RT_13：`role`∈同天线小区／重叠邻区",
+     "rule": "`share`缺失＝未知；其余必填",
+     "basis": "见关系类型表"
+    }
+   ]
+  },
+  {
+   "id": "RT_07",
+   "name": "复发关联",
+   "from": [
+    "OT_TICKET"
+   ],
+   "to": [
+    "OT_TICKET"
+   ],
+   "cardinality": "N:0..1；新工单指向原工单，原工单不重开",
+   "source": "建单时同小区同问题类型存在已关闭工单；永久保留",
+   "usedBy": "A_01；INV_11",
+   "attributes": []
+  },
+  {
+   "id": "RT_08",
+   "name": "根因依据",
+   "from": [
+    "OT_TICKET"
+   ],
+   "to": [
+    "OT_CELL",
+    "OT_ANTENNA"
+   ],
+   "cardinality": "N:M；`evidenceKind`；成立：某轮根因引用了该小区的MR窗口、指标或天线工参版本",
+   "source": "证据回链，不只引用结论文字；引用的MR窗口须有OT_CELL_MR数据，`evidenceKind`＝小区MR时`evidenceRefs`落到具体的OT_CELL_MR实例；告警、勘察是来源事实，经`evidenceRefs`引用，不建关系",
+   "usedBy": "F_08、A_02；INV_03",
+   "attributes": [
+    {
+     "name": "role",
+     "meaning": "`role`、`share`、`period`、`evidenceKind`",
+     "type": "RT_04：`role`∈主服务／次服务，`share`0～1，`period`；RT_06：`role`∈同天线小区／重叠邻区；RT_08：`evidenceKind`∈小区MR／小区指标／工参／勘察；RT_10：`role`∈主作用／受影响；RT_13：`role`∈同天线小区／重叠邻区",
+     "rule": "`share`缺失＝未知；其余必填",
+     "basis": "见关系类型表"
+    },
+    {
+     "name": "share",
+     "meaning": "`role`、`share`、`period`、`evidenceKind`",
+     "type": "RT_04：`role`∈主服务／次服务，`share`0～1，`period`；RT_06：`role`∈同天线小区／重叠邻区；RT_08：`evidenceKind`∈小区MR／小区指标／工参／勘察；RT_10：`role`∈主作用／受影响；RT_13：`role`∈同天线小区／重叠邻区",
+     "rule": "`share`缺失＝未知；其余必填",
+     "basis": "见关系类型表"
+    },
+    {
+     "name": "period",
+     "meaning": "`role`、`share`、`period`、`evidenceKind`",
+     "type": "RT_04：`role`∈主服务／次服务，`share`0～1，`period`；RT_06：`role`∈同天线小区／重叠邻区；RT_08：`evidenceKind`∈小区MR／小区指标／工参／勘察；RT_10：`role`∈主作用／受影响；RT_13：`role`∈同天线小区／重叠邻区",
+     "rule": "`share`缺失＝未知；其余必填",
+     "basis": "见关系类型表"
+    },
+    {
+     "name": "evidenceKind",
+     "meaning": "`role`、`share`、`period`、`evidenceKind`",
+     "type": "RT_04：`role`∈主服务／次服务，`share`0～1，`period`；RT_06：`role`∈同天线小区／重叠邻区；RT_08：`evidenceKind`∈小区MR／小区指标／工参／勘察；RT_10：`role`∈主作用／受影响；RT_13：`role`∈同天线小区／重叠邻区",
+     "rule": "`share`缺失＝未知；其余必填",
+     "basis": "见关系类型表"
+    }
+   ]
+  },
+  {
+   "id": "RT_09",
+   "name": "针对",
+   "from": [
+    "OT_PLAN"
+   ],
+   "to": [
+    "OT_TICKET"
+   ],
+   "cardinality": "N:1；成立：工单“已确认”",
+   "source": "—",
+   "usedBy": "A_04；INV_04",
+   "attributes": []
+  },
+  {
+   "id": "RT_10",
+   "name": "作用于",
+   "from": [
+    "OT_PLAN"
+   ],
+   "to": [
+    "OT_ANTENNA",
+    "OT_CELL"
+   ],
+   "cardinality": "N:M；`role`主作用／受影响。机械下倾：主作用＝天线，受影响＝承载的所有小区；电子下倾：主作用＝对应阵列小区，受影响＝仅该阵列",
+   "source": "由方案`actions`与RT_02派生；作用对象可能不是问题小区自身（如邻区侧天线）",
+   "usedBy": "F_10、A_05；INV_12",
+   "attributes": [
+    {
+     "name": "role",
+     "meaning": "`role`、`share`、`period`、`evidenceKind`",
+     "type": "RT_04：`role`∈主服务／次服务，`share`0～1，`period`；RT_06：`role`∈同天线小区／重叠邻区；RT_08：`evidenceKind`∈小区MR／小区指标／工参／勘察；RT_10：`role`∈主作用／受影响；RT_13：`role`∈同天线小区／重叠邻区",
+     "rule": "`share`缺失＝未知；其余必填",
+     "basis": "见关系类型表"
+    },
+    {
+     "name": "share",
+     "meaning": "`role`、`share`、`period`、`evidenceKind`",
+     "type": "RT_04：`role`∈主服务／次服务，`share`0～1，`period`；RT_06：`role`∈同天线小区／重叠邻区；RT_08：`evidenceKind`∈小区MR／小区指标／工参／勘察；RT_10：`role`∈主作用／受影响；RT_13：`role`∈同天线小区／重叠邻区",
+     "rule": "`share`缺失＝未知；其余必填",
+     "basis": "见关系类型表"
+    },
+    {
+     "name": "period",
+     "meaning": "`role`、`share`、`period`、`evidenceKind`",
+     "type": "RT_04：`role`∈主服务／次服务，`share`0～1，`period`；RT_06：`role`∈同天线小区／重叠邻区；RT_08：`evidenceKind`∈小区MR／小区指标／工参／勘察；RT_10：`role`∈主作用／受影响；RT_13：`role`∈同天线小区／重叠邻区",
+     "rule": "`share`缺失＝未知；其余必填",
+     "basis": "见关系类型表"
+    },
+    {
+     "name": "evidenceKind",
+     "meaning": "`role`、`share`、`period`、`evidenceKind`",
+     "type": "RT_04：`role`∈主服务／次服务，`share`0～1，`period`；RT_06：`role`∈同天线小区／重叠邻区；RT_08：`evidenceKind`∈小区MR／小区指标／工参／勘察；RT_10：`role`∈主作用／受影响；RT_13：`role`∈同天线小区／重叠邻区",
+     "rule": "`share`缺失＝未知；其余必填",
+     "basis": "见关系类型表"
+    }
+   ]
+  },
+  {
+   "id": "RT_11",
+   "name": "检验",
+   "from": [
+    "OT_EFFECT"
+   ],
+   "to": [
+    "OT_PLAN"
+   ],
+   "cardinality": "N:1；成立：方案已实施",
+   "source": "—",
+   "usedBy": "F_11、A_07",
+   "attributes": []
+  },
+  {
+   "id": "RT_12",
+   "name": "比较前后指标（目标）",
+   "from": [
+    "OT_EFFECT"
+   ],
+   "to": [
+    "OT_CELL"
+   ],
+   "cardinality": "N:1；目标＝工单针对的弱覆盖小区",
+   "source": "前窗＝派单窗口（取`discovery.evidenceRefs`所指的OT_CELL_MR版本），后窗＝实施日次日起；看该小区的OT_CELL_MR",
+   "usedBy": "F_11",
+   "attributes": []
+  },
+  {
+   "id": "RT_13",
+   "name": "比较前后指标（保护）",
+   "from": [
+    "OT_EFFECT"
+   ],
+   "to": [
+    "OT_CELL"
+   ],
+   "cardinality": "N:M；`role`同天线小区／重叠邻区",
+   "source": "保护范围与RT_06、RT_10一致",
+   "usedBy": "F_11",
+   "attributes": [
+    {
+     "name": "role",
+     "meaning": "`role`、`share`、`period`、`evidenceKind`",
+     "type": "RT_04：`role`∈主服务／次服务，`share`0～1，`period`；RT_06：`role`∈同天线小区／重叠邻区；RT_08：`evidenceKind`∈小区MR／小区指标／工参／勘察；RT_10：`role`∈主作用／受影响；RT_13：`role`∈同天线小区／重叠邻区",
+     "rule": "`share`缺失＝未知；其余必填",
+     "basis": "见关系类型表"
+    },
+    {
+     "name": "share",
+     "meaning": "`role`、`share`、`period`、`evidenceKind`",
+     "type": "RT_04：`role`∈主服务／次服务，`share`0～1，`period`；RT_06：`role`∈同天线小区／重叠邻区；RT_08：`evidenceKind`∈小区MR／小区指标／工参／勘察；RT_10：`role`∈主作用／受影响；RT_13：`role`∈同天线小区／重叠邻区",
+     "rule": "`share`缺失＝未知；其余必填",
+     "basis": "见关系类型表"
+    },
+    {
+     "name": "period",
+     "meaning": "`role`、`share`、`period`、`evidenceKind`",
+     "type": "RT_04：`role`∈主服务／次服务，`share`0～1，`period`；RT_06：`role`∈同天线小区／重叠邻区；RT_08：`evidenceKind`∈小区MR／小区指标／工参／勘察；RT_10：`role`∈主作用／受影响；RT_13：`role`∈同天线小区／重叠邻区",
+     "rule": "`share`缺失＝未知；其余必填",
+     "basis": "见关系类型表"
+    },
+    {
+     "name": "evidenceKind",
+     "meaning": "`role`、`share`、`period`、`evidenceKind`",
+     "type": "RT_04：`role`∈主服务／次服务，`share`0～1，`period`；RT_06：`role`∈同天线小区／重叠邻区；RT_08：`evidenceKind`∈小区MR／小区指标／工参／勘察；RT_10：`role`∈主作用／受影响；RT_13：`role`∈同天线小区／重叠邻区",
+     "rule": "`share`缺失＝未知；其余必填",
+     "basis": "见关系类型表"
+    }
+   ]
+  },
+  {
+   "id": "RT_14",
+   "name": "沉淀为",
+   "from": [
+    "OT_EFFECT"
+   ],
+   "to": [
+    "OT_CASE"
+   ],
+   "cardinality": "1:0..1",
+   "source": "评定完成后入库，含失败",
+   "usedBy": "A_09；INV_11",
+   "attributes": []
+  },
+  {
+   "id": "RT_15",
+   "name": "被引用于",
+   "from": [
+    "OT_CASE"
+   ],
+   "to": [
+    "OT_PLAN"
+   ],
+   "cardinality": "N:M",
+   "source": "选措时检索；当前案例0条，无案例时依已确认规则继续判断，不记为“无可用措施”",
+   "usedBy": "A_04",
+   "attributes": []
+  },
+  {
+   "id": "RT_16",
+   "name": "统计对象",
+   "from": [
+    "OT_CELL_MR"
+   ],
+   "to": [
+    "OT_CELL"
+   ],
+   "cardinality": "N:1；一个小区一个自然日至多一个当前版本；成立：MR日汇总的`cellKey`对应到本体小区",
+   "source": "MR平台日汇总；随数据追加；`cellKey`无法对应→不装载（映射失败，见“维护与变更约定”）；小区没有任何OT_CELL_MR＝尚无前置数据，不等于无弱覆盖",
+   "usedBy": "F_05、F_06、F_12（发现）；F_11（前后窗、保护指标）；INV_17",
+   "attributes": []
+  },
+  {
+   "id": "RT_17",
+   "name": "发现依据",
+   "from": [
+    "OT_TICKET"
+   ],
+   "to": [
+    "OT_CELL_MR"
+   ],
+   "cardinality": "N:M；成立：该工单`discovery`快照引用了这条MR日统计（`mrKey`＋`version`）",
+   "source": "建单时写入，此后不变；引用的版本即使后来被更正仍可读回；缺天不建立该关系",
+   "usedBy": "A_01；INV_16；TC01a、TC04a",
+   "attributes": []
+  }
+ ],
+ "mapping": {
+  "objectTables": [
+   {
+    "objectType": "OT_AREA",
+    "table": "areas",
+    "physicalKey": [
+     "areaId"
+    ],
+    "direction": "读"
+   },
+   {
+    "objectType": "OT_CELL",
+    "table": "cells",
+    "physicalKey": [
+     "cellKey"
+    ],
+    "direction": "读"
+   },
+   {
+    "objectType": "OT_CELL_MR",
+    "table": "cell_mr",
+    "physicalKey": [
+     "cellKey",
+     "date"
+    ],
+    "direction": "读"
+   },
+   {
+    "objectType": "OT_ANTENNA",
+    "table": "antennas",
+    "physicalKey": [
+     "antennaId",
+     "effectiveTime"
+    ],
+    "direction": "读"
+   },
+   {
+    "objectType": "OT_SITE",
+    "table": "sites",
+    "physicalKey": [
+     "siteId"
+    ],
+    "direction": "读"
+   },
+   {
+    "objectType": "OT_TICKET",
+    "table": "source_tickets",
+    "physicalKey": [
+     "ticketNo",
+     "taskno"
+    ],
+    "direction": "写"
+   },
+   {
+    "objectType": "OT_PLAN",
+    "table": null,
+    "physicalKey": [
+     "planNo",
+     "ticketNo"
+    ],
+    "direction": "写"
+   },
+   {
+    "objectType": "OT_EFFECT",
+    "table": null,
+    "physicalKey": [
+     "effectNo",
+     "ticketNo"
+    ],
+    "direction": "写"
+   },
+   {
+    "objectType": "OT_CASE",
+    "table": null,
+    "physicalKey": [
+     "caseNo"
+    ],
+    "direction": "写"
+   }
+  ],
+  "attributeColumns": [
+   {
+    "owner": "OT_AREA",
+    "attribute": "areaId",
+    "table": "areas",
+    "column": "areaId",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_AREA",
+    "attribute": "areaName",
+    "table": "areas",
+    "column": "areaName",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_AREA",
+    "attribute": "areaScene",
+    "table": "areas",
+    "column": "areaScene",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_AREA",
+    "attribute": "areaLevel",
+    "table": "areas",
+    "column": "areaLevel",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_AREA",
+    "attribute": "indoorOutdoor",
+    "table": "areas",
+    "column": "indoorOutdoor",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_AREA",
+    "attribute": "urbanRural",
+    "table": "areas",
+    "column": "urbanRural",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_AREA",
+    "attribute": "district",
+    "table": "areas",
+    "column": "district",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_AREA",
+    "attribute": "range",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "OT_CELL",
+    "attribute": "cellKey",
+    "table": "cells",
+    "column": "cellKey",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_CELL",
+    "attribute": "cellName",
+    "table": "cells",
+    "column": "cellName",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_CELL",
+    "attribute": "rat",
+    "table": "cells",
+    "column": "rat",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_CELL",
+    "attribute": "band",
+    "table": "cells",
+    "column": "band",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_CELL",
+    "attribute": "sceneLevel",
+    "table": "cells",
+    "column": "sceneLevel",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_CELL",
+    "attribute": "rsPower",
+    "table": "cells",
+    "column": "rsPower",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_CELL",
+    "attribute": "rsPowerPlan",
+    "table": "cells",
+    "column": "rsPowerPlan",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_CELL",
+    "attribute": "targetRadius",
+    "table": "cells",
+    "column": "targetRadius",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_CELL",
+    "attribute": "neighbors[]",
+    "table": null,
+    "column": null,
+    "direction": "读",
+    "mapped": false
+   },
+   {
+    "owner": "OT_CELL",
+    "attribute": "metrics[]",
+    "table": null,
+    "column": null,
+    "direction": "读",
+    "mapped": false
+   },
+   {
+    "owner": "OT_CELL",
+    "attribute": "azimuthDeviationDeg",
+    "table": "cells",
+    "column": "azimuthDeviationDeg",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_CELL",
+    "attribute": "obstructionEvidence",
+    "table": "cells",
+    "column": "obstructionEvidence",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_CELL_MR",
+    "attribute": "cellKey",
+    "table": "cell_mr",
+    "column": "cellKey",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_CELL_MR",
+    "attribute": "date",
+    "table": "cell_mr",
+    "column": "date",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_CELL_MR",
+    "attribute": "mrKey",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "OT_CELL_MR",
+    "attribute": "sampleTotal",
+    "table": "cell_mr",
+    "column": "sampleTotal",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_CELL_MR",
+    "attribute": "sampleWeak",
+    "table": "cell_mr",
+    "column": "sampleWeak",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_CELL_MR",
+    "attribute": "receivedAt",
+    "table": "cell_mr",
+    "column": "receivedAt",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_CELL_MR",
+    "attribute": "version",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "OT_ANTENNA",
+    "attribute": "antennaId",
+    "table": "antennas",
+    "column": "antennaId",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_ANTENNA",
+    "attribute": "siteId",
+    "table": "antennas",
+    "column": "siteId",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_ANTENNA",
+    "attribute": "height",
+    "table": "antennas",
+    "column": "height",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_ANTENNA",
+    "attribute": "azimuth",
+    "table": "antennas",
+    "column": "azimuth",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_ANTENNA",
+    "attribute": "supportsRET",
+    "table": "antennas",
+    "column": "supportsRET",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_ANTENNA",
+    "attribute": "mechTilt",
+    "table": "antennas",
+    "column": "mechTilt",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_ANTENNA",
+    "attribute": "effectiveTime",
+    "table": "antennas",
+    "column": "effectiveTime",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_SITE",
+    "attribute": "siteId",
+    "table": "sites",
+    "column": "siteId",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_SITE",
+    "attribute": "siteType",
+    "table": "sites",
+    "column": "siteType",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_SITE",
+    "attribute": "lifecycle",
+    "table": "sites",
+    "column": "lifecycle",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_SITE",
+    "attribute": "lat",
+    "table": "sites",
+    "column": "lat",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_SITE",
+    "attribute": "lon",
+    "table": "sites",
+    "column": "lon",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_TICKET",
+    "attribute": "ticketNo",
+    "table": null,
+    "column": null,
+    "direction": "写",
+    "mapped": false
+   },
+   {
+    "owner": "OT_TICKET",
+    "attribute": "problemCategory",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "OT_TICKET",
+    "attribute": "problemType",
+    "table": null,
+    "column": null,
+    "direction": "写",
+    "mapped": false
+   },
+   {
+    "owner": "OT_TICKET",
+    "attribute": "dispatchProblem",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "OT_TICKET",
+    "attribute": "weakKind",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "OT_TICKET",
+    "attribute": "rat",
+    "table": "source_tickets",
+    "column": "rat",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "OT_TICKET",
+    "attribute": "sceneLevel",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "OT_TICKET",
+    "attribute": "discovery",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "OT_TICKET",
+    "attribute": "status",
+    "table": null,
+    "column": null,
+    "direction": "写",
+    "mapped": false
+   },
+   {
+    "owner": "OT_TICKET",
+    "attribute": "relatedTicketNo",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "OT_TICKET",
+    "attribute": "affectedUsers",
+    "table": null,
+    "column": null,
+    "direction": null,
+    "mapped": false
+   },
+   {
+    "owner": "OT_TICKET",
+    "attribute": "diagnostics[]",
+    "table": null,
+    "column": null,
+    "direction": "写",
+    "mapped": false
+   },
+   {
+    "owner": "OT_TICKET",
+    "attribute": "rootCauses[]",
+    "table": null,
+    "column": null,
+    "direction": "读",
+    "mapped": false
+   },
+   {
+    "owner": "OT_PLAN",
+    "attribute": "planNo",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "OT_PLAN",
+    "attribute": "ticketNo",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "OT_PLAN",
+    "attribute": "round",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "OT_PLAN",
+    "attribute": "measureType",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "OT_PLAN",
+    "attribute": "status",
+    "table": null,
+    "column": null,
+    "direction": "写",
+    "mapped": false
+   },
+   {
+    "owner": "OT_PLAN",
+    "attribute": "actions[]",
+    "table": null,
+    "column": null,
+    "direction": "写",
+    "mapped": false
+   },
+   {
+    "owner": "OT_PLAN",
+    "attribute": "impact",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "OT_PLAN",
+    "attribute": "approval",
+    "table": null,
+    "column": null,
+    "direction": "写",
+    "mapped": false
+   },
+   {
+    "owner": "OT_PLAN",
+    "attribute": "rollbackCondition",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "OT_PLAN",
+    "attribute": "execution",
+    "table": null,
+    "column": null,
+    "direction": "读",
+    "mapped": false
+   },
+   {
+    "owner": "OT_EFFECT",
+    "attribute": "effectNo",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "OT_EFFECT",
+    "attribute": "planNo",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "OT_EFFECT",
+    "attribute": "round",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "OT_EFFECT",
+    "attribute": "beforeWindow",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "OT_EFFECT",
+    "attribute": "afterWindow",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "OT_EFFECT",
+    "attribute": "beforeRatio",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "OT_EFFECT",
+    "attribute": "afterRatio",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "OT_EFFECT",
+    "attribute": "afterHitDays",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "OT_EFFECT",
+    "attribute": "improved",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "OT_EFFECT",
+    "attribute": "achieved",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "OT_EFFECT",
+    "attribute": "sustained",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "OT_EFFECT",
+    "attribute": "protectionOk",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "OT_EFFECT",
+    "attribute": "protection[]",
+    "table": null,
+    "column": null,
+    "direction": "写",
+    "mapped": false
+   },
+   {
+    "owner": "OT_EFFECT",
+    "attribute": "status",
+    "table": null,
+    "column": null,
+    "direction": "写",
+    "mapped": false
+   },
+   {
+    "owner": "OT_EFFECT",
+    "attribute": "callRef",
+    "table": null,
+    "column": null,
+    "direction": "写",
+    "mapped": false
+   },
+   {
+    "owner": "OT_CASE",
+    "attribute": "caseNo",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "OT_CASE",
+    "attribute": "sourceTicketNo",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "OT_CASE",
+    "attribute": "planNo",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "OT_CASE",
+    "attribute": "effectNo",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "OT_CASE",
+    "attribute": "applicability",
+    "table": null,
+    "column": null,
+    "direction": "写",
+    "mapped": false
+   },
+   {
+    "owner": "OT_CASE",
+    "attribute": "measureType",
+    "table": null,
+    "column": null,
+    "direction": "写",
+    "mapped": false
+   },
+   {
+    "owner": "OT_CASE",
+    "attribute": "deltaValue",
+    "table": null,
+    "column": null,
+    "direction": "写",
+    "mapped": false
+   },
+   {
+    "owner": "OT_CASE",
+    "attribute": "outcome",
+    "table": null,
+    "column": null,
+    "direction": "写",
+    "mapped": false
+   },
+   {
+    "owner": "OT_CASE",
+    "attribute": "validation",
+    "table": null,
+    "column": null,
+    "direction": "写",
+    "mapped": false
+   },
+   {
+    "owner": "RT_04",
+    "attribute": "role",
+    "table": "area_cells",
+    "column": "role",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "RT_04",
+    "attribute": "share",
+    "table": "area_cells",
+    "column": "share",
+    "direction": "读",
+    "mapped": true
+   },
+   {
+    "owner": "RT_06",
+    "attribute": "role",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "RT_08",
+    "attribute": "evidenceKind",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "RT_10",
+    "attribute": "role",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   },
+   {
+    "owner": "RT_13",
+    "attribute": "role",
+    "table": null,
+    "column": null,
+    "direction": "派生",
+    "mapped": false
+   }
+  ],
+  "relationTables": [
+   {
+    "relationType": "RT_01",
+    "table": "cell_site",
+    "joinKeys": [
+     "cellKey",
+     "siteId"
+    ],
+    "direction": "读"
+   },
+   {
+    "relationType": "RT_02",
+    "table": "cell_antenna",
+    "joinKeys": [
+     "cellKey",
+     "antennaId",
+     "effectiveTime"
+    ],
+    "direction": "读"
+   },
+   {
+    "relationType": "RT_03",
+    "table": "cell_neighbors",
+    "joinKeys": [
+     "cellKey"
+    ],
+    "direction": "读"
+   },
+   {
+    "relationType": "RT_04",
+    "table": "area_cells",
+    "joinKeys": [
+     "areaId",
+     "cellKey"
+    ],
+    "direction": "读"
+   },
+   {
+    "relationType": "RT_05",
+    "table": "source_tickets",
+    "joinKeys": [
+     "cellName",
+     "rat"
+    ],
+    "direction": "写"
+   },
+   {
+    "relationType": "RT_06",
+    "table": null,
+    "joinKeys": [
+     "antennaId"
+    ],
+    "direction": "派生"
+   },
+   {
+    "relationType": "RT_07",
+    "table": null,
+    "joinKeys": [],
+    "direction": "写"
+   },
+   {
+    "relationType": "RT_08",
+    "table": null,
+    "joinKeys": [
+     "cellKey",
+     "date"
+    ],
+    "direction": "写"
+   },
+   {
+    "relationType": "RT_09",
+    "table": null,
+    "joinKeys": [
+     "ticketNo"
+    ],
+    "direction": "写"
+   },
+   {
+    "relationType": "RT_10",
+    "table": null,
+    "joinKeys": [],
+    "direction": "派生"
+   },
+   {
+    "relationType": "RT_11",
+    "table": null,
+    "joinKeys": [
+     "planNo",
+     "planNo"
+    ],
+    "direction": "写"
+   },
+   {
+    "relationType": "RT_12",
+    "table": null,
+    "joinKeys": [],
+    "direction": "派生"
+   },
+   {
+    "relationType": "RT_13",
+    "table": null,
+    "joinKeys": [],
+    "direction": "派生"
+   },
+   {
+    "relationType": "RT_14",
+    "table": null,
+    "joinKeys": [
+     "effectNo"
+    ],
+    "direction": "写"
+   },
+   {
+    "relationType": "RT_15",
+    "table": null,
+    "joinKeys": [],
+    "direction": "读"
+   },
+   {
+    "relationType": "RT_16",
+    "table": null,
+    "joinKeys": [],
+    "direction": "读"
+   },
+   {
+    "relationType": "RT_17",
+    "table": null,
+    "joinKeys": [
+     "version",
+     "cellKey",
+     "date",
+     "receivedAt"
+    ],
+    "direction": "写"
+   }
+  ]
+ },
+ "states": {
+  "OT_TICKET": [
+   "待核验",
+   "已确认",
+   "已排除",
+   "处置中",
+   "待评估",
+   "已改善",
+   "改善未解决",
+   "已关闭"
+  ],
+  "OT_PLAN": [
+   "草案",
+   "待确认",
+   "已批准",
+   "未批准",
+   "已派单",
+   "已实施",
+   "失败",
+   "未知",
+   "已回退"
+  ],
+  "OT_EFFECT": [
+   "待评估",
+   "评估中",
+   "改善",
+   "未改善",
+   "劣化",
+   "未达标",
+   "持续有效"
+  ],
+  "OT_CASE": [
+   "未验证",
+   "已验证"
+  ]
+ },
+ "transitions": {
+  "OT_TICKET": "待核验→已确认／已排除（A_03；已确认须有主因证据，已排除须F_07＝排除）；已确认→处置中（A_05）；处置中→待评估（A_06回执成功）；待评估→已改善／改善未解决（A_07，样本足）；已改善→已关闭（A_08，须持续有效＝真）；改善未解决→处置中（新一轮A_04）。再次触发不重开，由A_01新建并关联",
+  "OT_PLAN": "草案→待确认（A_04，impact＝通过或调减）；草案停留并转人工（impact＝不通过或未评估）；待确认→已批准→已派单／未批准（A_05）；已派单→已实施／失败／未知（A_06）；已实施→已回退（A_10，本期只定义）",
+  "OT_EFFECT": "待评估→改善／未改善／劣化／未达标（A_07，后窗≥7天且保护指标齐全）；改善→持续有效（后窗14天内每个7天滑窗都未达到派单条件）。保护不通过＝劣化；改善且达标＝改善；改善未达标＝未达标",
+  "OT_CASE": "评定为持续有效且可复现后→已验证；无效与证据不足的案例同样保留，不删除"
+ },
+ "constraints": [
+  {
+   "id": "INV_01",
+   "text": "一张工单恰好针对一个弱覆盖小区（派单对象），该小区须能确定制式与站点类型（宏站／室分）",
+   "checkpoints": [
+    "A_01",
+    "RT_05"
+   ]
+  },
+  {
+   "id": "INV_02",
+   "text": "症状级标签（[覆盖汇总]K族7个：弱覆盖、远端弱覆盖、室分弱覆盖、上行弱覆盖、重叠覆盖、过覆盖、服务小区过覆盖导致重叠覆盖）不得作主因，须先下钻",
+   "checkpoints": [
+    "A_02"
+   ]
+  },
+  {
+   "id": "INV_03",
+   "text": "主因至少有一条直接证据（小区MR、工参、告警记录、勘察）",
+   "checkpoints": [
+    "A_02",
+    "RT_08"
+   ]
+  },
+  {
+   "id": "INV_04",
+   "text": "待核验或已排除的工单不得生成优化方案",
+   "checkpoints": [
+    "A_04"
+   ]
+  },
+  {
+   "id": "INV_05",
+   "text": "天馈类措施（`executorRole`＝现场维护）不得自动执行：须人工确认并派单，由现场维护人员执行并回填",
+   "checkpoints": [
+    "A_05"
+   ]
+  },
+  {
+   "id": "INV_06",
+   "text": "周边影响为“不通过”或“未评估”的方案不得批准；“调减”的方案必须按调减后的幅度写入",
+   "checkpoints": [
+    "A_04",
+    "A_05",
+    "F_10"
+   ]
+  },
+  {
+   "id": "INV_07",
+   "text": "效果评估与复核使用现场回填的实际值，不使用计划值",
+   "checkpoints": [
+    "A_06",
+    "F_10"
+   ]
+  },
+  {
+   "id": "INV_08",
+   "text": "回执或回填缺失记“未知”，不得推进到待评估或关闭",
+   "checkpoints": [
+    "A_06",
+    "A_07"
+   ]
+  },
+  {
+   "id": "INV_09",
+   "text": "MR缺天、规则缺失（含场景等级无对应派单规则）、工参缺失一律记“未知／证据不足”，不得写0或默认结论",
+   "checkpoints": [
+    "F_05",
+    "F_06",
+    "F_12",
+    "F_08",
+    "F_10",
+    "F_11",
+    "A_01"
+   ]
+  },
+  {
+   "id": "INV_10",
+   "text": "持续有效为空或否时，工单不得关闭",
+   "checkpoints": [
+    "A_08"
+   ]
+  },
+  {
+   "id": "INV_11",
+   "text": "历史不覆盖：根因修订追加轮次；工参变更带生效时间；复发新建工单关联原单；失败与证据不足案例照常入库",
+   "checkpoints": [
+    "A_02",
+    "A_06",
+    "A_09"
+   ]
+  },
+  {
+   "id": "INV_12",
+   "text": "影响范围由调整方式决定：机械下倾→天线承载的所有小区；电子下倾→仅对应阵列小区",
+   "checkpoints": [
+    "F_10",
+    "RT_10"
+   ]
+  },
+  {
+   "id": "INV_13",
+   "text": "单次调整幅度≤单次上限，且为调节分辨率的整数倍；缺口更大则分轮",
+   "checkpoints": [
+    "F_09"
+   ]
+  },
+  {
+   "id": "INV_14",
+   "text": "同一小区同一问题类型存在未关闭工单时，不重复建单，关联已有工单",
+   "checkpoints": [
+    "A_01"
+   ]
+  },
+  {
+   "id": "INV_15",
+   "text": "同一天线同一生效区间两个来源取值冲突时不自动裁决，转人工；裁定前相关函数返回“冲突”，不评估",
+   "checkpoints": [
+    "A_06",
+    "F_08",
+    "F_10",
+    "F_11"
+   ]
+  },
+  {
+   "id": "INV_16",
+   "text": "问题须由前置数据发现：工单只能依发现结果建立——建单时F_06对窗口内OT_CELL_MR判定为“达到派单条件”，且`discovery.evidenceRefs[]`指向窗口内实际存在的OT_CELL_MR；无前置数据支撑的工单（未达到、证据不足、窗口无MR）不得建立；工单的状态、关闭与删除不改变前置数据与发现判定",
+   "checkpoints": [
+    "A_01",
+    "RT_17"
+   ]
+  },
+  {
+   "id": "INV_17",
+   "text": "前置数据只追加：OT_CELL_MR不被覆盖改写——同日重复到达新增版本，迟到数据按业务日期归日；已建工单的`discovery`快照与效果前窗按其引用的数据版本读回，不因数据更正而重算改写；更正后的发现结果由F_12另行给出",
+   "checkpoints": [
+    "DM_01",
+    "A_01",
+    "F_11",
+    "F_12"
+   ]
+  }
+ ],
+ "symptomLabels": [
+  "弱覆盖",
+  "远端弱覆盖",
+  "室分弱覆盖",
+  "上行弱覆盖",
+  "重叠覆盖",
+  "过覆盖",
+  "服务小区过覆盖导致重叠覆盖"
+ ],
+ "functions": [
+  {
+   "id": "F_01",
+   "code": "siteDistance",
+   "version": "0.1",
+   "question": "两站点相距多远（站间距）；OT_SITE",
+   "input": "两个站点引用及其`lat`、`lon`",
+   "method": "球面大圆距离（haversine，地球半径6371 km）",
+   "output": "`distance`（m）；任一坐标缺失→空（未知）"
+  },
+  {
+   "id": "F_02",
+   "code": "theoryRadius",
+   "version": "0.1",
+   "question": "小区的理论覆盖范围；OT_CELL（经RT_02取天线）",
+   "input": "挂高h（m）、总下倾θ（°）、垂直波束宽β（°）",
+   "method": "RULE_W06：rNear＝h÷tan(θ＋β/2)；rFar＝h÷tan(θ－β/2)",
+   "output": "`{rNear, rFar}`（m，1位小数）；h、θ、β≤0或θ＋β/2≥90°→无效；θ－β/2≤0→rFar＝不收敛（∞），不得当作0；`rat`＝NR→未定义（H6）"
+  },
+  {
+   "id": "F_03",
+   "code": "totalTilt",
+   "version": "0.1",
+   "question": "小区实际总下倾角；OT_CELL",
+   "input": "天线引用（`mechTilt`及版本）、RT_02引用（`elecTilt`）",
+   "method": "总下倾＝`mechTilt`＋`elecTilt`",
+   "output": "°；任一缺失→空"
+  },
+  {
+   "id": "F_04",
+   "code": "recommendTilt",
+   "version": "0.1",
+   "question": "为让远端落在目标半径应下倾多少；OT_CELL",
+   "input": "h、β、目标半径Rt",
+   "method": "RULE_W06：θ_t＝arctan(h÷Rt)＋β/2（主瓣上沿落在Rt上）",
+   "output": "°；h、Rt、β≤0→无效"
+  },
+  {
+   "id": "F_05",
+   "code": "dailyWeakCheck",
+   "version": "0.3",
+   "question": "小区某天是否弱覆盖（单日命中）；OT_CELL_MR（经RT_16属于OT_CELL）",
+   "input": "当天OT_CELL_MR的`sampleTotal`、`sampleWeak`（取最新版本，或按`evidenceRefs`指定的版本）；适用的派单规则（按小区制式×站点类型×场景等级选取RULE_D01～D04）",
+   "method": "RULE_D01～D04：占比＝sampleWeak÷sampleTotal；`sampleWeak`≥门限（宏站2000／室分500）且占比≥门限（宏站20%／室分15%）→命中，等于门限算命中",
+   "output": "`{date, mrKey, version, ratio(4位小数), weakOk, ratioOk, hit∈是／否／未知}`；当天无OT_CELL_MR实例→未知，ratio为空，不得为0；无对应规则→未知（规则缺口）"
+  },
+  {
+   "id": "F_06",
+   "code": "discoverCell",
+   "version": "0.3",
+   "question": "小区是否达到派单条件（7天出现3天）＝该小区的前置数据是否发现了弱覆盖问题；OT_CELL",
+   "input": "窗口（判断时点所在日之前的7个自然日）内各日OT_CELL_MR的F_05结果；规则的`windowDays`＝7、`minHitDays`＝3",
+   "method": "RULE_D01～D04：命中天数≥3→达到；命中＋未知＜3→未达到（缺天补满也不够）；其余→证据不足",
+   "output": "`{verdict∈达到派单条件／未达到派单条件／证据不足, problemKey（仅“达到”时给出）, ruleId, window, hitDays, hitDates[], unknownDates[], missDates[], daily[], evidenceRefs[]}`；`evidenceRefs[]`＝窗口内实际存在的OT_CELL_MR键与版本；无对应规则→证据不足，`unknownDates`＝全部7天，不套用其他场景门限"
+  },
+  {
+   "id": "F_07",
+   "code": "falseWeakCheck",
+   "version": "0.2",
+   "question": "弱覆盖是否由退服、告警等造成；OT_TICKET（派单小区及RT_06涉及的小区）",
+   "input": "派单窗口的命中日集合；派单小区、同天线小区、重叠邻区的告警区间（来源事实，取自告警系统）；TH07",
+   "method": "RULE_W04：重合占比＝落在告警区间内的命中日数÷命中日数；≥TH07＝排除；0＜占比＜TH07＝部分重合，转人工；＝0＝无重合",
+   "output": "`{结论∈排除／部分重合／无重合／不适用, 重合天数, 命中日数, 占比, 所用告警引用}`；无命中日→不适用"
+  },
+  {
+   "id": "F_08",
+   "code": "matchTiltCause",
+   "version": "0.2",
+   "question": "弱覆盖是否由下倾角过小引起，并排除次因；OT_TICKET→OT_CELL→OT_ANTENNA",
+   "input": "必需：h、`mechTilt`、`elecTilt`、β、Rt；可选参考：`rsPower`／`rsPowerPlan`、`azimuthDeviationDeg`、`obstructionEvidence`（MR距离—电平分布本次无输入）",
+   "method": "RULE_W06、W05／W08／W09，顺序见下文“函数填写要求”",
+   "output": "`{match∈命中／不命中／未知／冲突, totalTilt, thetaTarget, deficit, rNear, rFar, otherCauses[], role, missing[]}`；缺任一必需输入→未知并列缺项；`rat`＝NR→未知（规则缺口）；站点类型＝室分→未知（不适用宏站下倾模型）；工参待回填→未知；工参冲突→冲突"
+  },
+  {
+   "id": "F_09",
+   "code": "planTilt",
+   "version": "0.1",
+   "question": "一次调多少、需几轮；OT_PLAN",
+   "input": "缺口（F_08）；调整方式（机械／电子）；单次上限TH02；调节分辨率TH03",
+   "method": "RULE_W14：Δ＝⌊min(缺口,TH02)÷分辨率⌋×分辨率；轮次＝⌈缺口÷TH02⌉",
+   "output": "`{Δ(°), 轮次, executable}`；Δ＝0（缺口小于分辨率）→不可执行；F_08未命中→不生成"
+  },
+  {
+   "id": "F_10",
+   "code": "assessImpact",
+   "version": "0.1",
+   "question": "调整会不会伤到同天线小区和重叠邻区；OT_PLAN→OT_CELL",
+   "input": "调整方式与Δ；影响范围小区集（RT_10、RT_02派生）及各小区h、总下倾、β、Rt；重叠邻区集（RT_03）及其站点距离（F_01）、h、总下倾、β",
+   "method": "RULE_W13，逐级尝试见下文",
+   "output": "`{result∈通过／调减／不通过／未评估, deltaPlan, deltaFinal, affectedCells[], attempts[], checks[]}`；邻区工参缺失→该项“未评估”，整体不得为“通过”"
+  },
+  {
+   "id": "F_11",
+   "code": "judgeEffect",
+   "version": "0.3",
+   "question": "措施是否有效、是否持续；OT_EFFECT",
+   "input": "前窗（派单窗口7天，取工单`discovery.evidenceRefs`所指的OT_CELL_MR版本）与后窗（实施日次日起连续有数据的天，取最新版本）的OT_CELL_MR（RT_12）；适用的派单规则；保护指标（RT_13涉及小区）；TH09、TH11～TH13；方案`execution`实际值",
+   "method": "RULE_W16＋RULE_D01～D04，判定顺序见下文",
+   "output": "`{beforeRatio, afterRatio, afterHitDays, improved, achieved, sustained, protectionOk, status, daysAfter}`；后窗＜TH11（7天）、前窗无数据或无对应规则→状态“待评估”，各判定为空"
+  },
+  {
+   "id": "F_12",
+   "code": "scanWeakCells",
+   "version": "0.1",
+   "question": "在给定范围内，哪些小区的前置数据按[派单规则]发现了弱覆盖问题；OT_CELL（范围）→OT_CELL_MR",
+   "input": "发现范围（小区集合：显式列出，或按站点／区县展开）；判断时点；窗口＝判断时点所在日之前的7个自然日；RULE_F01",
+   "method": "对范围内每个小区：读其窗口内OT_CELL_MR（RT_16）、制式、站点类型（RT_01）、场景等级，逐日调F_05、再调F_06；按判定分组汇总；只读，不创建工单、不读取工单，同一数据与规则版本重复调用结果相同",
+   "output": "`{refTime, window, scope[], items[{cellKey, verdict, problemKey, ruleId, hitDays, unknownDates[], evidenceRefs[]}], counts{达到, 未达到, 证据不足}}`；窗口内无任何OT_CELL_MR的小区列为“证据不足（数据缺口）”，不静默跳过；站点类型未知或规则缺口→该项“证据不足”并标注缺项"
+  }
+ ],
+ "actions": [
+  {
+   "id": "A_01",
+   "code": "createTicket",
+   "label": "建单（依发现结果）",
+   "roles": [
+    "优化本体",
+    "地市优化工程师"
+   ],
+   "purpose": "优化本体或地市优化工程师；对前置数据发现的弱覆盖小区建立可追溯的处置单；目标：新建OT_TICKET",
+   "input": "输入：`cellKey`、判断时点（缺省取运行时钟）；可附F_12清单项作参考，但不采信。前提：小区存在且能确定制式、站点类型（RT_01）；A_01自行重算F_06＝达到派单条件（窗口＝判断时点所在日之前的7个自然日），并且窗口内存在OT_CELL_MR证据",
+   "changes": "新建工单（待核验）；写`discovery`快照（`problemKey`、规则与门限、命中／未知日、`evidenceRefs[]`）与RT_17，类别／问题类型／派单问题、场景等级快照，RT_05、RT_06，`diagnostics[]`；同小区同问题类型有未关闭工单→关联不新建；有已关闭工单→新建并填`relatedTicketNo`；不写、不改OT_CELL_MR",
+   "failure": "成功：返回`ticketNo`且重开一致，`discovery.evidenceRefs[]`逐条可读回OT_CELL_MR。小区不存在或站点类型未知→拒绝（INV_01）；重复→关联（INV_14）；证据不足（缺天、规则缺口、窗口无MR）→拒绝，不建单（INV_09、INV_16）；未达到派单条件→不建单（INV_16）",
+   "definedOnly": false
+  },
+  {
+   "id": "A_02",
+   "code": "writeRootCause",
+   "label": "写入根因",
+   "roles": [
+    "优化本体",
+    "地市优化工程师",
+    "优化专家"
+   ],
+   "purpose": "优化本体（规则命中）、优化工程师、专家；记录定因结论；目标：OT_TICKET的`rootCauses[]`",
+   "input": "输入：`ticketNo`、`causeLabel`、`causeFamily`、`role`、`evidenceRefs`、`source`。前提：工单为待核验或已确认；F_07结论不是“排除”",
+   "changes": "追加一轮根因，不覆盖旧轮",
+   "failure": "症状级标签作主因→拒绝（INV_02）；主因无证据→拒绝（INV_03）；工单已排除→拒绝",
+   "definedOnly": false
+  },
+  {
+   "id": "A_03",
+   "code": "confirmTicket",
+   "label": "确认或排除",
+   "roles": [
+    "地市优化工程师",
+    "优化专家"
+   ],
+   "purpose": "地市优化工程师（疑难转专家）；确认定因或排除假性弱覆盖；目标：OT_TICKET状态",
+   "input": "输入：`ticketNo`、`decision`、`reason`。前提：工单待核验；已有主因证据，或F_07＝排除",
+   "changes": "待核验→已确认／已排除；记录确认人与理由",
+   "failure": "F_07＝部分重合→须人工写明复核判断，不得自动确认；F_08次因命中→不得自动确认，由工程师判断是否转专家（TC03f）；无主因证据→不得确认",
+   "definedOnly": false
+  },
+  {
+   "id": "A_04",
+   "code": "generatePlan",
+   "label": "生成优化方案",
+   "roles": [
+    "优化本体"
+   ],
+   "purpose": "优化本体；为已确认工单生成带周边校验的方案；目标：新建OT_PLAN",
+   "input": "输入：`ticketNo`、`adjustType`。前提：工单已确认；F_08＝命中；电子下倾要求`supportsRET`为真",
+   "changes": "调F_09、F_10建方案，`measureType`取字典快照；通过或调减→状态“待确认”，`actions`写调减后的Δ；不通过或未评估→状态“草案”，标“转人工”",
+   "failure": "工单待核验或已排除→拒绝（INV_04）；F_08＝未知→不建（INV_09）；电子下倾但不支持电调→拒绝",
+   "definedOnly": false
+  },
+  {
+   "id": "A_05",
+   "code": "approveAndDispatch",
+   "label": "确认并派单",
+   "roles": [
+    "地市优化工程师"
+   ],
+   "purpose": "地市优化工程师；作用于2个及以上小区、VIP／VVIP场景（取自小区场景等级）或跨站的方案追加优化主管批准；批准并派给现场；实际操作目标：机械＝天线AN1的`mechTilt`，电子＝X阵列的`elecTilt`",
+   "input": "输入：`planNo`、`decision`、`executor`。前提：方案待确认；`impact`为通过或调减；方案所依据的工参版本等于当前版本",
+   "changes": "待确认→已批准→已派单；工单→处置中；写`approval`与派单号",
+   "failure": "`impact`为不通过／未评估→拒绝（INV_06）；试图自动执行天馈类措施→拒绝（INV_05）；工参版本已变→退回草案重算（TC07b③）",
+   "definedOnly": false
+  },
+  {
+   "id": "A_06",
+   "code": "recordExecution",
+   "label": "回填执行信息",
+   "roles": [
+    "地市优化工程师",
+    "现场维护人员"
+   ],
+   "purpose": "现场维护人员回填，优化工程师复核；记录现场实际调整；目标：OT_PLAN的`execution`，并更新OT_ANTENNA的`mechTilt`（或RT_02的`elecTilt`）新版本",
+   "input": "输入：`planNo`、`dispatchNo`、`executeTime`、`receipt`、`actualValues[]`。前提：方案已派单",
+   "changes": "写`execution`；成功→方案已实施，天线新版本生效时间＝`executeTime`，工单→待评估；失败→失败；回执缺失→未知",
+   "failure": "缺实际值→不得记已实施（INV_07）；回执缺失记“未知”，工单留在处置中（INV_08）；实际≠计划→按实际值记，并以实际值调F_10事后复核；与其他来源冲突→INV_15",
+   "definedOnly": false
+  },
+  {
+   "id": "A_07",
+   "code": "recordEffect",
+   "label": "写入优化效果",
+   "roles": [
+    "优化本体",
+    "地市优化工程师"
+   ],
+   "purpose": "优化本体，优化工程师复核；记录一轮效果评价；目标：新建OT_EFFECT",
+   "input": "输入：`planNo`。前提：方案已实施；前窗取工单派单窗口，后窗取实施日次日起的小区MR，保护指标取RT_06涉及小区",
+   "changes": "调F_11建优化效果；工单→已改善或改善未解决，或保持待评估",
+   "failure": "后窗不足7天或保护指标缺数据→效果“待评估”、判定为空（INV_09）；保护指标恶化→劣化，提示回退",
+   "definedOnly": false
+  },
+  {
+   "id": "A_08",
+   "code": "closeTicket",
+   "label": "关闭工单",
+   "roles": [
+    "优化主管"
+   ],
+   "purpose": "优化主管；关闭已持续有效的问题；目标：OT_TICKET状态",
+   "input": "输入：`ticketNo`。前提：效果状态＝持续有效",
+   "changes": "工单→已关闭",
+   "failure": "`sustained`为空或假→拒绝（INV_10）；优化本体无权关闭",
+   "definedOnly": false
+  },
+  {
+   "id": "A_09",
+   "code": "archiveCase",
+   "label": "历史案例入库",
+   "roles": [
+    "优化专家",
+    "知识维护人"
+   ],
+   "purpose": "优化专家或知识维护人；沉淀经验；目标：新建OT_CASE",
+   "input": "输入：`effectNo`、`applicability`（制式、站点类型、场景等级、区域场景等）。前提：效果已评定（含劣化、未改善）",
+   "changes": "建历史案例；`outcome`：持续有效→有效可复现（验证状态仍为“未验证”）；改善但持续有效为空→证据不足；劣化／未改善／未达标→无效",
+   "failure": "缺适用条件→拒绝；引用不存在的效果→拒绝；不得只存成功案例（INV_11）",
+   "definedOnly": false
+  },
+  {
+   "id": "A_10",
+   "code": "rollbackPlan",
+   "label": "回退方案",
+   "roles": [
+    "地市优化工程师"
+   ],
+   "purpose": "优化工程师；保护指标恶化时恢复原值；目标：新建回退方案",
+   "input": "输入：`planNo`。前提：效果＝劣化，或保护指标不通过",
+   "changes": "建回退方案（目标值＝`rollbackValue`），走A_05；原方案→已回退",
+   "failure": "本期只定义，不测",
+   "definedOnly": true
+  },
+  {
+   "id": "A_11",
+   "code": "resolveFactConflict",
+   "label": "裁定工参冲突",
+   "roles": [
+    "地市优化工程师"
+   ],
+   "purpose": "地市优化工程师；对同一天线同一生效区间两个来源取值冲突作出裁定；目标：OT_ANTENNA 对应字段的新版本与冲突记录",
+   "input": "输入：`conflictId`、`chosenSource`、`reason`。前提：冲突记录为未裁定",
+   "changes": "写入裁定版本（来源“ruling”，生效时间同冲突）；冲突记录置已裁定，含裁定人、理由、时间；因冲突停在“处置中”的工单→待评估",
+   "failure": "无未裁定冲突、未写理由、所选来源不在两个来源之内→拒绝（INV_15）；优化本体无权裁定",
+   "definedOnly": false
+  }
+ ],
+ "rules": [
+  {
+   "id": "RULE_D01",
+   "version": "1.0",
+   "registerOnly": false,
+   "meaning": "4G宏站弱覆盖小区；[派单规则]第2行原文：“宏站基站RSRP小于-110的弱覆盖采样点大于等于2000（单日），弱覆盖占比大于等于20%；7天出现3天”；类别“覆盖结构”、问题类型“MR弱覆盖小区”、派单问题“宏站弱覆盖小区”、数据源MR；规则文件原文，业务确认待补",
+   "scope": "LTE×宏站×一般场景；对OT_CELL_MR逐日判定：单日`sampleWeak`≥2000且占比≥0.20→命中；7天内命中≥3天→达到派单条件",
+   "output": "缺天→未知；命中＋未知＜3→未达到；其余→证据不足",
+   "uses": "F_05、F_06、F_12、F_11；TC01、TC01a、TC03b、TC08"
+  },
+  {
+   "id": "RULE_D02",
+   "version": "1.0",
+   "registerOnly": false,
+   "meaning": "4G室分弱覆盖小区；[派单规则]第3行：单日RSRP＜-110采样点≥500且占比≥15%，7天出现3天；派单问题“室分弱覆盖小区”",
+   "scope": "LTE×室分×一般场景",
+   "output": "同RULE_D01",
+   "uses": "F_05、F_06、F_12；TC08（C10）"
+  },
+  {
+   "id": "RULE_D03",
+   "version": "1.0",
+   "registerOnly": false,
+   "meaning": "5G宏站弱覆盖小区；[派单规则]第4行，门限同第2行",
+   "scope": "NR×宏站×一般场景",
+   "output": "同RULE_D01",
+   "uses": "F_05、F_06、F_12；TC06c（N1）"
+  },
+  {
+   "id": "RULE_D04",
+   "version": "1.0",
+   "registerOnly": false,
+   "meaning": "5G室分弱覆盖小区；[派单规则]第5行，门限同第3行",
+   "scope": "NR×室分×一般场景",
+   "output": "同RULE_D01",
+   "uses": "F_05、F_06、F_12；TC08（C11）"
+  },
+  {
+   "id": "RULE_F01",
+   "version": "0.1",
+   "registerOnly": false,
+   "meaning": "发现范围与窗口：从前置数据发现弱覆盖问题时，窗口＝判断时点所在日之前的7个自然日（窗口末日＝判断日前一天）；范围内每个小区都要有结论；本组拟定，参照场景收敛文档SC-WC-01的每日09:00批量识别；待确认",
+   "scope": "范围＝给定小区集合（显式列出或按站点／区县展开）；窗口内无OT_CELL_MR的小区→“证据不足（数据缺口）”，不静默跳过，也不判“未达到”；规则缺口（VIP／VVIP或场景等级缺失）→“证据不足”；发现只读，不依赖工单；每日一次的调度时点与MR到齐时间",
+   "output": "证据不足分项列出缺天日期或缺失的规则",
+   "uses": "F_12；TC01、TC08"
+  },
+  {
+   "id": "RULE_W04",
+   "version": "0.2",
+   "registerOnly": false,
+   "meaning": "先排除假性弱覆盖；Day1 W4，[覆盖汇总]第12行含“处理邻区故障站点”；按命中日计；待确认",
+   "scope": "取派单小区及其同天线小区、重叠邻区的告警区间；重合占比＝落在告警区间内的命中日数÷命中日数；≥TH07排除；0～TH07之间部分重合；＝0无重合",
+   "output": "排除→工单“已排除”，不调参；部分重合→转人工；无命中日→不适用",
+   "uses": "F_07；TC01、TC03c、TC03d、TC08（C5）"
+  },
+  {
+   "id": "RULE_W05",
+   "version": "0.1",
+   "registerOnly": false,
+   "meaning": "次因排除：发射功率偏低、覆盖方向偏差、周边遮挡；Day1 W5、W8、W9，；待确认",
+   "scope": "功率：现网低于规划值；方位：偏差＞TH08；遮挡：有勘察或GIS证据",
+   "output": "次因命中→与主因并列记录，不自动确认；缺证据→未核查，不当作无",
+   "uses": "F_08；TC03f"
+  },
+  {
+   "id": "RULE_W08",
+   "version": "0.1",
+   "registerOnly": false,
+   "meaning": "次因排除：发射功率偏低、覆盖方向偏差、周边遮挡；Day1 W5、W8、W9，；待确认",
+   "scope": "功率：现网低于规划值；方位：偏差＞TH08；遮挡：有勘察或GIS证据",
+   "output": "次因命中→与主因并列记录，不自动确认；缺证据→未核查，不当作无",
+   "uses": "F_08；TC03f"
+  },
+  {
+   "id": "RULE_W09",
+   "version": "0.1",
+   "registerOnly": false,
+   "meaning": "次因排除：发射功率偏低、覆盖方向偏差、周边遮挡；Day1 W5、W8、W9，；待确认",
+   "scope": "功率：现网低于规划值；方位：偏差＞TH08；遮挡：有勘察或GIS证据",
+   "output": "次因命中→与主因并列记录，不自动确认；缺证据→未核查，不当作无",
+   "uses": "F_08；TC03f"
+  },
+  {
+   "id": "RULE_W06",
+   "version": "0.1",
+   "registerOnly": false,
+   "meaning": "下倾角过小：总下倾偏离推荐下倾；Day1 W6，[覆盖汇总]A族6行；公式；待确认",
+   "scope": "LTE宏站；rNear＝h÷tan(θ＋β/2)，rFar＝h÷tan(θ－β/2)，θ_t＝arctan(h÷Rt)＋β/2；缺口＝θ_t－θ＞TH01→命中。主因证据＝工参推算＋小区按派单规则达到派单条件（MR派单窗口）；MR距离—电平分布为补强证据，本次无输入（见未决事项）",
+   "output": "缺任一必需输入→未知并列缺项；NR→未知（公式未定义）；室分→未知（不适用）；不命中→转其他原因族",
+   "uses": "F_02、F_03、F_04、F_08；TC01、TC03a、TC06、TC08"
+  },
+  {
+   "id": "RULE_W13",
+   "version": "0.1",
+   "registerOnly": false,
+   "meaning": "周边影响护栏：增强类措施不得伤到同天线小区与重叠邻区；Day1 W13，几何近似；待确认",
+   "scope": "范围：机械＝天线承载全部小区，电子＝目标阵列；①范围内每小区调整后rFar≥目标半径；②派单小区对每个重叠邻区的预测重叠指数不增大；Δ逐级减一个分辨率取第一个可行值",
+   "output": "通过／调减／不通过；邻区工参缺失→未评估，不得批准",
+   "uses": "F_10；TC01、TC02a～c、TC02f、TC03g、TC05a"
+  },
+  {
+   "id": "RULE_W14",
+   "version": "0.1",
+   "registerOnly": false,
+   "meaning": "措施准入与约束；Day1 W14；单次上限与分辨率为测试假设；待确认",
+   "scope": "天馈类（含机械下倾）不得自动执行；单次Δ≤TH02且为TH03整数倍；缺口更大分轮；作用于2个以上小区或VIP／VVIP小区追加主管批准",
+   "output": "Δ＝0不可执行；越限拒绝",
+   "uses": "F_09；A_04、A_05；TC01、TC07b"
+  },
+  {
+   "id": "RULE_W16",
+   "version": "0.2",
+   "registerOnly": false,
+   "meaning": "效果判断：派单窗口与实施次日起的后窗同口径比较＋三层判断＋保护指标；Day1 W16，按[派单规则]口径；待确认",
+   "scope": "见“效果判断与持续观察”；达标与持续有效均以“不再满足派单规则”为准",
+   "output": "后窗不足7天或保护指标缺数据→待评估；未知不记0",
+   "uses": "F_11；TC01、TC02d、TC03e、TC07e、TC07f"
+  },
+  {
+   "id": "RULE_G01",
+   "version": "0.1",
+   "registerOnly": false,
+   "meaning": "目标覆盖半径取法；本组拟定；待确认",
+   "scope": "默认＝TH14×最近站间距；可人工覆盖并留痕；样例直接给定250 m（0.5×500.4＝250.2）",
+   "output": "缺失→F_08、F_10返回未知",
+   "uses": "F_08、F_10；TC02a～b"
+  },
+  {
+   "id": "RULE_T01",
+   "version": "0.3",
+   "registerOnly": false,
+   "meaning": "工单粒度与来源：一个弱覆盖小区一张工单（[派单规则]“派单问题”为小区）；工单只能依发现结果开立，不是问题锚点（H14、INV_16）；待确认",
+   "scope": "同小区同问题类型未关闭时不重复建单，关联已有工单；已关闭后再次达到派单条件→新建并关联原单；建单须满足INV_16",
+   "output": "站点类型未知→拒绝建单；未达到或证据不足→不建单",
+   "uses": "A_01；TC01a、TC07a、TC09"
+  },
+  {
+   "id": "RULE_M01",
+   "version": "0.1",
+   "registerOnly": false,
+   "meaning": "原因—措施：弱覆盖小区天线下倾角过小→增大下倾角；[覆盖汇总]LTE第27行、NR第31行（备选“或在远端增强信号覆盖”本期不实现）；规则未验证，待确认",
+   "scope": "本小区侧；措施类型TILT_UP_MECH或TILT_UP_ELEC",
+   "output": "未命中F_08→不推荐；NR→公式缺口，转人工",
+   "uses": "A_04；TC01、TC06c"
+  },
+  {
+   "id": "RULE_M02",
+   "version": "0.1",
+   "registerOnly": true,
+   "meaning": "M02：过覆盖小区天线下倾角过小（第87、89行）→增大下倾角；M03：重叠覆盖度权重值高的邻区对天线下倾角过小（第45、48行）→增大邻区侧天线下倾角；待确认",
+   "scope": "本期不实现：M02的护栏口径（过覆盖需防近端新增弱覆盖）、M03的作用对象（邻区侧天线）待确认",
+   "output": "—",
+   "uses": "用例待补，见未决事项"
+  },
+  {
+   "id": "RULE_M03",
+   "version": "0.1",
+   "registerOnly": true,
+   "meaning": "M02：过覆盖小区天线下倾角过小（第87、89行）→增大下倾角；M03：重叠覆盖度权重值高的邻区对天线下倾角过小（第45、48行）→增大邻区侧天线下倾角；待确认",
+   "scope": "本期不实现：M02的护栏口径（过覆盖需防近端新增弱覆盖）、M03的作用对象（邻区侧天线）待确认",
+   "output": "—",
+   "uses": "用例待补，见未决事项"
+  },
+  {
+   "id": "RULE_W03",
+   "version": "",
+   "registerOnly": true,
+   "meaning": "影响评估：受影响面积与采样占比、用户数、流量；Day1 W3",
+   "scope": "本次无用户面数据，只给覆盖影响，不推算用户数",
+   "output": "缺业务数据→只给覆盖影响",
+   "uses": "—"
+  }
+ ],
+ "dispatchRules": [
+  {
+   "ruleId": "RULE_D01",
+   "ruleVersion": "1.0",
+   "rat": "LTE",
+   "siteType": "宏站",
+   "sceneLevel": "一般",
+   "minWeakSamples": 2000,
+   "minWeakRatio": 0.2,
+   "category": "覆盖结构",
+   "problemType": "MR弱覆盖小区",
+   "dispatchProblem": "宏站弱覆盖小区",
+   "windowDays": 7,
+   "minHitDays": 3
+  },
+  {
+   "ruleId": "RULE_D02",
+   "ruleVersion": "1.0",
+   "rat": "LTE",
+   "siteType": "室分",
+   "sceneLevel": "一般",
+   "minWeakSamples": 500,
+   "minWeakRatio": 0.15,
+   "category": "覆盖结构",
+   "problemType": "MR弱覆盖小区",
+   "dispatchProblem": "室分弱覆盖小区",
+   "windowDays": 7,
+   "minHitDays": 3
+  },
+  {
+   "ruleId": "RULE_D03",
+   "ruleVersion": "1.0",
+   "rat": "NR",
+   "siteType": "宏站",
+   "sceneLevel": "一般",
+   "minWeakSamples": 2000,
+   "minWeakRatio": 0.2,
+   "category": "覆盖结构",
+   "problemType": "MR弱覆盖小区",
+   "dispatchProblem": "宏站弱覆盖小区",
+   "windowDays": 7,
+   "minHitDays": 3
+  },
+  {
+   "ruleId": "RULE_D04",
+   "ruleVersion": "1.0",
+   "rat": "NR",
+   "siteType": "室分",
+   "sceneLevel": "一般",
+   "minWeakSamples": 500,
+   "minWeakRatio": 0.15,
+   "category": "覆盖结构",
+   "problemType": "MR弱覆盖小区",
+   "dispatchProblem": "室分弱覆盖小区",
+   "windowDays": 7,
+   "minHitDays": 3
+  }
+ ],
+ "measureTypes": [
+  {
+   "measureCode": "TILT_UP_MECH",
+   "name": "增大机械下倾角",
+   "smallClass": "优化措施／天馈现场调整／机械下倾角调整",
+   "level": "天线",
+   "executorRole": "现场维护",
+   "remote": false,
+   "resolution": 1,
+   "maxStep": 2,
+   "direction": "近中端增强、远端收缩"
+  },
+  {
+   "measureCode": "TILT_UP_ELEC",
+   "name": "增大电子下倾角",
+   "smallClass": "同上；源表只有“机械下倾角调整”，电调为本组补充【拟，待确认】",
+   "level": "小区阵列",
+   "executorRole": "参数平台或优化人员",
+   "remote": true,
+   "resolution": 0.1,
+   "maxStep": 2,
+   "direction": "同上"
+  }
+ ],
+ "assumptions": [
+  {
+   "id": "TH01",
+   "text": "命中容差`eps`＝0.5°",
+   "rules": "RULE_W06；F_08",
+   "cases": "TC01、TC06b",
+   "owner": "优化专家"
+  },
+  {
+   "id": "TH02",
+   "text": "单次调整上限`maxStep`＝2°",
+   "rules": "RULE_W14；F_09",
+   "cases": "TC01、TC02a～b、TC05a",
+   "owner": "工程规范／优化专家"
+  },
+  {
+   "id": "TH03",
+   "text": "调节分辨率：机械1°，电子0.1°",
+   "rules": "RULE_W14；F_09、F_10",
+   "cases": "TC01、TC02c、TC05a",
+   "owner": "工程规范"
+  },
+  {
+   "id": "TH07",
+   "text": "告警与命中日重合占比门限`falseWeakShare`＝0.5",
+   "rules": "RULE_W04；F_07",
+   "cases": "TC03c、TC03d、TC08",
+   "owner": "优化专家"
+  },
+  {
+   "id": "TH08",
+   "text": "方位偏差门限＝20°",
+   "rules": "RULE_W05／W08／W09；F_08",
+   "cases": "TC03f",
+   "owner": "优化专家"
+  },
+  {
+   "id": "TH09",
+   "text": "最小改善幅度（占比绝对差）＝0.05",
+   "rules": "RULE_W16；F_11",
+   "cases": "TC01、TC07e",
+   "owner": "省优化主管"
+  },
+  {
+   "id": "TH11",
+   "text": "后窗最少天数＝7天（与派单窗口同口径），不足则待评估",
+   "rules": "RULE_W16；F_11",
+   "cases": "TC03e",
+   "owner": "省优化主管"
+  },
+  {
+   "id": "TH12",
+   "text": "判“持续有效”所需后窗天数＝14天，其中每个7天滑窗都不满足派单规则",
+   "rules": "RULE_W16；F_11",
+   "cases": "TC01、TC07f",
+   "owner": "省优化主管"
+  },
+  {
+   "id": "TH13",
+   "text": "保护指标恶化容差＝0.02",
+   "rules": "RULE_W16；F_11",
+   "cases": "TC02d",
+   "owner": "省优化主管"
+  },
+  {
+   "id": "TH14",
+   "text": "目标半径系数k＝0.5",
+   "rules": "RULE_G01",
+   "cases": "样例直接给定，不直接验证",
+   "owner": "优化专家"
+  },
+  {
+   "id": "TH15",
+   "text": "理论覆盖半径采用简化平地模型（挂高相对覆盖面；θ＋β/2＜90°）",
+   "rules": "RULE_W06；F_02、F_04",
+   "cases": "TC01、TC06",
+   "owner": "优化专家"
+  },
+  {
+   "id": "TH16",
+   "text": "预测重叠指数＝max(0, rFar(目标)＋rFar(邻区)－站间距)，只比较派单小区对邻区",
+   "rules": "RULE_W13；F_10",
+   "cases": "TC01、TC02a～c、TC05a",
+   "owner": "优化专家"
+  }
+ ],
+ "params": {
+  "earthRadiusM": 6371000,
+  "eps": 0.5,
+  "maxStep": 2,
+  "tiltResolution": {
+   "机械": 1,
+   "电子": 0.1
+  },
+  "falseWeakShare": 0.5,
+  "azimuthDevThreshold": 20,
+  "effectMinDelta": 0.05,
+  "effectMinDaysAfter": 7,
+  "effectSustainDays": 14,
+  "protectionTolerance": 0.02,
+  "targetRadiusK": 0.5
+ },
+ "cases": [
+  {
+   "id": "TC01",
+   "title": "主用例，贯穿S0～S8",
+   "elements": [
+    "RT_01",
+    "RT_17",
+    "F_01",
+    "F_12",
+    "A_01",
+    "A_07",
+    "A_09",
+    "A_08"
+   ]
+  },
+  {
+   "id": "TC01a",
+   "title": "锚点验证：发现先于工单，数据更正不改写已建工单",
+   "elements": [
+    "F_05",
+    "F_06",
+    "F_12",
+    "A_01",
+    "RT_16",
+    "RT_17",
+    "INV_16",
+    "INV_17"
+   ]
+  },
+  {
+   "id": "TC02a",
+   "title": "关键反例：Y目标半径变严→调减",
+   "elements": [
+    "F_10",
+    "A_04",
+    "RT_02",
+    "RT_10",
+    "INV_12"
+   ]
+  },
+  {
+   "id": "TC02b",
+   "title": "关键反例：Y目标半径更严→不通过",
+   "elements": [
+    "F_10",
+    "A_04",
+    "A_05"
+   ]
+  },
+  {
+   "id": "TC02c",
+   "title": "关键反例：改电子下倾，范围缩小",
+   "elements": [
+    "F_10",
+    "RT_10",
+    "INV_12"
+   ]
+  },
+  {
+   "id": "TC02d",
+   "title": "关键反例：目标改善但保护条件失败",
+   "elements": [
+    "F_11",
+    "A_07",
+    "RT_12",
+    "RT_13"
+   ]
+  },
+  {
+   "id": "TC02e",
+   "title": "关键反例：实际值≠计划值",
+   "elements": [
+    "A_06",
+    "F_10",
+    "INV_07"
+   ]
+  },
+  {
+   "id": "TC02f",
+   "title": "关键反例：关系变了判断跟着变",
+   "elements": [
+    "RT_02",
+    "F_10",
+    "INV_12"
+   ]
+  },
+  {
+   "id": "TC03a",
+   "title": "异常：缺工参（挂高）",
+   "elements": [
+    "F_08",
+    "INV_04",
+    "INV_09"
+   ]
+  },
+  {
+   "id": "TC03b",
+   "title": "异常：MR缺天",
+   "elements": [
+    "F_05",
+    "F_06",
+    "A_01",
+    "INV_09"
+   ]
+  },
+  {
+   "id": "TC03c",
+   "title": "异常：告警覆盖多数命中日",
+   "elements": [
+    "F_07",
+    "A_03",
+    "INV_04"
+   ]
+  },
+  {
+   "id": "TC03d",
+   "title": "异常：告警部分重合",
+   "elements": [
+    "F_07",
+    "A_03"
+   ]
+  },
+  {
+   "id": "TC03e",
+   "title": "异常：后窗MR不足7天",
+   "elements": [
+    "F_11",
+    "A_07",
+    "INV_09",
+    "INV_10"
+   ]
+  },
+  {
+   "id": "TC03f",
+   "title": "异常：多原因（次因同时命中）",
+   "elements": [
+    "F_08",
+    "A_02",
+    "A_03",
+    "RULE_W05"
+   ]
+  },
+  {
+   "id": "TC03g",
+   "title": "异常：邻区工参缺失",
+   "elements": [
+    "F_10",
+    "A_04",
+    "A_05",
+    "INV_06",
+    "INV_09"
+   ]
+  },
+  {
+   "id": "TC03h",
+   "title": "异常：场景等级无对应派单规则",
+   "elements": [
+    "F_05",
+    "F_06",
+    "A_01",
+    "INV_09"
+   ]
+  },
+  {
+   "id": "TC04a",
+   "title": "记录引用与读回：保存后重开",
+   "elements": [
+    "OT_TICKET",
+    "OT_PLAN",
+    "OT_EFFECT",
+    "OT_CASE",
+    "RT_05",
+    "RT_09",
+    "RT_11",
+    "A_01",
+    "A_07",
+    "A_09"
+   ]
+  },
+  {
+   "id": "TC04b",
+   "title": "记录引用：错误引用被拒绝，旧记录保留",
+   "elements": [
+    "A_02",
+    "A_05",
+    "A_07",
+    "A_09"
+   ]
+  },
+  {
+   "id": "TC04c",
+   "title": "记录引用：改名不改写历史",
+   "elements": [
+    "OT_CELL",
+    "INV_11"
+   ]
+  },
+  {
+   "id": "TC05a",
+   "title": "动态更新：正常变化（含迟到回填）",
+   "elements": [
+    "A_06",
+    "F_03",
+    "F_02",
+    "F_08",
+    "F_09",
+    "F_10",
+    "INV_07",
+    "INV_11"
+   ]
+  },
+  {
+   "id": "TC05b",
+   "title": "动态更新：过期与冲突",
+   "elements": [
+    "A_05",
+    "A_06",
+    "F_08",
+    "F_10",
+    "F_11",
+    "INV_07",
+    "INV_08",
+    "INV_15"
+   ]
+  },
+  {
+   "id": "TC06a",
+   "title": "同类新实例（设计推演）：另一小区W",
+   "elements": [
+    "F_06",
+    "F_08",
+    "F_10",
+    "INV_13"
+   ]
+  },
+  {
+   "id": "TC06b",
+   "title": "同类新实例反例：下倾已合理，不命中",
+   "elements": [
+    "F_08"
+   ]
+  },
+  {
+   "id": "TC06c",
+   "title": "同类新实例（设计推演）：5G同题",
+   "elements": [
+    "RULE_D03",
+    "RULE_M01",
+    "F_06",
+    "F_08"
+   ]
+  },
+  {
+   "id": "TC06d",
+   "title": "同类新实例（运行验证）：未用于构建的输入",
+   "elements": []
+  },
+  {
+   "id": "TC07a",
+   "title": "复发与建单约束",
+   "elements": [
+    "A_01",
+    "RT_05",
+    "RT_07",
+    "INV_01",
+    "INV_11",
+    "INV_14",
+    "INV_16"
+   ]
+  },
+  {
+   "id": "TC07b",
+   "title": "自动执行与不通过批准",
+   "elements": [
+    "A_05",
+    "INV_05",
+    "INV_06"
+   ]
+  },
+  {
+   "id": "TC07c",
+   "title": "执行结果未知",
+   "elements": [
+    "A_05",
+    "A_06",
+    "A_07",
+    "INV_08"
+   ]
+  },
+  {
+   "id": "TC07d",
+   "title": "根因约束与修订",
+   "elements": [
+    "A_02",
+    "INV_02",
+    "INV_03",
+    "INV_11"
+   ]
+  },
+  {
+   "id": "TC07e",
+   "title": "效果分支与案例入库",
+   "elements": [
+    "A_07",
+    "A_08",
+    "A_09",
+    "F_11",
+    "INV_10",
+    "INV_11"
+   ]
+  },
+  {
+   "id": "TC07f",
+   "title": "持续有效与关单、复发不得关单",
+   "elements": [
+    "F_11",
+    "A_07",
+    "A_08",
+    "A_09",
+    "INV_10"
+   ]
+  },
+  {
+   "id": "TC08",
+   "title": "多小区批量发现与建单回归",
+   "elements": [
+    "F_05",
+    "F_08",
+    "F_12",
+    "A_01",
+    "RULE_D01",
+    "RULE_F01"
+   ]
+  },
+  {
+   "id": "TC09",
+   "title": "服务接口（OSDK风格）：元数据、函数、动作、对象读取",
+   "elements": []
+  },
+  {
+   "id": "TC10",
+   "title": "人机问答：小区X从前置数据发现到关单的对话",
+   "elements": []
+  }
+ ],
+ "designDecisions": [
+  {
+   "id": "H1",
+   "decision": "天线只保留机械下倾角、挂高、方位角、是否电调；电子下倾角与垂直波束宽放在关系RT_02（小区—天线）"
+  },
+  {
+   "id": "H2",
+   "decision": "小区属性`targetRadius`（目标覆盖半径），默认＝0.5×最近站间距，可人工覆盖"
+  },
+  {
+   "id": "H3",
+   "decision": "“复发”不作工单状态：新工单关联原工单号，原工单不重开"
+  },
+  {
+   "id": "H4",
+   "decision": "[覆盖汇总]6行规则归并为原子动作“增大下倾角”；措施类型字典分机械／电调两条，电调为本组补充"
+  },
+  {
+   "id": "H5",
+   "decision": "“重叠覆盖度”拆为实测重叠覆盖度（小区指标）与预测重叠指数（F_10输出）"
+  },
+  {
+   "id": "H6",
+   "decision": "F_02、F_04为简化平地模型，不适用5G AAU；5G公式未定义时返回“未知”"
+  },
+  {
+   "id": "H7",
+   "decision": "措施的单次上限、调节分辨率、容差、目标半径系数等作为测试假设，集中登记于“测试假设登记”"
+  },
+  {
+   "id": "H8",
+   "decision": "工单设`diagnostics[]`（函数结果记录）；方案、效果保存函数调用引用；周边影响结果含取值“未评估”；设INV_15（工参冲突不自动裁决）"
+  },
+  {
+   "id": "H9",
+   "decision": "派单对象＝小区：一张工单恰好针对一个弱覆盖小区（RT_05→OT_CELL）；覆盖区域只作位置与影响范围的上下文（工单`cover_area`），不设区域`weakStatus`与区域`metrics`；弱覆盖判定归小区，处置状态归工单"
+  },
+  {
+   "id": "H10",
+   "decision": "弱覆盖发现采用[派单规则]：RULE_D01～D04 v1.0——单日RSRP＜-110采样点数与弱覆盖占比同时达到门限记命中（宏站≥2000且≥20%，室分≥500且≥15%），7天出现3天达到派单条件；工单保存发现依据快照`discovery`"
+  },
+  {
+   "id": "H11",
+   "decision": "发现判定三值：命中≥3天→达到；命中＋未知＜3天→未达到；其余→证据不足。某天无MR数据记“未知”，不记0、不记“未命中”"
+  },
+  {
+   "id": "H12",
+   "decision": "规则按“制式×站点类型×场景等级”选取；[派单规则]只给“一般场景”，VIP／VVIP或场景等级缺失＝规则缺口，判“证据不足”，不套用一般场景门限；“-bak”文件不采用"
+  },
+  {
+   "id": "H13",
+   "decision": "效果按自然日评价：前窗＝派单窗口（7天）；后窗＝实施日次日起连续有数据的天（遇第一个缺天即止），≥7天（TH11）才评估；`achieved`＝后窗前7天不再满足派单规则；`sustained`＝后窗14天（TH12）内每个7天滑窗都不满足派单规则；保护指标缺数据→待评估"
+  },
+  {
+   "id": "H14",
+   "decision": "问题锚点＝前置数据本身：小区逐日MR统计（[派单规则]“数据源＝MR”）。弱覆盖问题＝[派单规则]对窗口内前置数据的判定结果（发现），身份由数据与规则确定（问题键`problemKey`＝`{cellKey}@{问题类型}@{窗口末日}`），不是预先登记的对象；工单是发现之后的处置载体，可重派、可缺失，不定义问题"
+  },
+  {
+   "id": "H15",
+   "decision": "小区逐日MR建为对象类型OT_CELL_MR（小区×自然日），小区不设`mrDaily[]`属性；设RT_16（OT_CELL_MR→OT_CELL，统计对象）、RT_17（OT_TICKET→OT_CELL_MR，发现依据）"
+  },
+  {
+   "id": "H16",
+   "decision": "F_05、F_06以OT_CELL_MR为输入，F_06为“发现判定”；F_12在给定范围内批量发现（只读，不创建工单）；A_01“依发现结果建单”，建单时重算F_06；RULE_F01规定发现范围与窗口；主用例从S0发现步骤开始"
+  },
+  {
+   "id": "H17",
+   "decision": "工单快照命名为`discovery`（不叫“派单快照”，以免与A_05向现场“派单”混淆），含`problemKey`、`evidenceRefs[]`（OT_CELL_MR的`mrKey`与版本）；效果前窗取`discovery.evidenceRefs`所指的数据版本；设INV_16（问题须由前置数据发现）、INV_17（前置数据只追加）"
+  }
+ ]
+}

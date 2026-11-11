@@ -1,0 +1,33 @@
+# 依赖与运行产物（--db 指定的本地库、日志、临时目录）
+node_modules/
+*.sqlite
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.log
+tmp/
+outputs/
+/shot-*.png
+reports/*.json
+
+# 本地大模型接入配置（含 api_key，不入库；模板见 config/llm.config.example.json）
+config/llm.config.json
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.htpasswd
+
+# 系统与编辑器
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.gstack/

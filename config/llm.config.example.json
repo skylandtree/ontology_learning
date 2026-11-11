@@ -1,0 +1,12 @@
+{
+  "_comment": "本地大模型接入配置。复制为 config/llm.config.json 后填写 api_key / base_url / model_name；语义理解引擎用 semantic_engine 切换：rule＝纯规则（默认，可测可复现），llm＝大模型做语义理解（事实仍来自本体函数）。enabled 一般不用填：填了 api_key 就算启用；本地服务不校验 Key 时才写 enabled=true；想彻底关掉写 enabled=false。",
+  "semantic_engine": "rule",
+  "api_key": "",
+  "base_url": "http://127.0.0.1:8000/v1",
+  "model_name": "qwen2.5-7b-instruct",
+  "timeout_ms": 30000,
+  "temperature": 0.2,
+  "max_tokens": 1200,
+  "retries": 1,
+  "extra_headers": {}
+}

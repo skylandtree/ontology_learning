@@ -1,0 +1,14 @@
+# Insert inside the existing HTTPS server block, before its fallback location.
+location = /ontology {
+    return 308 /ontology/;
+}
+location ^~ /ontology/ {
+    auth_basic "Ontology Workbench";
+    auth_basic_user_file /etc/nginx/conf.d/ontology.htpasswd;
+    client_max_body_size 4m;
+    proxy_pass http://127.0.0.1:27080/;
+    proxy_set_header Authorization "";
+    proxy_buffering off;
+    proxy_cache off;
+    proxy_read_timeout 180s;
+}

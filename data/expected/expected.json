@@ -1,0 +1,466 @@
+{
+ "_meta": {
+  "generatedBy": "scripts/build-expected.js",
+  "independentOf": "src/*",
+  "note": "读取种子 CSV 与 SPEC 生成的参数，按 SPEC 公式独立计算"
+ },
+ "rules": [
+  {
+   "id": "RULE_D01",
+   "rat": "LTE",
+   "siteType": "宏站",
+   "minWeakSamples": 2000,
+   "minWeakRatio": 0.2
+  },
+  {
+   "id": "RULE_D02",
+   "rat": "LTE",
+   "siteType": "室分",
+   "minWeakSamples": 500,
+   "minWeakRatio": 0.15
+  },
+  {
+   "id": "RULE_D03",
+   "rat": "NR",
+   "siteType": "宏站",
+   "minWeakSamples": 2000,
+   "minWeakRatio": 0.2
+  },
+  {
+   "id": "RULE_D04",
+   "rat": "NR",
+   "siteType": "室分",
+   "minWeakSamples": 500,
+   "minWeakRatio": 0.15
+  }
+ ],
+ "chm": {
+  "discover": {
+   "rule": "RULE_D01",
+   "verdict": "达到派单条件",
+   "hitDays": 7,
+   "hitDates": [
+    "2026-09-04",
+    "2026-09-05",
+    "2026-09-06",
+    "2026-09-07",
+    "2026-09-08",
+    "2026-09-09",
+    "2026-09-10"
+   ],
+   "unknownDates": []
+  },
+  "distances": {
+   "LTE:156517773": 800,
+   "LTE:156520791": 900
+  },
+  "beforeRatio": 0.3728,
+  "alarm": {
+   "share": 0.1429,
+   "verdict": "部分重合"
+  },
+  "tilt": {
+   "total": 6,
+   "rNear": 239.9,
+   "rFar": 725.1,
+   "thetaT": 7.35,
+   "gap": 1.35,
+   "_gap": 1.3461243546024297,
+   "match": true,
+   "deltaMech": 1,
+   "rounds": 1
+  },
+  "impact": {
+   "result": "通过",
+   "deltaFinal": 1,
+   "checks": [
+    {
+     "cell": "LTE:156514014",
+     "before": 725.1,
+     "after": 543.4,
+     "pass": true
+    },
+    {
+     "cell": "LTE:156514015",
+     "before": 725.1,
+     "after": 543.4,
+     "pass": true
+    },
+    {
+     "neighbor": "LTE:156517773",
+     "distance": 800,
+     "before": 210.5,
+     "after": 28.8,
+     "pass": true
+    },
+    {
+     "neighbor": "LTE:156520791",
+     "distance": 900,
+     "before": 168,
+     "after": 0,
+     "pass": true
+    }
+   ]
+  },
+  "afterRatio1": 0.0864,
+  "protection": {
+   "Y": {
+    "before": 0.0785,
+    "after": 0.0709
+   },
+   "Z1": {
+    "before": 0.2493,
+    "after": 0.1797
+   },
+   "Z2": {
+    "before": 0.2003,
+    "after": 0.1599
+   }
+  },
+  "afterAt4": {
+   "total": 7,
+   "rNear": 215.5,
+   "rFar": 543.4,
+   "thetaT": 7.35,
+   "gap": 0.35,
+   "_gap": 0.34612435460242974,
+   "match": false,
+   "deltaMech": 0,
+   "rounds": 1
+  }
+ },
+ "chmVariants": {
+  "yTightMech": {
+   "result": "不通过",
+   "checks": [
+    {
+     "cell": "LTE:156514014",
+     "before": 725.1,
+     "after": 543.4,
+     "pass": true
+    },
+    {
+     "cell": "LTE:156514015",
+     "before": 725.1,
+     "after": 543.4,
+     "pass": false
+    },
+    {
+     "neighbor": "LTE:156517773",
+     "distance": 800,
+     "before": 210.5,
+     "after": 28.8,
+     "pass": true
+    },
+    {
+     "neighbor": "LTE:156520791",
+     "distance": 900,
+     "before": 168,
+     "after": 0,
+     "pass": true
+    }
+   ]
+  },
+  "yTightElec": {
+   "delta": 1.3,
+   "result": "通过",
+   "deltaFinal": 1.3,
+   "checks": [
+    {
+     "cell": "LTE:156514014",
+     "before": 725.1,
+     "after": 505.4,
+     "pass": true
+    },
+    {
+     "neighbor": "LTE:156517773",
+     "distance": 800,
+     "before": 210.5,
+     "after": 0,
+     "pass": true
+    },
+    {
+     "neighbor": "LTE:156520791",
+     "distance": 900,
+     "before": 168,
+     "after": 0,
+     "pass": true
+    }
+   ]
+  },
+  "yRelinked": {
+   "result": "通过",
+   "deltaFinal": 1,
+   "checks": [
+    {
+     "cell": "LTE:156514014",
+     "before": 725.1,
+     "after": 543.4,
+     "pass": true
+    },
+    {
+     "neighbor": "LTE:156517773",
+     "distance": 800,
+     "before": 210.5,
+     "after": 28.8,
+     "pass": true
+    },
+    {
+     "neighbor": "LTE:156520791",
+     "distance": 900,
+     "before": 168,
+     "after": 0,
+     "pass": true
+    }
+   ]
+  },
+  "actualPlus3": {
+   "result": "不通过",
+   "failed": [
+    "LTE:156514014",
+    "LTE:156514015"
+   ]
+  },
+  "reduce": {
+   "tilt": {
+    "total": 5,
+    "rNear": 270.4,
+    "rFar": 1088.2,
+    "thetaT": 7.35,
+    "gap": 2.35,
+    "_gap": 2.3461243546024297,
+    "match": true,
+    "deltaMech": 2,
+    "rounds": 2
+   },
+   "y450": {
+    "result": "调减",
+    "deltaFinal": 1,
+    "checks": [
+     {
+      "cell": "LTE:156514014",
+      "before": 1088.2,
+      "after": 725.1,
+      "pass": true
+     },
+     {
+      "cell": "LTE:156514015",
+      "before": 725.1,
+      "after": 543.4,
+      "pass": true
+     },
+     {
+      "neighbor": "LTE:156517773",
+      "distance": 800,
+      "before": 573.6,
+      "after": 210.5,
+      "pass": true
+     },
+     {
+      "neighbor": "LTE:156520791",
+      "distance": 900,
+      "before": 531,
+      "after": 168,
+      "pass": true
+     }
+    ]
+   },
+   "y600": {
+    "result": "不通过",
+    "deltaFinal": null,
+    "checks": [
+     {
+      "cell": "LTE:156514014",
+      "before": 1088.2,
+      "after": 543.4,
+      "pass": true
+     },
+     {
+      "cell": "LTE:156514015",
+      "before": 725.1,
+      "after": 434.3,
+      "pass": false
+     },
+     {
+      "neighbor": "LTE:156517773",
+      "distance": 800,
+      "before": 573.6,
+      "after": 28.8,
+      "pass": true
+     },
+     {
+      "neighbor": "LTE:156520791",
+      "distance": 900,
+      "before": 531,
+      "after": 0,
+      "pass": true
+     }
+    ]
+   }
+  }
+ },
+ "sim": {
+  "discover": {
+   "rule": "RULE_D01",
+   "verdict": "达到派单条件",
+   "hitDays": 7,
+   "hitDates": [
+    "2026-10-16",
+    "2026-10-17",
+    "2026-10-18",
+    "2026-10-19",
+    "2026-10-20",
+    "2026-10-21",
+    "2026-10-22"
+   ],
+   "unknownDates": []
+  },
+  "tilt": {
+   "total": 5.5,
+   "rNear": 221,
+   "rFar": 1002.3,
+   "thetaT": 7.95,
+   "gap": 2.45,
+   "_gap": 2.44738485009049,
+   "match": true,
+   "deltaMech": 2,
+   "rounds": 2
+  },
+  "impact": {
+   "result": "通过",
+   "deltaFinal": 2,
+   "checks": [
+    {
+     "cell": "LTE:156565374",
+     "before": 1002.3,
+     "after": 500.5,
+     "pass": true
+    }
+   ]
+  }
+ },
+ "scanSep": {
+  "LTE:156514014": {
+   "verdict": "达到派单条件",
+   "hitDays": 7,
+   "unknown": 0
+  },
+  "LTE:156514015": {
+   "verdict": "未达到派单条件",
+   "hitDays": 0,
+   "unknown": 0
+  },
+  "LTE:156447908": {
+   "verdict": "达到派单条件",
+   "hitDays": 3,
+   "unknown": 0
+  },
+  "LTE:156383305": {
+   "verdict": "未达到派单条件",
+   "hitDays": 2,
+   "unknown": 0
+  },
+  "LTE:156327738": {
+   "verdict": "证据不足",
+   "hitDays": 2,
+   "unknown": 2
+  },
+  "LTE:156420740": {
+   "verdict": "达到派单条件",
+   "hitDays": 7,
+   "unknown": 0
+  },
+  "LTE:156398551": {
+   "verdict": "证据不足",
+   "hitDays": 0,
+   "unknown": 7
+  },
+  "LTE:156398860": {
+   "verdict": "达到派单条件",
+   "hitDays": 4,
+   "unknown": 0
+  },
+  "NR:4252758052": {
+   "verdict": "达到派单条件",
+   "hitDays": 7,
+   "unknown": 0
+  },
+  "NR:4255776777": {
+   "verdict": "达到派单条件",
+   "hitDays": 3,
+   "unknown": 0
+  },
+  "LTE:156517773": {
+   "verdict": "未达到派单条件",
+   "hitDays": 0,
+   "unknown": 0
+  },
+  "LTE:156520791": {
+   "verdict": "证据不足",
+   "hitDays": 0,
+   "unknown": 7
+  },
+  "LTE:156574916": {
+   "verdict": "达到派单条件",
+   "hitDays": 7,
+   "unknown": 0
+  }
+ },
+ "scanSepCounts": {
+  "达到": 7,
+  "未达到": 3,
+  "证据不足": 3
+ },
+ "scanOct": {
+  "LTE:156565374": {
+   "verdict": "达到派单条件",
+   "hitDays": 7,
+   "unknown": 0
+  },
+  "NR:4183806064": {
+   "verdict": "未达到派单条件",
+   "hitDays": 0,
+   "unknown": 0
+  },
+  "NR:4184072313": {
+   "verdict": "达到派单条件",
+   "hitDays": 7,
+   "unknown": 0
+  }
+ },
+ "scanOctAll": {
+  "LTE:156565374": {
+   "verdict": "达到派单条件",
+   "hitDays": 7,
+   "unknown": 0
+  },
+  "LTE:156567117": {
+   "verdict": "未达到派单条件",
+   "hitDays": 0,
+   "unknown": 0
+  },
+  "NR:4183806064": {
+   "verdict": "未达到派单条件",
+   "hitDays": 0,
+   "unknown": 0
+  },
+  "NR:4184072313": {
+   "verdict": "达到派单条件",
+   "hitDays": 7,
+   "unknown": 0
+  },
+  "LTE:156570059": {
+   "verdict": "证据不足",
+   "hitDays": 0,
+   "unknown": 7
+  }
+ },
+ "scanOctCounts": {
+  "达到": 2,
+  "未达到": 2,
+  "证据不足": 1
+ },
+ "bao": {
+  "weakRatio": 0.1182
+ }
+}

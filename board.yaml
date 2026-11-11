@@ -1,0 +1,643 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - img [ref=e6]
+      - generic [ref=e12]:
+        - heading "无线弱覆盖分析及优化决策" [level=1] [ref=e13]
+        - paragraph [ref=e14]: ONTOLOGY-DRIVEN WORKBENCH · SHANGHAI
+    - generic [ref=e15]:
+      - generic [ref=e51] [cursor=pointer]: 小区大屏
+      - generic [ref=e16]:
+        - generic [ref=e17]: Ontology
+        - generic [ref=e18]: shwo-weak-coverage · 9OT/17RT/12F/11A
+      - generic [ref=e19]:
+        - generic [ref=e20]: Spec Fingerprint
+        - generic [ref=e21]: f0fffe9b407f
+      - generic [ref=e22]:
+        - generic [ref=e23]: Anchor
+        - generic [ref=e24]: OT_CELL_MR
+    - generic [ref=e25]:
+      - generic [ref=e26]:
+        - generic [ref=e27]: 判断时点
+        - textbox "修改后回车：推进本体的仿真时钟（MR 数据按到达时刻陆续入库）" [ref=e28]: 2026-09-29 09:00:10
+      - button "+1d" [ref=e29] [cursor=pointer]
+      - combobox "角色决定可用动作（x-context-key-groups）" [ref=e30]:
+        - option "优化本体"
+        - option "地市优化工程师" [selected]
+        - option "优化主管"
+        - option "现场维护人员"
+        - option "优化专家"
+        - option "知识维护人"
+      - button "重置" [ref=e31] [cursor=pointer]
+      - generic "本体服务在线" [ref=e32]
+  - generic [ref=e33]:
+    - complementary [ref=e34]:
+      - generic [ref=e52]:
+        - generic [ref=e53]: 导航
+        - generic [ref=e54]: CELL-FIRST
+      - generic [ref=e55]:
+        - generic [ref=e56]: 小区
+        - generic [ref=e57] [cursor=pointer]:
+          - generic [ref=e58]: "00"
+          - generic [ref=e59]: 小区大屏
+          - generic [ref=e60]: "18"
+        - generic [ref=e61]: 当前小区
+        - generic [ref=e62]:
+          - text: 先在小区大屏点一个小区，
+          - text: 这里显示它的决策链与执行结果图谱
+        - generic [ref=e63]: 本体
+        - generic [ref=e64] [cursor=pointer]:
+          - generic [ref=e65]: C
+          - generic [ref=e66]: 本体驾驶舱
+        - generic [ref=e67] [cursor=pointer]:
+          - generic [ref=e68]: G
+          - generic [ref=e69]: 本体图谱
+        - generic [ref=e70] [cursor=pointer]:
+          - generic [ref=e71]: C
+          - generic [ref=e72]: 案例库
+    - main [ref=e35]:
+      - generic [ref=e73]:
+        - heading "小区大屏" [level=2] [ref=e74]
+        - generic [ref=e75]: CELL BOARD · ATTRIBUTES · shwo-weak-coverage
+        - generic [ref=e77]: 判断时点 2026-09-29 09:00:10
+      - generic [ref=e78]:
+        - text: 这一屏只列小区基础属性：制式、频段、站点类型、场景等级、区域、目标半径、发射功率、重叠邻区——属性全部取自本体对象与其关系，不做判定。
+        - text: 点任意一张卡片进入小区详情：决策链自动执行，从发现判定一路走到闭环与案例，能走到哪一步由本体说了算，走到哪一步、执行了什么、卡在哪里，都显示在该小区详情页的首部。
+        - text: 想看“链停在需要人工接入的地方、处理完再继续”：点开 陈家镇北NF02H_196（第 ⑤ 步等现场回报）
+        - button "从 09-11 重演" [ref=e79] [cursor=pointer]
+        - text: ；一路走通的对照是 崇贤达NF02H_222。
+        - text: 注意：跑过别的小区后判断时点会被推进，发现窗口随之移动。陈家镇北NF02H_196 的故事固定在 2026-09-11 09:00， 时点走远后第一步会判“未达到”——点上面「从 09-11 重演」回到演示起点即可。
+      - generic [ref=e80]:
+        - generic [ref=e81]:
+          - generic [ref=e82]: 小区总数
+          - generic [ref=e83]: "18"
+        - generic [ref=e84]:
+          - generic [ref=e85]: LTE
+          - generic [ref=e86]: "14"
+        - generic [ref=e87]:
+          - generic [ref=e88]: NR
+          - generic [ref=e89]: "4"
+        - generic [ref=e90]:
+          - generic [ref=e91]: 宏站
+          - generic [ref=e92]: "16"
+        - generic [ref=e93]:
+          - generic [ref=e94]: 室分
+          - generic [ref=e95]: "2"
+      - generic [ref=e96]:
+        - generic [ref=e97]: 筛选
+        - combobox [ref=e98]:
+          - option "全部制式" [selected]
+          - option "LTE"
+          - option "NR"
+        - combobox [ref=e99]:
+          - option "全部场景等级" [selected]
+          - option "一般"
+          - option "VIP"
+        - combobox [ref=e100]:
+          - option "全部站点类型" [selected]
+          - option "宏站"
+          - option "室分"
+        - searchbox "搜索小区名／小区标识／区域／天线" [ref=e101]
+        - generic [ref=e102]: 命中 18 / 18 个小区
+      - generic [ref=e103]:
+        - article [ref=e104] [cursor=pointer]:
+          - generic [ref=e105]:
+            - generic [ref=e106]: 新河镇政府NF02H_58
+            - generic [ref=e107]: LTE
+          - generic [ref=e108]: LTE:156327738
+          - generic [ref=e109]:
+            - generic [ref=e110]: B3
+            - generic [ref=e111]: 宏站
+            - generic [ref=e112]: 一般
+          - generic [ref=e113]:
+            - generic [ref=e114]:
+              - generic [ref=e115]: 目标半径
+              - generic [ref=e116]: 500 m
+            - generic [ref=e117]:
+              - generic [ref=e118]: 发射功率
+              - generic [ref=e119]: 12.2 dBm
+            - generic [ref=e120]:
+              - generic [ref=e121]: 区域
+              - generic [ref=e122]: 未关联
+            - generic [ref=e123]:
+              - generic [ref=e124]: 重叠邻区
+              - generic [ref=e125]: 未知
+          - generic [ref=e126]:
+            - generic "RT_02 天线" [ref=e127]: 610655-1-1
+            - generic "RT_01 归属站点" [ref=e128]: "610655"
+            - generic [ref=e129]: 点开自动执行决策链 →
+          - generic [ref=e131]: OT_CELL
+        - article [ref=e132] [cursor=pointer]:
+          - generic [ref=e133]:
+            - generic [ref=e134]: 港沿路NF02H_73
+            - generic [ref=e135]: LTE
+          - generic [ref=e136]: LTE:156383305
+          - generic [ref=e137]:
+            - generic [ref=e138]: B3
+            - generic [ref=e139]: 宏站
+            - generic [ref=e140]: 一般
+          - generic [ref=e141]:
+            - generic [ref=e142]:
+              - generic [ref=e143]: 目标半径
+              - generic [ref=e144]: 500 m
+            - generic [ref=e145]:
+              - generic [ref=e146]: 发射功率
+              - generic [ref=e147]: 12.2 dBm
+            - generic [ref=e148]:
+              - generic [ref=e149]: 区域
+              - generic [ref=e150]: 未关联
+            - generic [ref=e151]:
+              - generic [ref=e152]: 重叠邻区
+              - generic [ref=e153]: 未知
+          - generic [ref=e154]:
+            - generic "RT_02 天线" [ref=e155]: 610872-1-1
+            - generic "RT_01 归属站点" [ref=e156]: "610872"
+            - generic [ref=e157]: 点开自动执行决策链 →
+          - generic [ref=e159]: OT_CELL
+        - article [ref=e160] [cursor=pointer]:
+          - generic [ref=e161]:
+            - generic [ref=e162]: 崇明体育中心NF02H_215
+            - generic [ref=e163]: LTE
+          - generic [ref=e164]: LTE:156398551
+          - generic [ref=e165]:
+            - generic [ref=e166]: B3
+            - generic [ref=e167]: 宏站
+            - generic [ref=e168]: VIP
+          - generic [ref=e169]:
+            - generic [ref=e170]:
+              - generic [ref=e171]: 目标半径
+              - generic [ref=e172]: 500 m
+            - generic [ref=e173]:
+              - generic [ref=e174]: 发射功率
+              - generic [ref=e175]: 12.2 dBm
+            - generic [ref=e176]:
+              - generic [ref=e177]: 区域
+              - generic [ref=e178]: 未关联
+            - generic [ref=e179]:
+              - generic [ref=e180]: 重叠邻区
+              - generic [ref=e181]: 未知
+          - generic [ref=e182]:
+            - generic "RT_02 天线" [ref=e183]: 610931-1-1
+            - generic "RT_01 归属站点" [ref=e184]: "610931"
+            - generic [ref=e185]: 点开自动执行决策链 →
+          - generic [ref=e187]: OT_CELL
+        - article [ref=e188] [cursor=pointer]:
+          - generic [ref=e189]:
+            - generic [ref=e190]: 崇明医院门诊楼ND08H_12
+            - generic [ref=e191]: LTE
+          - generic [ref=e192]: LTE:156398860
+          - generic [ref=e193]:
+            - generic [ref=e194]: B39
+            - generic [ref=e195]: 室分
+            - generic [ref=e196]: 一般
+          - generic [ref=e197]:
+            - generic [ref=e198]:
+              - generic [ref=e199]: 目标半径
+              - generic [ref=e200]: 60 m
+            - generic [ref=e201]:
+              - generic [ref=e202]: 发射功率
+              - generic [ref=e203]: 12.2 dBm
+            - generic [ref=e204]:
+              - generic [ref=e205]: 区域
+              - generic [ref=e206]: 未关联
+            - generic [ref=e207]:
+              - generic [ref=e208]: 重叠邻区
+              - generic [ref=e209]: 未知
+          - generic [ref=e210]:
+            - generic "RT_01 归属站点" [ref=e211]: "610933"
+            - generic [ref=e212]: 点开自动执行决策链 →
+          - generic [ref=e214]: OT_CELL
+        - article [ref=e215] [cursor=pointer]:
+          - generic [ref=e216]:
+            - generic [ref=e217]: 堡镇中心NF02H_132
+            - generic [ref=e218]: LTE
+          - generic [ref=e219]: LTE:156420740
+          - generic [ref=e220]:
+            - generic [ref=e221]: B3
+            - generic [ref=e222]: 宏站
+            - generic [ref=e223]: 一般
+          - generic [ref=e224]:
+            - generic [ref=e225]:
+              - generic [ref=e226]: 目标半径
+              - generic [ref=e227]: 500 m
+            - generic [ref=e228]:
+              - generic [ref=e229]: 发射功率
+              - generic [ref=e230]: 12.2 dBm
+            - generic [ref=e231]:
+              - generic [ref=e232]: 区域
+              - generic [ref=e233]: 未关联
+            - generic [ref=e234]:
+              - generic [ref=e235]: 重叠邻区
+              - generic [ref=e236]: 未知
+          - generic [ref=e237]:
+            - generic "RT_02 天线" [ref=e238]: 611018-1-1
+            - generic "RT_01 归属站点" [ref=e239]: "611018"
+            - generic [ref=e240]: 点开自动执行决策链 →
+          - generic [ref=e242]: OT_CELL
+        - article [ref=e243] [cursor=pointer]:
+          - generic [ref=e244]:
+            - generic [ref=e245]: 东滩公园NF02H_164
+            - generic [ref=e246]: LTE
+          - generic [ref=e247]: LTE:156447908
+          - generic [ref=e248]:
+            - generic [ref=e249]: B3
+            - generic [ref=e250]: 宏站
+            - generic [ref=e251]: 一般
+          - generic [ref=e252]:
+            - generic [ref=e253]:
+              - generic [ref=e254]: 目标半径
+              - generic [ref=e255]: 500 m
+            - generic [ref=e256]:
+              - generic [ref=e257]: 发射功率
+              - generic [ref=e258]: 12.2 dBm
+            - generic [ref=e259]:
+              - generic [ref=e260]: 区域
+              - generic [ref=e261]: 未关联
+            - generic [ref=e262]:
+              - generic [ref=e263]: 重叠邻区
+              - generic [ref=e264]: 未知
+          - generic [ref=e265]:
+            - generic "RT_02 天线" [ref=e266]: 611124-1-1
+            - generic "RT_01 归属站点" [ref=e267]: "611124"
+            - generic [ref=e268]: 点开自动执行决策链 →
+          - generic [ref=e270]: OT_CELL
+        - article [ref=e271] [cursor=pointer]:
+          - generic [ref=e272]:
+            - generic [ref=e273]: 崇贤达NF02H_222
+            - generic [ref=e274]: LTE
+          - generic [ref=e275]: LTE:156514014
+          - generic [ref=e276]:
+            - generic [ref=e277]: B3
+            - generic [ref=e278]: 宏站
+            - generic [ref=e279]: 一般
+            - generic [ref=e280]: 乡镇道路
+          - generic [ref=e281]:
+            - generic [ref=e282]:
+              - generic [ref=e283]: 目标半径
+              - generic [ref=e284]: 500 m
+            - generic [ref=e285]:
+              - generic [ref=e286]: 发射功率
+              - generic [ref=e287]: 12.2 dBm
+            - generic [ref=e288]:
+              - generic [ref=e289]: 区域
+              - generic [ref=e290]: 陈家镇陈东路周边
+            - generic [ref=e291]:
+              - generic [ref=e292]: 重叠邻区
+              - generic [ref=e293]: 2 个
+          - generic [ref=e294]:
+            - generic "RT_02 天线" [ref=e295]: 611382-2-1
+            - generic "RT_01 归属站点" [ref=e296]: "611382"
+            - generic [ref=e297]: 点开自动执行决策链 →
+          - generic [ref=e299]: OT_CELL
+        - article [ref=e300] [cursor=pointer]:
+          - generic [ref=e301]:
+            - generic [ref=e302]: 崇贤达NF08H_223
+            - generic [ref=e303]: LTE
+          - generic [ref=e304]: LTE:156514015
+          - generic [ref=e305]:
+            - generic [ref=e306]: B8
+            - generic [ref=e307]: 宏站
+            - generic [ref=e308]: 一般
+            - generic [ref=e309]: 乡镇道路
+          - generic [ref=e310]:
+            - generic [ref=e311]:
+              - generic [ref=e312]: 目标半径
+              - generic [ref=e313]: 400 m
+            - generic [ref=e314]:
+              - generic [ref=e315]: 发射功率
+              - generic [ref=e316]: 12.2 dBm
+            - generic [ref=e317]:
+              - generic [ref=e318]: 区域
+              - generic [ref=e319]: 陈家镇陈东路周边
+            - generic [ref=e320]:
+              - generic [ref=e321]: 重叠邻区
+              - generic [ref=e322]: 0 个
+          - generic [ref=e323]:
+            - generic "RT_02 天线" [ref=e324]: 611382-2-1
+            - generic "RT_01 归属站点" [ref=e325]: "611382"
+            - generic [ref=e326]: 点开自动执行决策链 →
+          - generic [ref=e328]: OT_CELL
+        - article [ref=e329] [cursor=pointer]:
+          - generic [ref=e330]:
+            - generic [ref=e331]: 崇贤北NF02H_141
+            - generic [ref=e332]: LTE
+          - generic [ref=e333]: LTE:156517773
+          - generic [ref=e334]:
+            - generic [ref=e335]: B3
+            - generic [ref=e336]: 宏站
+            - generic [ref=e337]: 一般
+          - generic [ref=e338]:
+            - generic [ref=e339]:
+              - generic [ref=e340]: 目标半径
+              - generic [ref=e341]: 400 m
+            - generic [ref=e342]:
+              - generic [ref=e343]: 发射功率
+              - generic [ref=e344]: 12.2 dBm
+            - generic [ref=e345]:
+              - generic [ref=e346]: 区域
+              - generic [ref=e347]: 未关联
+            - generic [ref=e348]:
+              - generic [ref=e349]: 重叠邻区
+              - generic [ref=e350]: 1 个
+          - generic [ref=e351]:
+            - generic "RT_02 天线" [ref=e352]: 611397-1-1
+            - generic "RT_01 归属站点" [ref=e353]: "611397"
+            - generic [ref=e354]: 点开自动执行决策链 →
+          - generic [ref=e356]: OT_CELL
+        - article [ref=e357] [cursor=pointer]:
+          - generic [ref=e358]:
+            - generic [ref=e359]: 陈家镇东NF02H_87
+            - generic [ref=e360]: LTE
+          - generic [ref=e361]: LTE:156520791
+          - generic [ref=e362]:
+            - generic [ref=e363]: B3
+            - generic [ref=e364]: 宏站
+            - generic [ref=e365]: 一般
+          - generic [ref=e366]:
+            - generic [ref=e367]:
+              - generic [ref=e368]: 目标半径
+              - generic [ref=e369]: 400 m
+            - generic [ref=e370]:
+              - generic [ref=e371]: 发射功率
+              - generic [ref=e372]: 12.2 dBm
+            - generic [ref=e373]:
+              - generic [ref=e374]: 区域
+              - generic [ref=e375]: 未关联
+            - generic [ref=e376]:
+              - generic [ref=e377]: 重叠邻区
+              - generic [ref=e378]: 1 个
+          - generic [ref=e379]:
+            - generic "RT_02 天线" [ref=e380]: 611409-3-1
+            - generic "RT_01 归属站点" [ref=e381]: "611409"
+            - generic [ref=e382]: 点开自动执行决策链 →
+          - generic [ref=e384]: OT_CELL
+        - article [ref=e385] [cursor=pointer]:
+          - generic [ref=e386]:
+            - generic [ref=e387]: 庙镇新村NF02H_126
+            - generic [ref=e388]: LTE
+          - generic [ref=e389]: LTE:156565374
+          - generic [ref=e390]:
+            - generic [ref=e391]: B3
+            - generic [ref=e392]: 宏站
+            - generic [ref=e393]: 一般
+            - generic [ref=e394]: 乡镇道路
+          - generic [ref=e395]:
+            - generic [ref=e396]:
+              - generic [ref=e397]: 目标半径
+              - generic [ref=e398]: 450 m
+            - generic [ref=e399]:
+              - generic [ref=e400]: 发射功率
+              - generic [ref=e401]: 12.2 dBm
+            - generic [ref=e402]:
+              - generic [ref=e403]: 区域
+              - generic [ref=e404]: 庙镇新村及周边道路
+            - generic [ref=e405]:
+              - generic [ref=e406]: 重叠邻区
+              - generic [ref=e407]: 0 个
+          - generic [ref=e408]:
+            - generic "RT_02 天线" [ref=e409]: 611583-1-1
+            - generic "RT_01 归属站点" [ref=e410]: "611583"
+            - generic [ref=e411]: 点开自动执行决策链 →
+          - generic [ref=e413]: OT_CELL
+        - article [ref=e414] [cursor=pointer]:
+          - generic [ref=e415]:
+            - generic [ref=e416]: 庙镇东NF02H_77
+            - generic [ref=e417]: LTE
+          - generic [ref=e418]: LTE:156567117
+          - generic [ref=e419]:
+            - generic [ref=e420]: B3
+            - generic [ref=e421]: 宏站
+            - generic [ref=e422]: 一般
+          - generic [ref=e423]:
+            - generic [ref=e424]:
+              - generic [ref=e425]: 目标半径
+              - generic [ref=e426]: 450 m
+            - generic [ref=e427]:
+              - generic [ref=e428]: 发射功率
+              - generic [ref=e429]: 12.2 dBm
+            - generic [ref=e430]:
+              - generic [ref=e431]: 区域
+              - generic [ref=e432]: 未关联
+            - generic [ref=e433]:
+              - generic [ref=e434]: 重叠邻区
+              - generic [ref=e435]: 未知
+          - generic [ref=e436]:
+            - generic "RT_02 天线" [ref=e437]: 611590-1-1
+            - generic "RT_01 归属站点" [ref=e438]: "611590"
+            - generic [ref=e439]: 点开自动执行决策链 →
+          - generic [ref=e441]: OT_CELL
+        - article [ref=e442] [cursor=pointer]:
+          - generic [ref=e443]:
+            - generic [ref=e444]: 庙镇南NF02H_203
+            - generic [ref=e445]: LTE
+          - generic [ref=e446]: LTE:156570059
+          - generic [ref=e447]:
+            - generic [ref=e448]: B3
+            - generic [ref=e449]: 宏站
+            - generic [ref=e450]: 一般
+          - generic [ref=e451]:
+            - generic [ref=e452]:
+              - generic [ref=e453]: 目标半径
+              - generic [ref=e454]: 450 m
+            - generic [ref=e455]:
+              - generic [ref=e456]: 发射功率
+              - generic [ref=e457]: 12.2 dBm
+            - generic [ref=e458]:
+              - generic [ref=e459]: 区域
+              - generic [ref=e460]: 未关联
+            - generic [ref=e461]:
+              - generic [ref=e462]: 重叠邻区
+              - generic [ref=e463]: 未知
+          - generic [ref=e464]:
+            - generic "RT_02 天线" [ref=e465]: 611601-2-1
+            - generic "RT_01 归属站点" [ref=e466]: "611601"
+            - generic [ref=e467]: 点开自动执行决策链 →
+          - generic [ref=e469]: OT_CELL
+        - article [ref=e470] [cursor=pointer]:
+          - generic [ref=e471]:
+            - generic [ref=e472]: 陈家镇北NF02H_196
+            - generic [ref=e473]: LTE
+          - generic [ref=e474]: LTE:156574916
+          - generic [ref=e475]:
+            - generic [ref=e476]: B3
+            - generic [ref=e477]: 宏站
+            - generic [ref=e478]: 一般
+          - generic [ref=e479]:
+            - generic [ref=e480]:
+              - generic [ref=e481]: 目标半径
+              - generic [ref=e482]: 500 m
+            - generic [ref=e483]:
+              - generic [ref=e484]: 发射功率
+              - generic [ref=e485]: 12.2 dBm
+            - generic [ref=e486]:
+              - generic [ref=e487]: 区域
+              - generic [ref=e488]: 未关联
+            - generic [ref=e489]:
+              - generic [ref=e490]: 重叠邻区
+              - generic [ref=e491]: 2 个
+          - generic [ref=e492]:
+            - generic "RT_02 天线" [ref=e493]: 611620-1-1
+            - generic "RT_01 归属站点" [ref=e494]: "611620"
+            - generic [ref=e495]: 点开自动执行决策链 →
+          - generic [ref=e497]: OT_CELL
+        - article [ref=e498] [cursor=pointer]:
+          - generic [ref=e499]:
+            - generic [ref=e500]: 宝泰支HR05H_112
+            - generic [ref=e501]: NR
+          - generic [ref=e502]: NR:4183806064
+          - generic [ref=e503]:
+            - generic [ref=e504]: N41
+            - generic [ref=e505]: 宏站
+            - generic [ref=e506]: 一般
+          - generic [ref=e507]:
+            - generic [ref=e508]:
+              - generic [ref=e509]: 目标半径
+              - generic [ref=e510]: 500 m
+            - generic [ref=e511]:
+              - generic [ref=e512]: 发射功率
+              - generic [ref=e513]: 未提供
+            - generic [ref=e514]:
+              - generic [ref=e515]: 区域
+              - generic [ref=e516]: 未关联
+            - generic [ref=e517]:
+              - generic [ref=e518]: 重叠邻区
+              - generic [ref=e519]: 未知
+          - generic [ref=e520]:
+            - generic "RT_01 归属站点" [ref=e521]: "1021437"
+            - generic [ref=e522]: 点开自动执行决策链 →
+          - generic [ref=e524]: OT_CELL
+        - article [ref=e525] [cursor=pointer]:
+          - generic [ref=e526]:
+            - generic [ref=e527]: 海剑HR03H_121
+            - generic [ref=e528]: NR
+          - generic [ref=e529]: NR:4184072313
+          - generic [ref=e530]:
+            - generic [ref=e531]: N41
+            - generic [ref=e532]: 宏站
+            - generic [ref=e533]: 一般
+          - generic [ref=e534]:
+            - generic [ref=e535]:
+              - generic [ref=e536]: 目标半径
+              - generic [ref=e537]: 500 m
+            - generic [ref=e538]:
+              - generic [ref=e539]: 发射功率
+              - generic [ref=e540]: 未提供
+            - generic [ref=e541]:
+              - generic [ref=e542]: 区域
+              - generic [ref=e543]: 未关联
+            - generic [ref=e544]:
+              - generic [ref=e545]: 重叠邻区
+              - generic [ref=e546]: 未知
+          - generic [ref=e547]:
+            - generic "RT_01 归属站点" [ref=e548]: "1021502"
+            - generic [ref=e549]: 点开自动执行决策链 →
+          - generic [ref=e551]: OT_CELL
+        - article [ref=e552] [cursor=pointer]:
+          - generic [ref=e553]:
+            - generic [ref=e554]: 陈家镇HR05H_36
+            - generic [ref=e555]: NR
+          - generic [ref=e556]: NR:4252758052
+          - generic [ref=e557]:
+            - generic [ref=e558]: N41
+            - generic [ref=e559]: 宏站
+            - generic [ref=e560]: 一般
+          - generic [ref=e561]:
+            - generic [ref=e562]:
+              - generic [ref=e563]: 目标半径
+              - generic [ref=e564]: 500 m
+            - generic [ref=e565]:
+              - generic [ref=e566]: 发射功率
+              - generic [ref=e567]: 未提供
+            - generic [ref=e568]:
+              - generic [ref=e569]: 区域
+              - generic [ref=e570]: 未关联
+            - generic [ref=e571]:
+              - generic [ref=e572]: 重叠邻区
+              - generic [ref=e573]: 未知
+          - generic [ref=e574]:
+            - generic "RT_01 归属站点" [ref=e575]: "1038271"
+            - generic [ref=e576]: 点开自动执行决策链 →
+          - generic [ref=e578]: OT_CELL
+        - article [ref=e579] [cursor=pointer]:
+          - generic [ref=e580]:
+            - generic [ref=e581]: 长兴客运码头HR12H_9
+            - generic [ref=e582]: NR
+          - generic [ref=e583]: NR:4255776777
+          - generic [ref=e584]:
+            - generic [ref=e585]: N79
+            - generic [ref=e586]: 室分
+            - generic [ref=e587]: 一般
+          - generic [ref=e588]:
+            - generic [ref=e589]:
+              - generic [ref=e590]: 目标半径
+              - generic [ref=e591]: 60 m
+            - generic [ref=e592]:
+              - generic [ref=e593]: 发射功率
+              - generic [ref=e594]: 未提供
+            - generic [ref=e595]:
+              - generic [ref=e596]: 区域
+              - generic [ref=e597]: 未关联
+            - generic [ref=e598]:
+              - generic [ref=e599]: 重叠邻区
+              - generic [ref=e600]: 未知
+          - generic [ref=e601]:
+            - generic "RT_01 归属站点" [ref=e602]: "1039008"
+            - generic [ref=e603]: 点开自动执行决策链 →
+          - generic [ref=e605]: OT_CELL
+    - complementary [ref=e37]:
+      - generic [ref=e38]:
+        - generic [ref=e39]:
+          - generic [ref=e40]: 本体要素
+          - generic [ref=e41]: INSPECTOR
+        - generic [ref=e606]:
+          - text: 点击任意本体要素徽章
+          - text: 查看它在本体的定义、校验点与依据
+      - generic [ref=e44]:
+        - generic [ref=e45]:
+          - generic [ref=e46]: 本体问答
+          - generic [ref=e47]: QA · GROUNDED
+        - generic [ref=e48]:
+          - generic [ref=e607]:
+            - generic [ref=e608]: 当前小区
+            - generic [ref=e609]: 未选小区（全局问答）
+            - generic [ref=e610]: 只读问答：不代为执行写动作
+          - generic [ref=e611]: 我是当前小区的问答助手：可以问我这个小区有哪些属性、它已经走完的决策全流程是什么、某个结论依据本体里的哪些对象与函数——回答只引用本体里的事实，每个数值都能追溯到出处。
+          - generic [ref=e613]: 先在小区大屏选一个小区，问答会围绕它展开；也可以直接点下面的推荐提问。
+          - generic [ref=e614]:
+            - generic [ref=e615]: 推荐提问
+            - generic [ref=e616] [cursor=pointer]: 哪些小区弱覆盖
+            - generic [ref=e617] [cursor=pointer]: 派单规则是什么
+            - generic [ref=e618] [cursor=pointer]: 工单有哪些状态
+            - generic [ref=e619] [cursor=pointer]: F_08 是什么
+            - generic [ref=e620] [cursor=pointer]: INV_16 约束什么
+          - generic [ref=e621]:
+            - textbox "例如：哪些小区达到弱覆盖派单条件？" [ref=e622]
+            - button "发送" [ref=e623] [cursor=pointer]
+  - contentinfo [ref=e49]:
+    - generic [ref=e624]:
+      - text: 本体服务
+      - generic [ref=e626]: shwo-weak-coverage
+    - generic [ref=e627]:
+      - text: 小区
+      - generic [ref=e628]: "18"
+    - generic [ref=e629]:
+      - text: 工单
+      - generic [ref=e630]: "1"
+    - generic [ref=e631]:
+      - text: 方案
+      - generic [ref=e632]: "1"
+    - generic [ref=e633]:
+      - text: 效果
+      - generic [ref=e634]: "2"
+    - generic [ref=e635]:
+      - text: 案例
+      - generic [ref=e636]: "1"
+    - generic [ref=e637]:
+      - text: MR
+      - generic [ref=e638]: "292"
+    - generic [ref=e639]: A_09 · ok
+    - generic [ref=e641]: A_08 · ok
+    - generic [ref=e643]: A_07 · ok
+    - generic [ref=e645]:
+      - text: trace
+      - generic [ref=e646]: fdefdba919bd7cd6
